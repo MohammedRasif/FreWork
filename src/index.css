@@ -1,8 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
 @import "tailwindcss";
-@plugin "daisyui";
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
+/* @plugin "daisyui"; */
 
+
+
+.font-roboto {
+  font-family: "Roboto", sans-serif;
+}
+
+.font-open-sans {
+  font-family: "Open Sans", sans-serif;
+}
+
+.font-nunito-sans {
+  font-family: "Nunito Sans", sans-serif;
+}
 
 #root{
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Roboto", sans-serif;
+  text-rendering: optimizeLegibility;
+  cursor: default;
+}
+
+button {
+  @apply cursor-pointer;
+}
+
+.btn {
+  @apply p-2 rounded-md cursor-pointer outline-none;
+}
+
+.btn-white {
+  @apply bg-white text-[#252F40] shadow-[0_2px_4px_-1px_#00000030]
+}
+
+.btn-primary-transparent {
+  @apply bg-transparent border-2 border-[#3776E2] text-[#3776E2]
+}
+
+.btn-primary {
+  @apply bg-[#3776E2] text-[#FAFAFA];
+}
+
+.btn-secondary {
+  @apply bg-[#E6EAF0];
 }
