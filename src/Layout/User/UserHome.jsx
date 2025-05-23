@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import PlanCard from "../../components/plan-card";
 
 const rawPlanData = [
@@ -87,12 +88,15 @@ const UserHome = () => {
       </div>
 
       <div className="w-full grid grid-cols-12 py-8">
-        <div className="col-span-11">
+        <div className="col-span-10">
           <div className="w-full flex items-end justify-end">
-            <button className="btn btn-primary-transparent flex items-center gap-2 font-nunito-sans font-semibold">
+            <Button
+              variant="transparent"
+              className="font-nunito-sans font-semibold"
+            >
               Create Plan
               <Plus size={18} />
-            </button>
+            </Button>
           </div>
 
           <div className="w-full flex items-center gap-2">
@@ -107,18 +111,34 @@ const UserHome = () => {
 
           <div className="w-full h-auto mt-4 space-y-4">
             {rawPlanData.map((plan) => (
-              <PlanCard
-                key={plan.id}
-                title={plan.title}
-                on={plan.on}
-                duration={plan.duration}
-                category={plan.category}
-              />
+              <PlanCard key={plan.id} plan={plan} />
             ))}
           </div>
         </div>
 
-        <div className=""></div>
+        <div className="col-span-2 w-full pt-16 px-5">
+          <h4 className="text-[#343E4B] font-semibold text-xl text-center">
+            My All Plans
+          </h4>
+          <div className="flex flex-col gap-4 py-2 px-4">
+            <Button variant="white">Created Plan</Button>
+            <Button variant="secondary">Published Plans</Button>
+            <Button variant="secondary">Published Plans</Button>
+            <Button variant="secondary">Accepted Offers</Button>
+            <Button variant="secondary">Favourite Agencies</Button>
+
+            <div className="flex flex-col gap-1">
+              <p className="text-xs font-medium">Need free fasted response?</p>
+              <Button
+                variant="link"
+                size="xs"
+                className="underline text-left w-min text-xs"
+              >
+                Click here
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

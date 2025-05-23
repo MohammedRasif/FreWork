@@ -13,6 +13,13 @@ import {
 } from "lucide-react";
 import UserAvatar from "../../assets/img/bruce-mars.png";
 import { SlDiamond } from "react-icons/sl";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function AdminDashboardLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -136,9 +143,7 @@ export default function AdminDashboardLayout() {
               <h5 className="font-open-sans text-sm font-normal">
                 Please check our docs
               </h5>
-              <button className="btn btn-white uppercase font-bold text-sm mt-3">
-                documentation
-              </button>
+              <Button variant="white">DOCUMENTATION</Button>
             </div>
           </div>
         </nav>
@@ -169,25 +174,28 @@ export default function AdminDashboardLayout() {
               </button>
               <div className="flex items-center justify-center gap-5">
                 <h4 className="text-xl font-medium">Settings</h4>
-                <button className="cursor-pointer">
-                  <ChevronDown size={20} />
-                </button>
-                <div className="absolute top-20 right-10 w-52 h-auto p-4 rounded-md bg-white shadow-[0_2px_4px_-1px_#00000030] before:content-[''] before:absolute before:-top-7 before:right-[15px] before:w-0 before:h-0 before:border-l-[15px] before:border-r-[15px] before:border-b-[30px] before:border-l-transparent before:border-r-transparent before:border-b-white">
-                  <ul className="w-full flex flex-col gap-4">
-                    <li className="flex items-center gap-2 text-[#343E4B] text-base cursor-pointer">
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="cursor-pointer">
+                      <ChevronDown size={20} />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end">
+                    <DropdownMenuItem>
                       <CircleArrowUp size={20} />
                       Upgrade package
-                    </li>
-                    <li className="flex items-center gap-2 text-[#343E4B] text-base cursor-pointer">
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
                       <Mail size={20} />
                       Contact support
-                    </li>
-                    <li className="flex items-center gap-2 text-[#343E4B] text-base cursor-pointer">
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
                       <Lock size={20} />
                       Change password
-                    </li>
-                  </ul>
-                </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
