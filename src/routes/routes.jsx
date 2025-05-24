@@ -10,13 +10,17 @@ import AdminHome from "../Layout/Admin/AdminHome";
 import UserHome from "../Layout/User/UserHome";
 import AdminDashboardLayout from "../Layout/Admin/AdminDashboardLayout";
 import UserDashboardLayout from "../Layout/User/UserDashboardLayout";
+import Membership from "@/Pages/Home/Membership";
+import Pricing from "@/Pages/Home/Pricing";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Main />,
     children: [
-      { path: "/", element: <Home /> }
+      { path: "/", element: <Home /> },
+      {path: "/membership" , element: <Membership/>},
+      {path: "/pricing" , element: <Pricing/>}
       
     ],
   },
