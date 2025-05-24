@@ -54,7 +54,7 @@ const Membership = () => {
     ]
 
     return (
-        <div className="flex bg-gray-50 items-center px-10 ">
+        <div className="flex bg-gray-50 items-center px-10  ">
             {/* Main Content - Left Side */}
             <div className="w-4/5 p-6">
                 {/* Header */}

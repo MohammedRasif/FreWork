@@ -12,6 +12,7 @@ import AdminDashboardLayout from "../Layout/Admin/AdminDashboardLayout";
 import UserDashboardLayout from "../Layout/User/UserDashboardLayout";
 import Membership from "@/Pages/Home/Membership";
 import Pricing from "@/Pages/Home/Pricing";
+import TourPlan from "@/Pages/Home/TourPlan";
 
 export const router = createBrowserRouter([
   {
@@ -20,7 +21,8 @@ export const router = createBrowserRouter([
     children: [
       { path: "/", element: <Home /> },
       {path: "/membership" , element: <Membership/>},
-      {path: "/pricing" , element: <Pricing/>}
+      {path: "/pricing" , element: <Pricing/>},
+      {path: "/tourPlan" , element: <TourPlan/>},
       
     ],
   },
