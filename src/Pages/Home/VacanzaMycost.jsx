@@ -23,7 +23,7 @@ const VacanzaMycost = () => {
                 <div className="absolute top-0 left-0 w-full h-full z-10"></div>
 
                 {/* Content Container */}
-                <div className="relative z-20 flex flex-col items-center justify-center min-h-screen px-4 py-10">
+                <div className="relative z-20 flex flex-col items-center justify-center h-[85vh] px-4 py-10">
 
 
                     {/* Steps Container */}
