@@ -54,24 +54,24 @@ const Membership = () => {
     ]
 
     return (
-        <div className="flex bg-gray-50 items-center px-10 ">
+        <div className="flex bg-gray-50 items-center px-10 pb-16 roboto ">
             {/* Main Content - Left Side */}
             <div className="w-4/5 p-6">
                 {/* Header */}
                 <div className="mb-6">
-                    <h1 className="text-4xl font-semibold text-gray-800 mb-1">Search for Tour planer (Agencies)</h1>
+                    <h1 className="  text-3xl sm:text-4xl font-medium text-gray-600 mb-3 sm:mb-5 ">Search for Tour planer (Agencies)</h1>
                     <p className="text-gray-500 text-md font-medium">All posted tour plans are here</p>
                 </div>
 
                 {/* Search Bar */}
-                <div className="relative mb-8">
+                <div className="relative mb-8 w-96">
                     <div className="flex">
                         <input
                             type="text"
                             placeholder="Search here..."
-                            className="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
-                        <button className="px-6 py-3 bg-[#3776E2] text-white rounded-r-lg transition-colors">
+                        <button className="px-5 py-3 bg-[#3776E2] text-white rounded-r-lg transition-colors">
                             <Search className="" size={24} />
                         </button>
                     </div>
@@ -142,7 +142,7 @@ const Membership = () => {
             </div>
 
             {/* Top Agencies - Right Side */}
-            <div className="w-1/5 bg-white border border-gray-200 p-6 mr-5 -mt-28 rounded-xl">
+            <div className="w-1/5 bg-white border border-gray-200 p-6 mr-5 mt-20 rounded-xl">
                 <h2 className="font-semibold text-gray-800 mb-6 text-center">TOP AGENCIES</h2>
 
                 <div className="space-y-5">

@@ -13,6 +13,11 @@ import UserDashboardLayout from "../Layout/User/UserDashboardLayout";
 import Membership from "@/Pages/Home/Membership";
 import Pricing from "@/Pages/Home/Pricing";
 import AdminProfile from "../Layout/Admin/AdminProfile";
+import AdminProfileEdit from "../Layout/Admin/AdminProfileEdit";
+import AdminPricing from "@/Layout/Admin/AdminPricing";
+import AdminNotification from "@/Layout/Admin/AdminNotification";
+import TourPlan from "@/Pages/Home/TourPlan";
+import Contact from "@/Pages/Home/Contact";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +27,8 @@ export const router = createBrowserRouter([
       { path: "/", element: <Home /> },
       { path: "/membership", element: <Membership /> },
       { path: "/pricing", element: <Pricing /> },
+      { path: "/tourPlan", element: <TourPlan /> },
+      { path: "/contact", element: <Contact /> },
     ],
   },
 
@@ -32,6 +39,9 @@ export const router = createBrowserRouter([
       { index: true, element: <AdminHome /> },
       { path: "dashboard", element: <AdminHome /> },
       { path: "profile", element: <AdminProfile /> },
+      { path: "editProfile", element: <AdminProfileEdit /> },
+      { path: "membership", element: <AdminPricing /> },
+      { path: "admin_notification", element: <AdminNotification /> },
     ],
   },
 
@@ -44,7 +54,7 @@ export const router = createBrowserRouter([
     ],
   },
 
-  { path: "/sign_up", element: <Registration /> },
+  { path: "/register", element: <Registration /> },
   { path: "/login", element: <Login /> },
   { path: "/verify", element: <EmailVerification /> },
   { path: "/otp_verify", element: <OTP_Verification /> },

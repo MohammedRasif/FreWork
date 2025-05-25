@@ -1,113 +1,194 @@
-import React, { useState } from 'react';
-import { Mail, Lock, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import Lottie from 'lottie-react';
-import registration from '../../assets/registration.json'
+import { useForm } from "react-hook-form"
+import { useState } from "react"
+import { ChevronDown, Mail, Lock } from "lucide-react"
+import img from "../../assets/img/Mask group (3).png"
+import { NavLink } from "react-router-dom"
 
-const Registration = () => {
-  const [countryCode, setCountryCode] = useState('+1');
+const register = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [selectedUserType, setSelectedUserType] = useState("")
 
-  const countryCodes = [
-    { code: '+1', flag: '🇺🇸', name: 'United States' },
-    { code: '+44', flag: '🇬🇧', name: 'United Kingdom' },
-    { code: '+91', flag: '🇮🇳', name: 'India' },
-    { code: '+33', flag: '🇫🇷', name: 'France' },
-    { code: '+61', flag: '🇦🇺', name: 'Australia' },
-  ];
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm()
+
+  const password = watch("password")
+
+  const userTypes = ["Tourist", "Travel agency"]
+
+  const onSubmit = (data) => {
+    console.log("Form Data:", data)
+    alert("Registration successful!")
+  }
+
+  const handleUserTypeSelect = (type) => {
+    setSelectedUserType(type)
+    setValue("userType", type)
+    setIsDropdownOpen(false)
+  }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      <div className="w-full bg-gray-900 md:w-1/2 h-[30vh] md:h-screen relative">
-      <Lottie
-        animationData={registration} 
-        loop={true} 
-          className="absolute inset-0 w-3/4 h-full mx-auto object-cover"></Lottie>
-        
-       
+    <div className="min-h-screen flex">
+      {/* Left Side - Image */}
+      <div className="hidden lg:flex lg:w-1/2 relative">
+        <img
+          src={img}
+          alt="Background image"
+          className="w-full h-full object-cover absolute inset-0"
+        />
       </div>
 
-      <div className="w-full md:w-1/2 min-h-[100vh] md:h-screen relative">
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-40"
-          style={{
-            backgroundImage: "url('https://i.ibb.co.com/cctYrsKY/Group-1686551056.png')",
-          }}
-        ></div>
+      {/* Right Side - Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-100">
+        <div className="w-full max-w-xl">
+          {/* Logo */}
+          <div className="text-center mb-8">
+            <div className="text-gray-400 text-sm mb-6">Logo here</div>
+            <h1 className="text-4xl font-semibold text-gray-700">Welcome to Frework</h1>
+          </div>
 
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-[70vh] md:h-screen p-8">
-          <div className="w-full max-w-xl space-y-8">
-            <div className="text-center">
-              <img
-                src="https://i.ibb.co.com/sp5JLnkF/Whats-App-Image-2025-02-22-at-9-25-22-AM-3.png"
-                alt="Logo"
-                className="mx-auto mb-16 w-3/4"
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Email Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-4 w-4 text-gray-400" />
+                </div>
+                <input
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "Invalid email address",
+                    },
+                  })}
+                  type="email"
+                  placeholder="user@gmail.com"
+                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+            </div>
+
+            {/* User Type Dropdown */}
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-gray-700 mb-1">What describes you best</label>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="w-64 px-3 py-2.5 border border-gray-300 rounded-sm bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent flex items-center justify-between"
+                >
+                  <span className={selectedUserType ? "text-gray-900" : "text-gray-400"}>
+                    {selectedUserType || "Select one"}
+                  </span>
+                  <ChevronDown
+                    className={`h-4 w-4 text-gray-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                {isDropdownOpen && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-sm shadow-lg">
+                    {userTypes.map((type) => (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => handleUserTypeSelect(type)}
+                        className="w-full px-3 py-2 text-left hover:bg-gray-50 focus:outline-none focus:bg-gray-50 first:rounded-t-sm last:rounded-b-sm"
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <input
+                {...register("userType", { required: "Please select user type" })}
+                type="hidden"
+                value={selectedUserType}
+              />
+              {errors.userType && <p className="text-red-500 text-xs mt-1">{errors.userType.message}</p>}
+            </div>
+
+            {/* Password Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-4 w-4 text-gray-400" />
+                </div>
+                <input
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 6,
+                      message: "Password must be at least 6 characters",
+                    },
+                  })}
+                  type="password"
+                  placeholder="Password"
+                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+            </div>
+
+            {/* Confirm Password Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-4 w-4 text-gray-400" />
+                </div>
+                <input
+                  {...register("confirmPassword", {
+                    required: "Please confirm your password",
+                    validate: (value) => value === password || "Passwords do not match",
+                  })}
+                  type="password"
+                  placeholder="Password"
+                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
+            </div>
+
+            {/* Invitation Code Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Invitation code (optional)</label>
+              <input
+                {...register("invitationCode")}
+                type="text"
+                placeholder="Enter here"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
-            <form className="space-y-6 backdrop-blur-sm bg-white/10 p-10 mb-10 rounded-lg border border-gray-200 shadow-lg">
-              <h2 className="text-3xl font-bold text-[#B28D28] mb-10 text-center">Sign up</h2>
-              <div className="form-control w-full">
-                <div className="relative">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="input input-bordered border-[#B28D2866]/40 w-full pl-10 bg-white/20 text-white placeholder-gray-300"
-                  />
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                </div>
-              </div>
+            {/* Register Button */}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-6"
+            >
+              Register
+            </button>
+          </form>
 
-              <div className="form-control w-full">
-                <div className="relative">
-                  <input
-                    type="password"
-                    placeholder="Enter your password"
-                    className="input input-bordered w-full pl-10 bg-white/20 border-[#B28D2866]/40  placeholder-gray-300 text-black"
-                  />
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                </div>
-              </div>
-
-              {/* Replaced "Re-Type your password" with phone number input */}
-              <div className="form-control w-full">
-                <div className="relative flex items-center">
-                  <div className="flex items-center bg-white/20 border-[#B28D2866]/40 border rounded-l-lg h-12 px-3">
-                    <span className="mr-1">
-                      {countryCodes.find((c) => c.code === countryCode)?.flag}
-                    </span>
-                    <select
-                      value={countryCode}
-                      onChange={(e) => setCountryCode(e.target.value)}
-                      className="bg-transparent  focus:outline-none"
-                    >
-                      {countryCodes.map((country) => (
-                        <option key={country.code} value={country.code} className="text-black">
-                          {country.code}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <input
-                    type="tel"
-                    placeholder="Enter phone number"
-                    className="input input-bordered w-full h-12 bg-white/20 border-[#B28D2866]/40 text-black placeholder-gray-300 rounded-l-none border-l-0"
-                  />
-                </div>
-              </div>
-
-
-              <button className="btn bg-[#B28D28] text-white rounded-full w-full text-base">Next</button>
-
-              <p className="text-center text-gray-900">
-                Already have an account?
-                <Link to="/login" className="text-[#8F5E0A] font-semibold ml-1 hover:underline">Login</Link>
-              </p>
-            </form>
+          {/* Login Link */}
+          <div className="text-center mt-6">
+            <NavLink to="/login" className="text-sm text-gray-600 ">
+              Already have an account? <button className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer">Login</button>
+            </NavLink >
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Registration;
+export default register

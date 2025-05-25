@@ -271,7 +271,7 @@ const AdminHome = () => {
       </div>
 
       {/* Sidebar - 1/5 width */}
-      <div className="w-1/5 p-6 mt-[10.6vh] rounded-md bg-white shadow-md">
+      <div className="w-1/5 p-6 mt-[7.6vh] rounded-md ">
         <div className="space-y-6">
           {/* My Board Header */}
           <div>

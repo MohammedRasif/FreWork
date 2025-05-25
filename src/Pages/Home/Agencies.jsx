@@ -29,7 +29,7 @@ const Agencies = () => {
     ];
 
     return (
-        <div className="pb-8 px-4">
+        <div className="pb-8 px-4 roboto">
             <div className="text-center py-16">
                 <p className="text-gray-700 text-lg mb-4 font-medium">Top Requests are here  </p>
                 <h1 className="text-4xl md:text-5xl font-semibold text-[#3F4C65]">Currently Top Agencies</h1>

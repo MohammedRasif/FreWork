@@ -5,7 +5,7 @@ import img3 from "../../assets/img/booking 1.svg";
 
 const VacanzaMycost = () => {
     return (
-        <div>
+        <div className="bg-white">
             {/* Header Text */}
             <div className="text-center pt-16">
                 <p className="text-gray-700 text-lg mb-4 font-medium">What we offer to our users...</p>
