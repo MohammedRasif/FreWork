@@ -99,6 +99,10 @@ const login = () => {
               {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
             </div>
 
+            <div>
+              <h1 className="text-blue-500 text-end cursor-pointer hover:underline">forget password</h1>
+            </div>
+
            
          
 
