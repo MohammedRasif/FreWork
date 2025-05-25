@@ -13,6 +13,7 @@ import UserDashboardLayout from "../Layout/User/UserDashboardLayout";
 import Membership from "@/Pages/Home/Membership";
 import Pricing from "@/Pages/Home/Pricing";
 import AdminProfile from "../Layout/Admin/AdminProfile";
+import ChatInterface from "../Layout/User/ChatInterface";
 
 export const router = createBrowserRouter([
   {
@@ -41,6 +42,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <UserHome /> },
       { path: "dashboard", element: <UserHome /> },
+      { path: "chat", element: <ChatInterface /> },
     ],
   },
 

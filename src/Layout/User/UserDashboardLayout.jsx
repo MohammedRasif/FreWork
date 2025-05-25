@@ -35,7 +35,7 @@ export default function UserDashboardLayout() {
         {
           name: "Conversations",
           icon: <MessageCircle size={20} />,
-          path: "/conversations",
+          path: "user/chat",
         },
         {
           name: "Notifications",
@@ -201,7 +201,7 @@ export default function UserDashboardLayout() {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto p-12 bg-[#F5F5F6]">
+        <main className="flex-1 overflow-auto p-8 bg-[#F5F5F6]">
           <Outlet />
         </main>
       </div>
