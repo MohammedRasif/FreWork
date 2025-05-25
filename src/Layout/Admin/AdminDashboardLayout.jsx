@@ -29,18 +29,30 @@ export default function AdminDashboardLayout() {
   const menuItems = [
     {
       items: [
-        { name: "My Plans", icon: <ClipboardList size={20} />, path: "/admin" },
-        { name: "Profile", icon: <UserRound size={20} />, path: "/profile" },
+        { name: "My Plans", 
+          icon: <ClipboardList size={20} />, 
+          path: "/admin" },
+        {
+          name: "Notifications",
+          icon: <Bell size={20} />,
+          path: "/notifications",
+        },
+        {
+          name: "Membership",
+          icon: <UserRound size={20} />,
+          path: "admin/membership",
+        },
         {
           name: "Conversations",
           icon: <MessageCircle size={20} />,
           path: "/conversations",
         },
         {
-          name: "Notifications",
-          icon: <Bell size={20} />,
-          path: "/notifications",
+          name: "Profile",
+          icon: <UserRound size={20} />,
+          path: "admin/profile",
         },
+
         { name: "Logout", icon: <LogOut size={20} />, path: "/logout" },
       ],
     },
@@ -66,7 +78,7 @@ export default function AdminDashboardLayout() {
       {/* Sidebar */}
       <aside
         className={`${
-          isCollapsed ? "w-20" : "w-64"
+          isCollapsed ? "w-20" : "w-72"
         } transition-all duration-500 ease-in-out`}
       >
         {/* Logo */}
@@ -83,10 +95,10 @@ export default function AdminDashboardLayout() {
             </div>
 
             <div className="w-full flex flex-col gap-1 pl-3">
-              <h3 className="text-2xl font-normal text-[#343E4B]">
+              <h3 className="text-2xl text-center font-normal text-[#343E4B]">
                 Company Profile
               </h3>
-              <span className="text-center text-sm text-[#8C8C8C]">
+              <span className="text-center text-md text-[#8C8C8C]">
                 username
               </span>
             </div>
@@ -113,7 +125,7 @@ export default function AdminDashboardLayout() {
                         {item.icon}
                       </span>
                       <span
-                        className={`transform transition-all duration-500 text-sm font-semibold ${
+                        className={`transform transition-all duration-500 text-md font-semibold ${
                           isCollapsed
                             ? "opacity-0 -translate-x-full"
                             : "opacity-100 translate-x-0"
@@ -202,7 +214,7 @@ export default function AdminDashboardLayout() {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto p-12 bg-[#F5F5F6]">
+        <main className="flex-1 overflow-auto  bg-[#F5F5F6]">
           <Outlet />
         </main>
       </div>
