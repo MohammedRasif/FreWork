@@ -229,7 +229,6 @@ const Pricing = () => {
                     </AnimatePresence>
                 </div>
             </div>
-            <Faq />
         </section>
     );
 };

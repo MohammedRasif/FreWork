@@ -14,6 +14,7 @@ import Membership from "@/Pages/Home/Membership";
 import Pricing from "@/Pages/Home/Pricing";
 import AdminProfile from "../Layout/Admin/AdminProfile";
 import AdminProfileEdit from "../Layout/Admin/AdminProfileEdit";
+import AdminPricing from "@/Layout/Admin/AdminPricing";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,7 @@ export const router = createBrowserRouter([
       { path: "dashboard", element: <AdminHome /> },
       { path: "profile", element: <AdminProfile /> },
       { path: "editProfile", element: <AdminProfileEdit /> },
+      { path: "pricing", element: <AdminPricing /> },
     ],
   },
 
