@@ -12,6 +12,7 @@ import AdminDashboardLayout from "../Layout/Admin/AdminDashboardLayout";
 import UserDashboardLayout from "../Layout/User/UserDashboardLayout";
 import Membership from "@/Pages/Home/Membership";
 import Pricing from "@/Pages/Home/Pricing";
+import AdminProfile from "../Layout/Admin/AdminProfile";
 
 export const router = createBrowserRouter([
   {
@@ -19,9 +20,8 @@ export const router = createBrowserRouter([
     element: <Main />,
     children: [
       { path: "/", element: <Home /> },
-      {path: "/membership" , element: <Membership/>},
-      {path: "/pricing" , element: <Pricing/>}
-      
+      { path: "/membership", element: <Membership /> },
+      { path: "/pricing", element: <Pricing /> },
     ],
   },
 
@@ -31,6 +31,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <AdminHome /> },
       { path: "dashboard", element: <AdminHome /> },
+      { path: "profile", element: <AdminProfile /> },
     ],
   },
 

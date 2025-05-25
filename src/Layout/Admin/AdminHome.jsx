@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef } from "react";
-import { Heart, Share2 } from "lucide-react";
+import { Heart, Share2, ThumbsUp, MessageCircle } from "lucide-react";
 import { FaCommentDots } from "react-icons/fa";
 import { HiDotsVertical } from "react-icons/hi";
 import AdminOfferPlan from "./AdminOfferPlan";
+import AdminAcceptPlan from "./AdminAcceptPlan";
 
 const AdminHome = () => {
-  // State for active tab, dropdown, and social counts
+  // State for active tab, dropdown, social counts, and like toggle
   const [activeTab, setActiveTab] = useState("All Plans");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
   const [socialCounts, setSocialCounts] = useState({
     likes: 520,
     offers: 66,
@@ -83,7 +85,7 @@ const AdminHome = () => {
                 </div>
                 <div className="text-right flex items-center space-x-2 relative">
                   <div>
-                    <p className="text-lg font-semibold text-gray-800">
+                    <p className="text-lg font-bold text-gray-700">
                       Budget {travelData.budget}
                     </p>
                     <p className="text-md text-gray-800">Total 5 person</p>
@@ -97,7 +99,7 @@ const AdminHome = () => {
                   >
                     <HiDotsVertical
                       size={22}
-                      className="cursor-pointer text-gray-600 hover:text-gray-800 transition-colors"
+                      className="cursor-pointer text-gray-600 hover:text-gray-800 transition-colors -mt-3"
                     />
                   </button>
                   {isDropdownOpen && (
@@ -152,34 +154,50 @@ const AdminHome = () => {
                 />
               </div>
 
-              {/* Show line and share and offers */}
-              <div className="flex items-center justify-between mb-4 text-sm text-gray-600">
+              {/* Social Stats */}
+              <div className="flex items-center justify-between py-3">
                 <div className="flex items-center gap-2">
-                  <Heart className="w-4 h-4 " />
-                  <span className=" font-medium">
+                  <div className="flex items-center">
+                    <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center mr-1">
+                      <ThumbsUp className="w-3 h-3 text-white fill-current" />
+                    </div>
+                    <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center -ml-2">
+                      <Heart className="w-3 h-3 text-white fill-current" />
+                    </div>
+                  </div>
+                  <span className="text-sm text-gray-600 ml-2">
                     {socialCounts.likes} Likes
                   </span>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 text-sm text-gray-600">
                   <span>{socialCounts.offers} Offers</span>
                   <span>{socialCounts.shares} Share</span>
                 </div>
               </div>
 
               {/* Social Actions */}
-              <div className="flex items-center gap-6 pt-4 border-t border-gray-100">
-                <button className="flex items-center gap-2 text-gray-600 px-3 py-2 rounded-md transition-colors cursor-pointer font-semibold hover:bg-gray-100">
-                  <Heart className="w-4 h-4" />
-                  {socialStats.likes}
-                </button>
-                <button className="flex items-center gap-2 text-gray-600 px-3 py-2 rounded-md transition-colors cursor-pointer font-semibold hover:bg-gray-100">
-                  <FaCommentDots className="w-4 h-4" />
-                  {socialStats.follows}
-                </button>
-                <button className="flex items-center gap-2 text-gray-600 px-3 py-2 rounded-md transition-colors cursor-pointer font-semibold hover:bg-gray-100">
-                  <Share2 className="w-4 h-4" />
-                  {socialStats.shares}
-                </button>
+              <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                <div className="flex items-center gap-6">
+                  <button
+                    onClick={() => setIsLiked(!isLiked)}
+                    className={`flex items-center gap-2 text-sm ${
+                      isLiked ? "text-blue-600" : "text-gray-600"
+                    } hover:text-blue-600 transition-colors`}
+                  >
+                    <ThumbsUp
+                      className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`}
+                    />
+                    {socialStats.likes}
+                  </button>
+                  <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                    <MessageCircle className="w-4 h-4" />
+                    {socialStats.follows}
+                  </button>
+                  <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                    <Share2 className="w-4 h-4" />
+                    {socialStats.shares}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -192,14 +210,8 @@ const AdminHome = () => {
         );
       case "Accepted Plans":
         return (
-          <div className="rounded-lg bg-white shadow-sm border border-gray-200 mb-6 p-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Accepted Plans
-            </h2>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              These are the plans you have accepted. Prepare for your upcoming
-              adventures!
-            </p>
+          <div>
+            <AdminAcceptPlan />
           </div>
         );
       default:
@@ -221,14 +233,14 @@ const AdminHome = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen ">
+    <div className="flex min-h-screen">
       {/* Main Content - 4/5 width */}
       <div className="w-4/5 p-6">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">
             Welcome,{" "}
-            <span className="font-semibold ">Choose perfect offer for you</span>
+            <span className="font-semibold">Choose perfect offer for you</span>
           </h1>
           {/* Search field */}
           <div className="relative w-full max-w-[30vh]">
@@ -284,7 +296,7 @@ const AdminHome = () => {
               onClick={() => setActiveTab("Offered Plans")}
               className={`w-full text-left px-4 py-3 font-semibold rounded-md transition-colors ${
                 activeTab === "Offered Plans"
-                  ? "bg-white shadow-md text-blue-600"
+                  ? "bg-white shadow-md "
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
@@ -294,7 +306,7 @@ const AdminHome = () => {
               onClick={() => setActiveTab("Accepted Plans")}
               className={`w-full text-left px-4 py-3 font-semibold rounded-md transition-colors ${
                 activeTab === "Accepted Plans"
-                  ? "bg-white shadow-md text-blue-600"
+                  ? "bg-white shadow-md "
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >

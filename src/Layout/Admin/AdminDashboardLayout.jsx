@@ -30,17 +30,27 @@ export default function AdminDashboardLayout() {
     {
       items: [
         { name: "My Plans", icon: <ClipboardList size={20} />, path: "/admin" },
-        { name: "Profile", icon: <UserRound size={20} />, path: "/profile" },
+        {
+          name: "Notifications",
+          icon: <Bell size={20} />,
+          path: "/notifications",
+        },
+        {
+          name: "Membership",
+          icon: <UserRound size={20} />,
+          path: "admin/membership",
+        },
         {
           name: "Conversations",
           icon: <MessageCircle size={20} />,
           path: "/conversations",
         },
         {
-          name: "Notifications",
-          icon: <Bell size={20} />,
-          path: "/notifications",
+          name: "Profile",
+          icon: <UserRound size={20} />,
+          path: "admin/profile",
         },
+
         { name: "Logout", icon: <LogOut size={20} />, path: "/logout" },
       ],
     },
