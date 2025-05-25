@@ -11,7 +11,7 @@ import { MapPin, Send, Leaf, Users, ArrowRight } from "lucide-react";
 
 const EasyandFast = () => {
     return (
-       <div>
+       <div className='mb-20'>
          <img src={img4} alt="" className='absolute right-0 h-[50vh] -mt-32 ' />
          <img src={img4} alt="" className='absolute left-0 h-[50vh] rotate-180 mt-[110vh]' />
          <div className="font-sans relative flex flex-col items-center justify-center max-w-7xl mx-auto  py-12">

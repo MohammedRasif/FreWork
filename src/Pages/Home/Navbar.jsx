@@ -41,6 +41,13 @@ const Navbar = () => {
                 >
                     Tour Plans
                 </NavLink>
+                <NavLink
+                    to="/contact"
+                    className={`text-base text-[20px] font-medium ${activeLink === "contact" ? "text-[#2464EC] border-b-2 border-[#2464EC]" : "text-gray-700 hover:text-blue-600"}`}
+                    onClick={() => setActiveLink("contact")}
+                >
+                    Contact
+                </NavLink>
             </div>
 
             {/* Auth Buttons */}

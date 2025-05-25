@@ -35,9 +35,9 @@ export default function AdminDashboardLayout() {
         {
           name: "Notifications",
           icon: <Bell size={20} />,
-          path: "/notifications",
+          path: "admin/admin_notification",
         },
-        {
+        { 
           name: "Membership",
           icon: <UserRound size={20} />,
           path: "admin/membership",
@@ -78,7 +78,7 @@ export default function AdminDashboardLayout() {
       {/* Sidebar */}
       <aside
         className={`${
-          isCollapsed ? "w-20" : "w-72"
+          isCollapsed ? "w-20" : "w-80"
         } transition-all duration-500 ease-in-out`}
       >
         {/* Logo */}

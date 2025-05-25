@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { FaStar, FaEdit, FaPhone, FaEnvelope, FaGlobe, FaMapMarkerAlt, FaCheckCircle, FaChevronRight, FaArrowLeft, FaCalendarAlt } from "react-icons/fa"
 import { IoMdSend } from "react-icons/io"
+import { NavLink } from "react-router-dom"
 
 const AdminProfile = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
@@ -146,10 +147,10 @@ const AdminProfile = () => {
                 <span className="text-[15px] text-blue-600">({data.header.reviews})</span>
               </div>
             </div>
-            <button className="flex items-center gap-1 mt-2">
+            <NavLink to="/admin/editProfile" className="flex items-center gap-1 mt-2 cursor-pointer">
               <FaEdit className="w-5 h-5" />
               <span className="text-md">Edit</span>
-            </button>
+            </NavLink >
           </div>
 
           {/* About Section */}

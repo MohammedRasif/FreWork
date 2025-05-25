@@ -1,7 +1,129 @@
 
+import { useEffect, useRef, useState } from "react";
+import { HiDotsVertical } from "react-icons/hi";
+import { ThumbsUp, Heart, MessageCircle, Share2 } from "lucide-react";
+import { GoArrowLeft } from "react-icons/go";
+import { IoIosSend } from "react-icons/io";
+import { MdVerified } from "react-icons/md";
+
 const TourPlan = () => {
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isLiked, setIsLiked] = useState(false);
+    const [offerBudget, setOfferBudget] = useState("");
+    const dropdownRef = useRef(null);
+
+    // Consolidated data object
+    const [travelData, setTravelData] = useState({
+        tour: {
+            title: "Tour From Dhaka To Bangkok",
+            destination: "Tour From Dhaka to Bangkok",
+            budget: "200USD",
+            date: "12th July, 2025",
+            duration: "10 Days",
+            category: "Adventure",
+            description:
+                "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text ever since the Lorem Ipsum is simply dummy text of the printing and type setting industry.",
+            locations: [
+                "Location",
+                "Location",
+                "Location",
+                "Location",
+                "Location",
+                "Location",
+            ],
+            interestedLocations: [
+                "Grand Palace",
+                "Wat Arun",
+                "Chatuchak Market",
+                "Floating Market",
+                "Jim Thompson House",
+                "Lumpini Park",
+            ],
+            image:
+                "https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443119/samples/landscapes/nature-mountains.jpg",
+            likes: 520,
+            comments: 60,
+            shares: 1,
+        },
+        offers: [
+            {
+                id: 1,
+                company: "Letstour pvt ltd",
+                budget: "200USD",
+                verified: true,
+                image:
+                    "https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443127/samples/man-portrait.jpg",
+                likes: 520,
+            },
+            {
+                id: 2,
+                company: "Tour spotter agency",
+                budget: "200USD",
+                verified: true,
+                image:
+                    "https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443119/samples/landscapes/nature-mountains.jpg",
+                likes: 520,
+            },
+        ],
+    });
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    // Functions to manage tour data
+    const updateTour = (updatedTour) => {
+        setTravelData((prev) => ({
+            ...prev,
+            tour: { ...prev.tour, ...updatedTour },
+        }));
+    };
+
+    const deleteTour = () => {
+        setTravelData((prev) => ({
+            ...prev,
+            tour: null,
+        }));
+    };
+
+    // Functions to manage offers
+    const addOffer = (newOffer) => {
+        setTravelData((prev) => ({
+            ...prev,
+            offers: [
+                ...prev.offers,
+                { id: prev.offers.length + 1, ...newOffer },
+            ],
+        }));
+    };
+
+    const updateOffer = (id, updatedOffer) => {
+        setTravelData((prev) => ({
+            ...prev,
+            offers: prev.offers.map((offer) =>
+                offer.id === id ? { ...offer, ...updatedOffer } : offer
+            ),
+        }));
+    };
+
+    const deleteOffer = (id) => {
+        setTravelData((prev) => ({
+            ...prev,
+            offers: prev.offers.filter((offer) => offer.id !== id),
+        }));
+    };
+
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
+        <div className="min-h-screen bg-gray-50 p-6 pb-20 roboto">
             <div className="mx-20">
                 <div className="flex gap-6">
                     {/* Main Content - Left Side */}
@@ -9,15 +131,24 @@ const TourPlan = () => {
                         {/* Header */}
                         <div className="mb-6">
                             <div className="flex items-center justify-between mb-2">
-                                
-                            
-                    <h1 className="text-4xl font-semibold text-gray-800 mb-1">Published Tour Plans</h1>
-                    
-          
+                                <h1 className="text-3xl sm:text-4xl font-medium text-gray-600 mb-3 sm:mb-5 ">
+                                    Published Tour Plans
+                                </h1>
                                 <div className="flex items-center gap-4">
-                                    <select className="px-3 py-2 border border-gray-300 rounded-md text-sm">
-                                        <option>Select</option>
-                                    </select>
+                                    <div>
+                                       
+                                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:border-blue-400 transition-colors">
+                                            <option value="" disabled selected>
+                                                Select a category
+                                            </option>
+                                            <option value="adventure">Adventure</option>
+                                            <option value="cultural">Cultural</option>
+                                            <option value="relaxation">Relaxation</option>
+                                            <option value="historical">Historical</option>
+                                            <option value="beach">Beach</option>
+                                            <option value="wildlife">Wildlife</option>
+                                        </select>
+                                    </div>
                                     <div className="relative">
                                         <input
                                             type="text"
@@ -40,279 +171,344 @@ const TourPlan = () => {
                                     </div>
                                 </div>
                             </div>
-                           
-                            <p className="text-gray-500 text-md font-medium">All posted tour plans are here</p>
+                            <p className="text-gray-500 text-md font-medium">
+                                All posted tour plans are here
+                            </p>
                         </div>
 
                         {/* Tour Card */}
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                            {/* Tour Header */}
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-2">Tour From Dhaka To Bangkok</h2>
-                                    <div className="space-y-1 text-sm text-gray-600">
-                                        <p>
-                                            <span className="font-medium">Willing to go on:</span> 12th July, 2025
-                                        </p>
-                                        <p>
-                                            <span className="font-medium">Duration:</span> 10 Days
-                                        </p>
-                                        <p>
-                                            <span className="font-medium">Category:</span> Adventure
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-2xl font-bold text-gray-900">2001USD</div>
-                                    <div className="text-sm text-gray-500">Test 5 Person</div>
-                                    <div className="text-xs text-blue-600 mt-1">Budget</div>
-                                </div>
-                            </div>
-
-                            {/* Description */}
-                            <div className="mb-4">
-                                <p className="text-gray-700 text-sm leading-relaxed">
-                                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-                                    industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
-                                    scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
-                                    into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the
-                                    release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
-                                    software like Aldus PageMaker including versions of Lorem Ipsum. It is a long established fact that a
-                                    reader will be distracted by the readable content of a page when looking at its layout. The point of
-                                    using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using
-                                    'Content here, content here', making it look like readable English. Many desktop publishing packages
-                                    and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum'
-                                    will uncover many web sites still in their infancy. Various versions have evolved over the years,
-                                    sometimes by accident, sometimes on purpose (injected humour and the like).
-                                </p>
-                                <button className="text-blue-600 text-sm font-medium mt-2 hover:underline">see more</button>
-                            </div>
-
-                            {/* Tags */}
-                            <div className="mb-4">
-                                <p className="text-sm text-gray-600 mb-2">
-                                    <span className="font-medium">Interested Destination:</span>
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                    {["Location", "Location", "Location", "Location", "Location"].map((tag, index) => (
-                                        <span key={index} className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Main Image */}
-                            <div className="mb-4">
-                                <div className="relative rounded-lg overflow-hidden">
-                                    <img
-                                        src="https://res.cloudinary.com/dfsu0cuvb/image/upload/v1737529176/samples/balloons.jpg"
-                                        alt="Resort pool with palm trees"
-                                        width={800}
-                                        height={400}
-                                        className="w-full h-80 object-cover"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Engagement Stats */}
-                            <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-                                <div className="flex items-center gap-6">
-                                    <div className="flex items-center gap-2">
-                                        <div className="flex -space-x-1">
-                                            <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center">
-                                                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
-                                                </svg>
-                                            </div>
-                                            <div className="w-6 h-6 bg-red-500 rounded-full border-2 border-white flex items-center justify-center">
-                                                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
+                        {travelData.tour && (
+                            <div className="bg-white rounded-t-lg border-x border-t border-gray-200">
+                                {/* Card Header */}
+                                <div className="p-6 pb-4">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                                                {travelData.tour.destination}
+                                            </h2>
+                                            <div className="space-y-1 text-sm text-gray-600">
+                                                <p>
+                                                    Willing to go on{" "}
+                                                    <span className="font-medium">
+                                                        {travelData.tour.date}
+                                                    </span>
+                                                </p>
+                                                <p>
+                                                    Include:{" "}
+                                                    <span className="font-medium">
+                                                        {travelData.tour.duration}
+                                                    </span>
+                                                </p>
+                                                <p>
+                                                    Category:{" "}
+                                                    <span className="font-medium">
+                                                        {travelData.tour.category}
+                                                    </span>
+                                                </p>
                                             </div>
                                         </div>
-                                        <span className="text-sm text-gray-600">203 Likes</span>
+                                        <div className="text-right flex items-center space-x-2 relative">
+                                            <div>
+                                                <p className="text-lg font-bold text-gray-700">
+                                                    Budget {travelData.tour.budget}
+                                                </p>
+                                                <p className="text-md text-gray-800">Total 5 person</p>
+                                            </div>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setIsDropdownOpen(!isDropdownOpen);
+                                                }}
+                                            >
+                                                <HiDotsVertical
+                                                    size={22}
+                                                    className="cursor-pointer text-gray-600 hover:text-gray-800 transition-colors -mt-3"
+                                                />
+                                            </button>
+                                            {isDropdownOpen && (
+                                                <div
+                                                    ref={dropdownRef}
+                                                    className="absolute right-0 top-8 bg-white shadow-lg rounded-md py-2 w-40 z-10"
+                                                >
+                                                    <button
+                                                        onClick={() =>
+                                                            updateTour({
+                                                                description:
+                                                                    "Updated description for the tour plan.",
+                                                            })
+                                                        }
+                                                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                    >
+                                                        Edit Plan
+                                                    </button>
+                                                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        Share Plan
+                                                    </button>
+                                                    <button
+                                                        onClick={deleteTour}
+                                                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                                    >
+                                                        Delete Plan
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Description */}
+                                    <div className="mb-4">
+                                        <p className="text-sm text-gray-600 leading-relaxed">
+                                            {travelData.tour.description}
+                                        </p>
+                                    </div>
+
+                                    {/* Interested Travel Points */}
+                                    <div className="mb-6 flex items-center space-x-3">
+                                        <p className="text-sm font-medium text-gray-700">
+                                            Interested Travel Points:
+                                        </p>
+                                        <div className="flex flex-wrap gap-1">
+                                            {travelData.tour.interestedLocations.map(
+                                                (location, index) => (
+                                                    <span
+                                                        key={index}
+                                                        className="text-sm font-medium text-blue-600 hover:underline cursor-pointer"
+                                                    >
+                                                        {location}
+                                                    </span>
+                                                )
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4 text-sm text-gray-600">
-                                    <span>6 Others</span>
-                                    <span>1 Share</span>
+
+                                {/* Tour Image */}
+                                <div className="px-6 pb-6 space-y-4">
+                                    <div className="rounded-lg overflow-hidden">
+                                        <img
+                                            src={
+                                                travelData.tour.image ||
+                                                "/placeholder.svg?height=256&width=512"
+                                            }
+                                            alt="Tour destination"
+                                            className="w-full h-96 object-cover"
+                                        />
+                                    </div>
+                                    {/* Social Stats */}
+                                    <div className="flex items-center justify-between pt-3">
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex items-center">
+                                                <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center mr-1">
+                                                    <ThumbsUp className="w-3 h-3 text-white fill-current" />
+                                                </div>
+                                                <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center -ml-2">
+                                                    <Heart className="w-3 h-3 text-white fill-current" />
+                                                </div>
+                                            </div>
+                                            <span className="text-sm text-gray-600 ml-2">
+                                                {travelData.tour.likes} Likes
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                                            <span>{travelData.tour.comments} Comments</span>
+                                            <span>{travelData.tour.shares} Share</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Social Actions */}
+                                    <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                                        <div className="flex items-center gap-6">
+                                            <button
+                                                onClick={() => setIsLiked(!isLiked)}
+                                                className={`flex items-center gap-2 text-sm cursor-pointer ${isLiked ? "text-blue-600" : "text-gray-600"
+                                                    } hover:text-blue-600 transition-colors`}
+                                            >
+                                                <ThumbsUp
+                                                    className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`}
+                                                />
+                                                <span>Likes</span>
+                                            </button>
+                                            <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors cursor-pointer">
+                                                <MessageCircle className="w-4 h-4" />
+                                                <span>Comments</span>
+                                            </button>
+                                            <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors cursor-pointer">
+                                                <Share2 className="w-4 h-4" />
+                                                <span>Share</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Agency Listings */}
+                        <div className="bg-white rounded-b-lg border-x border-b border-gray-200">
+                            {/* Header */}
+                            <div className="px-6 pb-4 border-b border-gray-200">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-2xl font-semibold text-gray-600 pt-3 flex items-center space-x-2">
+                                            <GoArrowLeft />
+                                            <p>All Offers</p>
+                                        </h3>
+                                    </div>
+                                    <div className="flex items-center space-x-16 pt-2">
+                                        <div className="text-sm text-gray-600">Offered Budget</div>
+                                        <div className="text-sm text-gray-600">
+                                            <h3 className="text-xl font-semibold text-gray-600 flex items-center space-x-2">
+                                                <GoArrowLeft />
+                                                <p>Back</p>
+                                            </h3>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Action Buttons */}
-                            <div className="flex items-center justify-between border-t border-gray-200 pt-3 mt-3">
-                                <div className="flex items-center gap-6">
-                                    <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"
+                            <div className="px-6 pb-6 space-y-4 py-6">
+                                {/* Existing Offers */}
+                                {travelData.offers.map((offer) => (
+                                    <div
+                                        key={offer.id}
+                                        className="flex items-center justify-between px-4 rounded-lg"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            {/* Avatar */}
+                                            <img
+                                                src={offer.image || "/placeholder.svg"}
+                                                alt={`${offer.company} avatar`}
+                                                className="w-11 h-11 rounded-full object-cover"
                                             />
-                                        </svg>
-                                        <span className="text-sm">Like</span>
-                                    </button>
-                                    <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-                                            />
-                                        </svg>
-                                        <span className="text-sm">Others</span>
-                                    </button>
-                                    <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-                                            />
-                                        </svg>
-                                        <span className="text-sm">Share</span>
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-medium text-gray-900">
+                                                        {offer.company}
+                                                    </span>
+                                                    {offer.verified && (
+                                                        <div className="flex space-x-1">
+                                                            <div className="rounded-full flex items-center justify-center">
+                                                                <span className="text-blue-500">
+                                                                    <MdVerified size={24} />
+                                                                </span>
+                                                            </div>
+                                                            <div className="rounded-full flex items-center justify-center">
+                                                                <span className="text-green-500">
+                                                                    <MdVerified size={24} />
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-semibold text-xl">
+                                                    💰 {offer.budget}
+                                                </span>
+                                            </div>
+                                            <button className="px-5 py-2 bg-[#3776E2] text-white text-md rounded-md hover:bg-blue-700 transition-colors">
+                                                Response
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {/* Separator */}
+                                <div className="border-t border-gray-200 my-4"></div>
+
+                                {/* Place Your Offer */}
+                                <div className="flex items-center gap-3 p-4 rounded-lg">
+                                    <div className="text-gray-600 flex items-center justify-center mt-8">
+                                        <img
+                                            src="https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443124/samples/smile.jpg"
+                                            alt="User avatar"
+                                            className="rounded-full w-11 h-11"
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-xl font-medium text-gray-700 mb-2">
+                                            Place your offer Budget here
+                                        </p>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter here"
+                                            value={offerBudget}
+                                            onChange={(e) => setOfferBudget(e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                                        />
+                                    </div>
+                                    <button
+                                        className={`px-3 py-[7px] font-medium rounded-md transition-colors mt-9 ${offerBudget.trim()
+                                                ? "bg-blue-600 text-white hover:bg-blue-700"
+                                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                            }`}
+                                        disabled={!offerBudget.trim()}
+                                    >
+                                        <IoIosSend size={28} />
                                     </button>
                                 </div>
                             </div>
                         </div>
-
-                        {/* Agency Listings */}
-                        {/* <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-lg font-semibold text-gray-900">All Offers</h3>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-gray-600">Offered budget</span>
-                                    <select className="px-2 py-1 border border-gray-300 rounded text-sm">
-                                        <option>Low</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                  
-                            {[
-                                { name: "Leisure pvt ltd", verified: true, provided: true },
-                                { name: "Tour spotter agency", verified: true, provided: true },
-                                { name: "Camila travel agency", verified: false, provided: true },
-                            ].map((agency, index) => (
-                                <div key={index} className="bg-white rounded-lg border border-gray-200 p-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
-                                                <span className="text-sm font-medium text-gray-600">
-                                                    {agency.name
-                                                        .split(" ")
-                                                        .map((word) => word[0])
-                                                        .join("")
-                                                        .toUpperCase()}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-2">
-                                                    <h4 className="font-medium text-gray-900">{agency.name}</h4>
-                                                    {agency.verified && (
-                                                        <div className="flex items-center gap-1">
-                                                            <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path
-                                                                    fillRule="evenodd"
-                                                                    d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                                    clipRule="evenodd"
-                                                                />
-                                                            </svg>
-                                                            <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path
-                                                                    fillRule="evenodd"
-                                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                                    clipRule="evenodd"
-                                                                />
-                                                            </svg>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
-                                                    {agency.provided && (
-                                                        <span className="flex items-center gap-1">
-                                                            <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path
-                                                                    fillRule="evenodd"
-                                                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                                    clipRule="evenodd"
-                                                                />
-                                                            </svg>
-                                                            2500 USD
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
-                                            Interested
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-
-                            <div className="text-center py-4">
-                                <p className="text-sm text-gray-600">
-                                    Want to register? <button className="text-blue-600 hover:underline font-medium">Click here</button>
-                                </p>
-                            </div>
-                        </div> */}
                     </div>
 
                     {/* Sidebar - Right Side */}
-                    <div className="w-1/5">
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4  mt-[100px]">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
-
+                    <div className="w-1/5 mt-4">
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-[100px]">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                                Filters
+                            </h3>
                             <div className="space-y-4">
-                                {/* Search */}
                                 <div>
                                     <input
                                         type="text"
                                         placeholder="search to available plan"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
                                 </div>
-
-                                {/* Price Range */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Price range (USD)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Price range (USD)
+                                    </label>
                                     <div className="grid grid-cols-2 gap-2">
                                         <input
                                             type="text"
                                             placeholder="Min"
-                                            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         />
                                         <input
                                             type="text"
                                             placeholder="Max"
-                                            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         />
                                     </div>
                                 </div>
-
-                                {/* Country Selection */}
                                 <div>
-                                    <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-500">
-                                        <option>Select country</option>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Select Country
+                                    </label>
+                                    <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:border-blue-400 transition-colors">
+                                        <option value="" disabled selected>
+                                            Select a country
+                                        </option>
+                                        <option value="thailand">Thailand</option>
+                                        <option value="india">India</option>
+                                        <option value="malaysia">Malaysia</option>
+                                        <option value="singapore">Singapore</option>
+                                        <option value="japan">Japan</option>
+                                        <option value="indonesia">Indonesia</option>
+                                        <option value="vietnam">Vietnam</option>
+                                        <option value="sri_lanka">Sri Lanka</option>
                                     </select>
                                 </div>
-
-                                {/* Tour Destination */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Tour Destination</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Tour Destination
+                                    </label>
                                     <input
                                         type="text"
                                         placeholder="search destination"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
                                 </div>
                             </div>
@@ -321,7 +517,7 @@ const TourPlan = () => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default TourPlan
+export default TourPlan;
