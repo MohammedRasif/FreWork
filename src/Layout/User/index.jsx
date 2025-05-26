@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CreatedPlanCard from "../../components/created-plan-card";
-import { Link, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
 const HomeLayout = ({ children }) => {
@@ -21,6 +21,7 @@ const HomeLayout = ({ children }) => {
 			<div className="w-full grid grid-cols-12 py-8">
 				<div className="col-span-10">
 					<div className="w-full flex items-end justify-end">
+						<NavLink to="/user/CreatePlan">
 						<Button
 							variant="transparent"
 							className="font-nunito-sans font-semibold"
@@ -28,6 +29,7 @@ const HomeLayout = ({ children }) => {
 							Create Plan
 							<Plus size={18} />
 						</Button>
+						</NavLink>
 					</div>
 
 					<div className="w-full flex items-center gap-2">
