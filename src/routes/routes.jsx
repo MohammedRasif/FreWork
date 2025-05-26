@@ -22,6 +22,8 @@ import AdminPricing from "@/Layout/Admin/AdminPricing";
 import AdminNotification from "@/Layout/Admin/AdminNotification";
 import TourPlan from "@/Pages/Home/TourPlan";
 import Contact from "@/Pages/Home/Contact";
+import AdminDashboardLayout from "@/Layout/Admin/AdminDashboardLayout";
+import HomeLayout from "@/Layout/User";
 
 export const router = createBrowserRouter([
 	{
