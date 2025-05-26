@@ -3,6 +3,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "daisyui";
 
 @theme inline {
 	--radius-sm: calc(var(--radius) - 4px);
@@ -47,7 +48,7 @@
 	--font-nunito-sans: "Nunito Sans", sans-serif;
 	--font-open-sans: "Open Sans", sans-serif;
 	--radius: 0.5rem;
-	--background: oklch(0.986 0.003 264); /* #F8F9FA */
+	--background: oklch(0.975 0.005 240);
 	--foreground: oklch(0.37 0.025 240);
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.145 0 0);

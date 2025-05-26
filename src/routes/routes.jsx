@@ -8,17 +8,31 @@ import OTP_Verification from "../Pages/Authentication/OTP_Verification";
 import ResetPassword from "../Pages/Authentication/ResetPassword";
 import AdminHome from "../Layout/Admin/AdminHome";
 import UserDashboardLayout from "../Layout/User/UserDashboardLayout";
-import { CreatedPlan } from "@/Layout/User/CreatedPlan"; // Ensure this alias resolves correctly
-import AdminDashboardLayout from "@/Layout/Admin/AdminDashboardLayout";
-import { PublishedPlan } from "@/Layout/User/PublishedPlan";
-import HomeLayout from "@/Layout/User";
+import Membership from "@/Pages/Home/Membership";
+import Pricing from "@/Pages/Home/Pricing";
+import AdminProfile from "../Layout/Admin/AdminProfile";
+
+import ChatInterface from "../Layout/User/ChatInterface";
+import UserProfile from "../Layout/User/UserProfile";
+import UserEditProfile from "@/Layout/User/UserEditProfile";
+import Messages from "@/Layout/User/Messages";
+
+import AdminProfileEdit from "../Layout/Admin/AdminProfileEdit";
+import AdminPricing from "@/Layout/Admin/AdminPricing";
+import AdminNotification from "@/Layout/Admin/AdminNotification";
+import TourPlan from "@/Pages/Home/TourPlan";
+import Contact from "@/Pages/Home/Contact";
 
 export const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <Main />,
 		children: [
-			{ index: true, element: <Home /> }, // Default route for /
+			{ path: "/", element: <Home /> },
+			{ path: "/membership", element: <Membership /> },
+			{ path: "/pricing", element: <Pricing /> },
+			{ path: "/tourPlan", element: <TourPlan /> },
+			{ path: "/contact", element: <Contact /> },
 		],
 	},
 
@@ -26,8 +40,12 @@ export const router = createBrowserRouter([
 		path: "/admin",
 		element: <AdminDashboardLayout />,
 		children: [
-			{ index: true, element: <AdminHome /> }, // Default route for /admin
-			{ path: "dashboard", element: <AdminHome /> }, // Optional separate dashboard route
+			{ index: true, element: <AdminHome /> },
+			{ path: "dashboard", element: <AdminHome /> },
+			{ path: "profile", element: <AdminProfile /> },
+			{ path: "editProfile", element: <AdminProfileEdit /> },
+			{ path: "membership", element: <AdminPricing /> },
+			{ path: "admin_notification", element: <AdminNotification /> },
 		],
 	},
 
@@ -59,6 +77,47 @@ export const router = createBrowserRouter([
 	},
 
 	{ path: "/sign_up", element: <Registration /> },
+	{ path: "/login", element: <Login /> },
+	{ path: "/verify", element: <EmailVerification /> },
+	{ path: "/otp_verify", element: <OTP_Verification /> },
+	{ path: "/reset_password", element: <ResetPassword /> },
+	{
+		path: "/user",
+		element: <UserDashboardLayout />,
+		children: [
+			{ index: true, element: <UserHome /> },
+			{ path: "dashboard", element: <UserHome /> },
+			{
+				path: "chat", // Changed from "user" to "chat" to avoid repetition
+				element: <ChatInterface />,
+				children: [
+					{
+						path: ":id",
+						element: <Messages />,
+					},
+				],
+			},
+			{ path: "profile", element: <UserProfile /> },
+			{ path: "editProfile", element: <UserEditProfile /> },
+		],
+	},
+
+	// {
+	//       path: "Message", // Relative path under /Admin_Dashboard
+	//       element: <AdminDashboardMessage />,
+	//       children: [
+	//         {
+	//           path: ":id", // Relative path under /Admin_Dashboard/Message
+	//           element: <AdminDashboardChats />
+	//         },
+	//         {
+	//           path: "chatbot",
+	//           element: <AdminDashboardAiChat />
+	//         }
+	//       ]
+	//     },
+
+	{ path: "/register", element: <Registration /> },
 	{ path: "/login", element: <Login /> },
 	{ path: "/verify", element: <EmailVerification /> },
 	{ path: "/otp_verify", element: <OTP_Verification /> },

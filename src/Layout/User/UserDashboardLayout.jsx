@@ -38,12 +38,12 @@ export default function UserDashboardLayout() {
 				{
 					name: "Profile",
 					icon: <UserRound size={20} />,
-					path: "/profile",
+					path: "user/profile",
 				},
 				{
 					name: "Conversations",
 					icon: <MessageCircle size={20} />,
-					path: "/conversations",
+					path: "user/chat",
 				},
 				{
 					name: "Notifications",
@@ -229,7 +229,7 @@ export default function UserDashboardLayout() {
 				</header>
 
 				{/* Main Content */}
-				<main className="flex-1 overflow-auto p-12 bg-background">
+				<main className="flex-1 overflow-auto p-8 bg-[#F5F5F6]">
 					<Outlet />
 				</main>
 			</div>

@@ -1,81 +1,127 @@
-import React from 'react';
-import { Mail, Lock, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import Lottie from 'lottie-react';
-import login from '../../assets/login2.json';
+import { useForm } from "react-hook-form"
+import { useState } from "react"
+import { ChevronDown, Mail, Lock } from "lucide-react"
+import img from "../../assets/img/Mask group (3).png"
+import { NavLink } from "react-router-dom"
 
-const Login = () => {
+const login = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [selectedUserType, setSelectedUserType] = useState("")
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm()
+
+  const password = watch("password")
+
+  const userTypes = ["Tourist", "Travel agency"]
+
+  const onSubmit = (data) => {
+    console.log("Form Data:", data)
+    alert("Registration successful!")
+  }
+
+  const handleUserTypeSelect = (type) => {
+    setSelectedUserType(type)
+    setValue("userType", type)
+    setIsDropdownOpen(false)
+  }
+
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
- 
-      <div className="w-full md:w-1/2 h-[30vh] md:h-screen relative bg-gray-900">
-      <Lottie
-          animationData={login} 
-          loop={false}
-        className="absolute inset-0 w-3/4 h-full mx-auto object-cover"></Lottie>
+    <div className="min-h-screen flex">
+      {/* Left Side - Image */}
+      <div className="hidden lg:flex lg:w-1/2 relative">
+        <img
+          src={img}
+          alt="Background image"
+          className="w-full h-full object-cover absolute inset-0"
+        />
       </div>
 
+      {/* Right Side - Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-100">
+        <div className="w-full max-w-xl">
+          {/* Logo */}
+          <div className="text-center mb-8">
+            <div className="text-gray-400 text-sm mb-6">Logo here</div>
+            <h1 className="text-4xl font-semibold text-gray-700">Welcome to Frework</h1>
+          </div>
 
-      <div className="w-full md:w-1/2 min-h-[100vh] md:h-screen relative">
-       
-        
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-[70vh] md:h-screen p-8">
-          <div className="w-full max-w-xl space-y-8">
-            <div className="text-center">
-              <img 
-                src="https://i.ibb.co.com/sp5JLnkF/Whats-App-Image-2025-02-22-at-9-25-22-AM-3.png" 
-                alt="Logo" 
-                className="mx-auto mb-16 w-3/4" 
-              />
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Email Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-4 w-4 text-gray-400" />
+                </div>
+                <input
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "Invalid email address",
+                    },
+                  })}
+                  type="email"
+                  placeholder="user@gmail.com"
+                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
             </div>
 
-            <form className="backdrop-blur-sm bg-white/10 p-10 mb-10 rounded-lg border border-gray-200 shadow-lg">
-              <h2 className="text-3xl font-bold text-[#B28D28] mb-10 text-center">Login</h2>
-              <div className="form-control w-full mb-6">
-                <div className="relative">
-                  <input 
-                    type="email" 
-                    placeholder="Enter your email" 
-                    className="input input-bordered border-[#B28D2866]/40 w-full pl-10 bg-white/20  text-black placeholder-gray-300" 
-                  />
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            {/* Password Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-4 w-4 text-gray-400" />
                 </div>
+                <input
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 6,
+                      message: "Password must be at least 6 characters",
+                    },
+                  })}
+                  type="password"
+                  placeholder="Password"
+                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+            </div>
 
-              <div className="form-control w-full">
-                <div className="relative">
-                  <input 
-                    type="password" 
-                    placeholder="Enter your password" 
-                    className="input input-bordered w-full pl-10 bg-white/20 border-[#B28D2866]/40 text-black placeholder-gray-300" 
-                  />
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                </div>
-               </div>
-              
-              <div className='flex mx-auto justify-end mb-10'>
-                <Link 
-                to="/verify"
-                className='text-[#8F5E0A] font-semibold cursor-pointer hover:underline text-end pt-2'>Forgot Password?</Link>
-              </div>
+           
+         
 
-<Link 
-to="/login"
-className=''
->
-<button className='w-full bg-[#B28D28] p-2 rounded-full text-white text-base font-semibold cursor-pointer'>Login</button>
-</Link>
+            {/* login Button */}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-6"
+            >
+              Login
+            </button>
+          </form>
 
-              <p className="text-center  text-gray-900 mt-2">
-                Already have an account? 
-                <Link to="/sign_up" className="text-[#8F5E0A] font-semibold ml-1 hover:underline">Sign Up</Link>
-              </p>
-            </form>
+          {/* Login Link */}
+          <div className="text-center mt-6">
+            <NavLink to="/register" className="text-sm text-gray-600 ">
+             
+               Don't have a account? <button className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer">Register</button>
+            </NavLink >
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default Login;
+export default login
