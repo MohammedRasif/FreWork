@@ -26,6 +26,7 @@ import AdminDashboardLayout from "@/Layout/Admin/AdminDashboardLayout";
 import HomeLayout from "@/Layout/User";
 import { CreatedPlan } from "@/Layout/User/CreatedPlan";
 import { PublishedPlan } from "@/Layout/User/PublishedPlan";
+import CreatePlan from "@/Layout/User/CreatePlan";
 
 export const router = createBrowserRouter([
 	{
@@ -102,7 +103,8 @@ export const router = createBrowserRouter([
 				],
 			},
 			{ path: "profile", element: <UserProfile /> },
-			{ path: "editProfile", element: <UserEditProfile /> },
+			{ path: "CreatePlan", element: <CreatePlan /> },
+			{ path: "editCreatePlan", element: <CreatePlan /> },
 			{ path: "notification", element: <AdminNotification /> },
 		],
 	},
