@@ -74,7 +74,7 @@ const createdPlan = [
 	},
 ];
 
-export function CreatedPlan() {
+export default function CreatedPlan() {
 	return (
 		<>
 			<div className="w-full h-auto mt-4 space-y-4">

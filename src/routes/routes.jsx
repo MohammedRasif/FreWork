@@ -24,8 +24,8 @@ import TourPlan from "@/Pages/Home/TourPlan";
 import Contact from "@/Pages/Home/Contact";
 import AdminDashboardLayout from "@/Layout/Admin/AdminDashboardLayout";
 import HomeLayout from "@/Layout/User";
-import { CreatedPlan } from "@/Layout/User/CreatedPlan";
-import { PublishedPlan } from "@/Layout/User/PublishedPlan";
+import CreatedPlan from "@/Layout/User/CreatedPlan";
+import PublishedPlan from "@/Layout/User/PublishedPlan";
 
 export const router = createBrowserRouter([
 	{
