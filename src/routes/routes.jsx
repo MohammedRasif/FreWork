@@ -24,6 +24,8 @@ import TourPlan from "@/Pages/Home/TourPlan";
 import Contact from "@/Pages/Home/Contact";
 import AdminDashboardLayout from "@/Layout/Admin/AdminDashboardLayout";
 import HomeLayout from "@/Layout/User";
+import { CreatedPlan } from "@/Layout/User/CreatedPlan";
+import { PublishedPlan } from "@/Layout/User/PublishedPlan";
 
 export const router = createBrowserRouter([
 	{
@@ -57,7 +59,7 @@ export const router = createBrowserRouter([
 		children: [
 			{
 				index: true,
-				path: "created",
+				path: "",
 				element: (
 					<HomeLayout>
 						<CreatedPlan />
@@ -87,8 +89,8 @@ export const router = createBrowserRouter([
 		path: "/user",
 		element: <UserDashboardLayout />,
 		children: [
-			{ index: true, element: <UserHome /> },
-			{ path: "dashboard", element: <UserHome /> },
+			{ index: true, element: <HomeLayout /> },
+			{ path: "dashboard", element: <HomeLayout /> },
 			{
 				path: "chat", // Changed from "user" to "chat" to avoid repetition
 				element: <ChatInterface />,
@@ -101,6 +103,7 @@ export const router = createBrowserRouter([
 			},
 			{ path: "profile", element: <UserProfile /> },
 			{ path: "editProfile", element: <UserEditProfile /> },
+			{ path: "notification", element: <AdminNotification /> },
 		],
 	},
 

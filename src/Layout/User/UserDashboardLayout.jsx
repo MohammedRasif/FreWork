@@ -48,7 +48,7 @@ export default function UserDashboardLayout() {
 				{
 					name: "Notifications",
 					icon: <Bell size={20} />,
-					path: "/notifications",
+					path: "user/notification",
 				},
 				{ name: "Logout", icon: <LogOut size={20} />, path: "/logout" },
 			],

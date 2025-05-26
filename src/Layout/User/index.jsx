@@ -46,7 +46,7 @@ const HomeLayout = ({ children }) => {
 					</h4>
 					<div className="flex flex-col gap-4 py-2 px-4">
 						<Button variant="white">
-							<Link to="/user/created">Created Plan</Link>
+							<Link to="/user">Created Plan</Link>
 						</Button>
 						<Button variant="secondary">
 							<Link to="/user/published">Published Plans</Link>
