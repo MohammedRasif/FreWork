@@ -28,7 +28,7 @@ const sidebarData = {
 // Mock tour data
 const tourData = {
   title: "Tour From Dhaka To Bangkok",
-  destination: "tour From Dhaka to Bankok", // Added for the new design
+  destination: "Tour From Dhaka to Bankok", // Added for the new design
   budget: "200USD",
   date: "12th July, 2025",
   duration: "10 Days",
