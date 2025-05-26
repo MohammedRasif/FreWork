@@ -31,7 +31,7 @@ export default function UserDashboardLayout() {
     {
       items: [
         { name: "My Plans", icon: <ClipboardList size={20} />, path: "/user" },
-        { name: "Profile", icon: <UserRound size={20} />, path: "/profile" },
+        { name: "Profile", icon: <UserRound size={20} />, path: "user/profile" },
         {
           name: "Conversations",
           icon: <MessageCircle size={20} />,
