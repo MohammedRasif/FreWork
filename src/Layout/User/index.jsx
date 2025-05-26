@@ -1,9 +1,12 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CreatedPlanCard from "../../components/created-plan-card";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 const HomeLayout = ({ children }) => {
+	const { pathname } = useLocation();
+
 	return (
 		<div className="w-full h-auto">
 			<div className="w-full flex flex-col gap-2">
@@ -45,14 +48,44 @@ const HomeLayout = ({ children }) => {
 						My All Plans
 					</h4>
 					<div className="flex flex-col gap-4 py-2 px-4">
-						<Button variant="white">
+						<Button
+							variant={
+								pathname === "/user" ? "white" : "secondary"
+							}
+							className="px-4 py-3 w-full font-semibold"
+						>
 							<Link to="/user">Created Plan</Link>
 						</Button>
-						<Button variant="secondary">
+						<Button
+							variant={
+								pathname === "/user/published"
+									? "white"
+									: "secondary"
+							}
+							className="px-4 py-3 w-full font-semibold"
+						>
 							<Link to="/user/published">Published Plans</Link>
 						</Button>
-						<Button variant="secondary">Accepted Offers</Button>
-						<Button variant="secondary">Favourite Agencies</Button>
+						<Button
+							variant={
+								pathname === "/user/accepted"
+									? "white"
+									: "secondary"
+							}
+							className="px-4 py-3 w-full font-semibold"
+						>
+							Accepted Offers
+						</Button>
+						<Button
+							variant={
+								pathname === "/user/favourite"
+									? "white"
+									: "secondary"
+							}
+							className="px-4 py-3 w-full font-semibold"
+						>
+							Favourite Agencies
+						</Button>
 
 						<div className="flex flex-col gap-1">
 							<p className="text-xs font-medium">
