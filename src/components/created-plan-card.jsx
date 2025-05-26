@@ -39,7 +39,7 @@ import {
 import { DialogClose } from "@radix-ui/react-dialog";
 import CardViewImage from "../assets/img/card-view-image.png";
 
-export default function PlanCard({ plan }) {
+export default function CreatedPlanCard({ plan }) {
 	return (
 		<div className="w-full h-auto bg-white rounded-xl p-3 shadow-[0_3px_7.3px_0px_#0000001A] grid grid-cols-6">
 			<div className="rounded-md overflow-hidden w-[168px] h-[147px]">

@@ -1,4 +1,4 @@
-import PlanCard from "@/components/plan-card";
+import CreatedPlanCard from "@/components/created-plan-card";
 import { Outlet } from "react-router-dom";
 
 const createdPlan = [
@@ -79,7 +79,7 @@ export function CreatedPlan() {
 		<>
 			<div className="w-full h-auto mt-4 space-y-4">
 				{createdPlan.map((plan) => (
-					<PlanCard key={plan.id} plan={plan} />
+					<CreatedPlanCard key={plan.id} plan={plan} />
 				))}
 			</div>
 		</>

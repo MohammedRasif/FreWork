@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import PlanCard from "../../components/plan-card";
+import CreatedPlanCard from "../../components/created-plan-card";
 import { Link } from "react-router-dom";
 
 const HomeLayout = ({ children }) => {
