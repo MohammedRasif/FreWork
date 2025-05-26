@@ -22,6 +22,32 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function UserDashboardLayout() {
+
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [selectedItem, setSelectedItem] = useState("Dashboard");
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const menuItems = [
+    {
+      items: [
+        { name: "My Plans", icon: <ClipboardList size={20} />, path: "/user" },
+        { name: "Profile", icon: <UserRound size={20} />, path: "user/profile" },
+        {
+          name: "Conversations",
+          icon: <MessageCircle size={20} />,
+          path: "user/chat",
+        },
+        {
+          name: "Notifications",
+          icon: <Bell size={20} />,
+          path: "/notifications",
+        },
+        { name: "Logout", icon: <LogOut size={20} />, path: "/" },
+      ],
+    },
+  ];
+
 	const [isCollapsed, setIsCollapsed] = useState(false);
 	const [selectedItem, setSelectedItem] = useState("Dashboard");
 	const [showSettingsMenu, setShowSettingsMenu] = useState(false);
@@ -54,6 +80,7 @@ export default function UserDashboardLayout() {
 			],
 		},
 	];
+
 
 	// Sync selectedItem with current route on initial load
 	useEffect(() => {
