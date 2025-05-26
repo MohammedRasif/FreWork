@@ -24,8 +24,14 @@ import TourPlan from "@/Pages/Home/TourPlan";
 import Contact from "@/Pages/Home/Contact";
 import AdminDashboardLayout from "@/Layout/Admin/AdminDashboardLayout";
 import HomeLayout from "@/Layout/User";
+<<<<<<< HEAD
 import CreatedPlan from "@/Layout/User/CreatedPlan";
 import PublishedPlan from "@/Layout/User/PublishedPlan";
+=======
+import { CreatedPlan } from "@/Layout/User/CreatedPlan";
+import { PublishedPlan } from "@/Layout/User/PublishedPlan";
+import CreatePlan from "@/Layout/User/CreatePlan";
+>>>>>>> rasif
 
 export const router = createBrowserRouter([
 	{
@@ -102,7 +108,8 @@ export const router = createBrowserRouter([
 				],
 			},
 			{ path: "profile", element: <UserProfile /> },
-			{ path: "editProfile", element: <UserEditProfile /> },
+			{ path: "CreatePlan", element: <CreatePlan /> },
+			{ path: "editCreatePlan", element: <CreatePlan /> },
 			{ path: "notification", element: <AdminNotification /> },
 		],
 	},
