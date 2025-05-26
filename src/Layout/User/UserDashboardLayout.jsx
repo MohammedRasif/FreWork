@@ -31,18 +31,18 @@ export default function UserDashboardLayout() {
     {
       items: [
         { name: "My Plans", icon: <ClipboardList size={20} />, path: "/user" },
-        { name: "Profile", icon: <UserRound size={20} />, path: "/profile" },
+        { name: "Profile", icon: <UserRound size={20} />, path: "user/profile" },
         {
           name: "Conversations",
           icon: <MessageCircle size={20} />,
-          path: "/conversations",
+          path: "user/chat",
         },
         {
           name: "Notifications",
           icon: <Bell size={20} />,
           path: "/notifications",
         },
-        { name: "Logout", icon: <LogOut size={20} />, path: "/logout" },
+        { name: "Logout", icon: <LogOut size={20} />, path: "/" },
       ],
     },
   ];
@@ -201,7 +201,7 @@ export default function UserDashboardLayout() {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto p-12 bg-[#F5F5F6]">
+        <main className="flex-1 overflow-auto p-8 bg-[#F5F5F6]">
           <Outlet />
         </main>
       </div>

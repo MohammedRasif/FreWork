@@ -13,11 +13,18 @@ import UserDashboardLayout from "../Layout/User/UserDashboardLayout";
 import Membership from "@/Pages/Home/Membership";
 import Pricing from "@/Pages/Home/Pricing";
 import AdminProfile from "../Layout/Admin/AdminProfile";
+
+import ChatInterface from "../Layout/User/ChatInterface";
+import UserProfile from "../Layout/User/UserProfile";
+import UserEditProfile from "@/Layout/User/UserEditProfile";
+import Messages from "@/Layout/User/Messages";
+
 import AdminProfileEdit from "../Layout/Admin/AdminProfileEdit";
 import AdminPricing from "@/Layout/Admin/AdminPricing";
 import AdminNotification from "@/Layout/Admin/AdminNotification";
 import TourPlan from "@/Pages/Home/TourPlan";
 import Contact from "@/Pages/Home/Contact";
+
 
 export const router = createBrowserRouter([
   {
@@ -45,14 +52,47 @@ export const router = createBrowserRouter([
     ],
   },
 
-  {
-    path: "/user",
-    element: <UserDashboardLayout />,
-    children: [
-      { index: true, element: <UserHome /> },
-      { path: "dashboard", element: <UserHome /> },
-    ],
-  },
+ {
+  path: "/user",
+  element: <UserDashboardLayout />,
+  children: [
+    { index: true, element: <UserHome /> },
+    { path: "dashboard", element: <UserHome /> },
+    {
+      path: "chat", // Changed from "user" to "chat" to avoid repetition
+      element: <ChatInterface />,
+      children: [
+        {
+          path: ":id",
+          element: <Messages />
+        },
+      ],
+    },
+    { path: "profile", element: <UserProfile /> },
+    { path: "editProfile", element: <UserEditProfile /> },
+  ],
+},
+
+
+  // {
+  //       path: "Message", // Relative path under /Admin_Dashboard
+  //       element: <AdminDashboardMessage />,
+  //       children: [
+  //         {
+  //           path: ":id", // Relative path under /Admin_Dashboard/Message
+  //           element: <AdminDashboardChats />
+  //         },
+  //         {
+  //           path: "chatbot",
+  //           element: <AdminDashboardAiChat />
+  //         }
+  //       ]
+  //     },
+
+
+
+
+
 
   { path: "/register", element: <Registration /> },
   { path: "/login", element: <Login /> },

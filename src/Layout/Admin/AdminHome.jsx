@@ -4,6 +4,8 @@ import { FaCommentDots } from "react-icons/fa";
 import { HiDotsVertical } from "react-icons/hi";
 import AdminOfferPlan from "./AdminOfferPlan";
 import AdminAcceptPlan from "./AdminAcceptPlan";
+import UserAccepte from "../User/UserAccepte";
+import Favorite from "../User/Favorite";
 
 const AdminHome = () => {
   // State for active tab, dropdown, social counts, and like toggle
@@ -211,7 +213,8 @@ const AdminHome = () => {
       case "Accepted Plans":
         return (
           <div>
-            <AdminAcceptPlan />
+          <AdminAcceptPlan /> 
+            
           </div>
         );
       default:
