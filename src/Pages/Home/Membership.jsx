@@ -164,7 +164,7 @@ const Membership = () => {
       </div>
 
       {/* Top Agencies */}
-      <div className="w-full sm:w-1/5 bg-white border border-gray-200 p-4 sm:p-6 sm:mr-5 sm:mt-20 rounded-xl">
+      <div className="w-full sm:w-1/5 bg-white border border-gray-200 p-4 sm:p-6 sm:mr-5 sm:mt-52 rounded-xl">
         <h2 className="font-bold sm:font-semibold text-gray-800 mb-6 text-center text-lg sm:text-xl">
           TOP AGENCIES
         </h2>

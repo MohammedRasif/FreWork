@@ -25,14 +25,14 @@ const Navbar = () => {
                     className={`text-base text-[20px] font-medium ${activeLink === "membership" ? "text-[#2464EC] border-b-2 border-[#2464EC]" : "text-gray-700 hover:text-blue-600"}`}
                     onClick={() => setActiveLink("membership")}
                 >
-                    Membership plans
+                   Agencies
                 </NavLink>
                 <NavLink
                     to="/pricing"
                     className={`text-base text-[20px] font-medium ${activeLink === "agencies" ? "text-[#2464EC] border-b-2 border-[#2464EC]" : "text-gray-700 hover:text-blue-600"}`}
                     onClick={() => setActiveLink("agencies")}
                 >
-                    Agencies
+                      Membership plans
                 </NavLink>
                 <NavLink
                     to="/tourPlan"
