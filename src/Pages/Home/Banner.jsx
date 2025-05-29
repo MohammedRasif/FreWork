@@ -26,10 +26,10 @@ const Banner = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <div className="px-6 py-8 sm:px-8 sm:py-10 md:px-10 md:py-12 text-left">
-              <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-[22px] sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
                 How Does <span className="text-blue-700">VacanzaMyCost.It</span> Work?
               </h1>
-              <p className="mt-4 text-xs sm:text-base md:text-lg lg:text-xl text-gray-800">
+              <p className="mt-4 text-sm font-medium sm:text-base md:text-lg lg:text-xl text-gray-800">
                 Lorem ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it.
               </p>
               <button className="mt-6 sm:mt-8 bg-[#3C76DC] hover:bg-blue-600 text-white font-medium py-1.5 px-4 sm:py-2.5 sm:px-8 rounded-md transition-colors text-xs sm:text-base md:text-lg">

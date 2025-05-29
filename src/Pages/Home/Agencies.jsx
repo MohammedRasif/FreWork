@@ -4,7 +4,7 @@ const Agencies = () => {
   const publishedData = [
     {
       id: 1,
-      image: "https://res.cloudinary.com/dfsu0cuvb/image/upload/v1737529176/samples/balloons.jpg",
+      image: "https://res.cloudinary.com/dfsu0cuvb/image/upload/v1737529180/cld-sample-4.jpg",
       title: "Some Amazing Title Here",
       description: "Lorem ipsum dolor sit amet, alina adipisci elite. Egestas elementum enim netus amet turpis lectus.",
       location: "Museums",
@@ -12,7 +12,7 @@ const Agencies = () => {
     },
     {
       id: 2,
-      image: "https://res.cloudinary.com/dfsu0cuvb/image/upload/v1737529170/samples/landscapes/nature-mountains.jpg",
+      image: "https://res.cloudinary.com/dfsu0cuvb/image/upload/v1737529180/cld-sample-3.jpg",
       title: "Another Amazing Place",
       description: "Lorem ipsum dolor sit amet, alina adipisci elite. Egestas elementum enim netus amet turpis lectus.",
       location: "Beach Resort",
