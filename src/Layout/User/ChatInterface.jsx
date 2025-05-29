@@ -26,23 +26,25 @@ export default function ChatInterface() {
   useEffect(() => {
     const pathParts = location.pathname.split("/");
     const agencyIdFromPath = pathParts[pathParts.length - 1];
-
+    // Check if the path includes "chat" and the agencyId exists in agencies
     if (pathParts.includes("chat") && agencies.some(agency => agency.id === agencyIdFromPath)) {
       setSelectedAgencyId(agencyIdFromPath);
     } else {
       setSelectedAgencyId(null);
     }
-  }, [location.pathname]);
+  }, [location.pathname, agencies]);
 
   const handleAgencyClick = (agency) => {
     setSelectedAgencyId(agency.id);
-    navigate(`/user/chat/${agency.id}`, { state: { agency } });
+    // Determine the base path (user or admin) for navigation
+    const basePath = location.pathname.includes("/admin/") ? "/admin/chat" : "/user/chat";
+    navigate(`${basePath}/${agency.id}`, { state: { agency } });
   };
 
-  const isBaseRoute = location.pathname === "/user/chat";
-
+  // Check if the current route is a base route for either user or admin
+  const isBaseRoute = location.pathname === "/user/chat" || location.pathname === "/admin/chat";
   return (
-    <div className="  roboto">
+    <div className="  roboto p-4">
       <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-3">Messages</h1>
       <div className="flex" style={{ height: "80vh" }}>
         {/* Sidebar */}
@@ -53,7 +55,7 @@ export default function ChatInterface() {
               placeholder="Search chats"
               className="border border-gray-300 rounded-md w-full pl-10 py-[10px]"
             />
-            <IoMdSearch  className="absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full object-cover" />
+            <IoMdSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full object-cover" />
 
           </div>
 
@@ -63,9 +65,8 @@ export default function ChatInterface() {
               <div
                 key={agency.id}
                 onClick={() => handleAgencyClick(agency)}
-                className={`flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-[#252c3b] text-gray-700 dark:text-gray-200 transition-colors border-b border-gray-200 ${
-                  selectedAgencyId === agency.id ? "bg-blue-100 dark:bg-[#2F80A9]" : ""
-                }`}
+                className={`flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-[#252c3b] text-gray-700 dark:text-gray-200 transition-colors border-b border-gray-200 ${selectedAgencyId === agency.id ? "bg-blue-100 dark:bg-[#2F80A9]" : ""
+                  }`}
               >
                 <img
                   src={agency.image}

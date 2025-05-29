@@ -83,9 +83,9 @@ const UserAccepte = () => {
     }
 
     return (
-        <div className="">
+        <div className=" p-4">
             {/* Header with tabs and search */}
-            <div className="flex justify-between mb-6 border-b border-gray-300">
+            <div className="flex justify-between mt-6 mb-6 border-b border-gray-300">
                 <div className="flex space-x-8">
                     <button
                         onClick={() => setActiveTab("upcoming")}

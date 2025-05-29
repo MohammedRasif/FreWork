@@ -26,6 +26,7 @@ export default function UserDashboardLayout() {
 	const [selectedItem, setSelectedItem] = useState("Dashboard");
 	const [showSettingsMenu, setShowSettingsMenu] = useState(false);
 	const location = useLocation();
+
 	const navigate = useNavigate();
 	const menuItems = [
 		{
@@ -48,7 +49,7 @@ export default function UserDashboardLayout() {
 				{
 					name: "Notifications",
 					icon: <Bell size={20} />,
-					path: "/notifications",
+					path: "user/notification",
 				},
 				{ name: "Logout", icon: <LogOut size={20} />, path: "/" },
 			],
@@ -71,31 +72,29 @@ export default function UserDashboardLayout() {
 	};
 
 	return (
-		<div className="row flex h-screen bg-background">
+		<div className="flex h-screen bg-[#F8F9FA] p-4">
 			{/* Sidebar */}
 			<aside
-				className={`${
-					isCollapsed ? "w-20" : "w-80"
-				} transition-all duration-500 ease-in-out`}
+				className={`${isCollapsed ? "w-20" : "w-80"
+					} transition-all duration-500 ease-in-out`}
 			>
 				{/* Logo */}
 				<div className="h-auto flex items-center px-4">
-					<div className="flex flex-col w-full justify-center items-center gap-2 mt-24">
+					<div className="flex flex-col w-full justify-center items-center  mt-16">
 						<div
-							className={`transform transition-all duration-500 ${
-								isCollapsed
+							className={`transform transition-all duration-500 ${isCollapsed
 									? "opacity-0 -translate-x-full"
 									: "opacity-100 translate-x-0"
-							}`}
+								}`}
 						>
 							<img src={UserAvatar} alt="User" />
 						</div>
 
 						<div className="w-full flex flex-col gap-1 pl-3">
-							<h3 className="text-2xl font-normal text-[#343E4B]">
+							<h3 className="text-2xl text-center font-normal text-[#343E4B]">
 								Alec Thompson
 							</h3>
-							<span className="text-sm text-[#8C8C8C]">
+							<span className="text-sm text-center text-[#8C8C8C]">
 								CEO/Founder
 							</span>
 						</div>
@@ -117,21 +116,19 @@ export default function UserDashboardLayout() {
 													item.path
 												)
 											}
-											className={`flex items-center gap-3 px-3 py-2 text-[#67748E] rounded-lg group relative ${
-												selectedItem === item.name
+											className={`flex items-center gap-3 px-3 py-2 text-[#67748E] rounded-lg group relative ${selectedItem === item.name
 													? "bg-[#3776E2] text-white font-semibold"
 													: ""
-											}`}
+												}`}
 										>
 											<span className="p-2 rounded-lg bg-white text-[#67748E] shadow-[0_2px_4px_-1px_#00000030]">
 												{item.icon}
 											</span>
 											<span
-												className={`transform transition-all duration-500 text-sm font-semibold ${
-													isCollapsed
+												className={`transform transition-all duration-500 text-md font-semibold ${isCollapsed
 														? "opacity-0 -translate-x-full"
 														: "opacity-100 translate-x-0"
-												} whitespace-nowrap`}
+													} whitespace-nowrap`}
 											>
 												{item.name}
 											</span>
@@ -146,8 +143,8 @@ export default function UserDashboardLayout() {
 							</ul>
 						</div>
 					))}
-					<div className="h-44 w-64 flex flex-col bg-[url('/src/assets/img/dashboard-menu-help-card-bg.png')] bg-no-repeat bg-cover bg-center p-5 gap-1 rounded-2xl">
-						<div className="w-8 h-8 flex items-center justify-center bg-white shadow-[0_2px_4px_-1px_#00000030] p-1 rounded-md">
+					<div className="h-44 w-full flex flex-col bg-[url('/src/assets/img/dashboard-menu-help-card-bg.png')] bg-no-repeat bg-center p-5 gap-2 rounded-2xl">
+						<div className="w-8 h-8 flex items-center justify-center bg-white shadow-[0_2px_4px_-1px_#00000030] p-2 rounded-md">
 							<SlDiamond size={16} />
 						</div>
 						<div className="w-full flex flex-col gap-1">
@@ -157,13 +154,7 @@ export default function UserDashboardLayout() {
 							<h5 className="font-open-sans text-sm font-normal">
 								Please check our docs
 							</h5>
-							<Button
-								variant="white"
-								size="sm"
-								className="text-xs"
-							>
-								DOCUMENTATION
-							</Button>
+							<Button variant="white">DOCUMENTATION</Button>
 						</div>
 					</div>
 				</nav>
@@ -172,7 +163,7 @@ export default function UserDashboardLayout() {
 			<div className="flex-1 flex flex-col overflow-hidden">
 				{/* Navbar */}
 				<header className="h-16 bg-background">
-					<div className="h-full px-4 flex items-center justify-between">
+					<div className="h-full  flex items-center justify-between">
 						<div className="flex items-center gap-4">
 							{/* <button
                 onClick={() => setIsCollapsed(!isCollapsed)}
@@ -229,7 +220,7 @@ export default function UserDashboardLayout() {
 				</header>
 
 				{/* Main Content */}
-				<main className="flex-1 overflow-auto p-8 bg-[#F5F5F6]">
+				<main className="flex-1 overflow-auto p-0 bg-[#F5F5F6]">
 					<Outlet />
 				</main>
 			</div>

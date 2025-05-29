@@ -42,7 +42,7 @@ function UserProfile() {
   return (
     <div className="mx-auto p-4">
       {/* Header Section */}
-      <h2 className="text-3xl font-bold text-gray-800">{userData.header.title}</h2>
+      <h2 className="text-3xl font-semibold text-gray-800">{userData.header.title}</h2>
       <div className="flex items-center justify-between py-2 space-x-2">
         <h1 className="text-lg text-gray-600">{userData.header.invitationCode}</h1>
        <NavLink to="/user/editProfile">

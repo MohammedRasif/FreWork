@@ -47,7 +47,7 @@ export default function AdminDashboardLayout() {
 				{
 					name: "Conversations",
 					icon: <MessageCircle size={20} />,
-					path: "/conversations",
+					path: "admin/chat",
 				},
 				{
 					name: "Profile",
@@ -55,7 +55,7 @@ export default function AdminDashboardLayout() {
 					path: "admin/profile",
 				},
 
-				{ name: "Logout", icon: <LogOut size={20} />, path: "/logout" },
+				{ name: "Logout", icon: <LogOut size={20} />, path: "/" },
 			],
 		},
 	];
@@ -85,7 +85,7 @@ export default function AdminDashboardLayout() {
 			>
 				{/* Logo */}
 				<div className="h-auto flex items-center px-4">
-					<div className="flex flex-col w-full justify-center items-center gap-2 mt-24">
+					<div className="flex flex-col w-full justify-center items-center  mt-16">
 						<div
 							className={`transform transition-all duration-500 ${
 								isCollapsed

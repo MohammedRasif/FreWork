@@ -144,7 +144,7 @@ function Messages() {
   }
 
   return (
-    <div className="rounded-r-lg bg-[#F5F7FB] dark:bg-[#252c3b] h-full flex flex-col">
+    <div className="rounded-r-lg bg-[#F5F7FB] dark:bg-[#252c3b] h-full flex flex-col ">
       {/* Header Section */}
       <div className="flex items-center space-x-4 p-3 border-b border-gray-200 rounded-tr-lg bg-white dark:bg-[#252c3b]">
         <div className="h-[46px] w-[46px] rounded-full bg-gray-200 flex items-center justify-center text-lg">

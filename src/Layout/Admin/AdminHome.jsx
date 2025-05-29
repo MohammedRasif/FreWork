@@ -304,7 +304,7 @@ const AdminHome = () => {
 					<div className="space-y-3">
 						<button
 							onClick={() => setActiveTab("All Plans")}
-							className={`w-full text-center px-4 py-3 font-semibold rounded-md transition-colors ${
+							className={`w-full text-center px-4 py-3 font-semibold rounded-md transition-colors cursor-pointer ${
 								activeTab === "All Plans"
 									? "bg-white shadow-md"
 									: "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -314,7 +314,7 @@ const AdminHome = () => {
 						</button>
 						<button
 							onClick={() => setActiveTab("Offered Plans")}
-							className={`w-full text-center px-4 py-3 font-semibold rounded-md transition-colors ${
+							className={`w-full text-center px-4 py-3 font-semibold rounded-md transition-colors cursor-pointer ${
 								activeTab === "Offered Plans"
 									? "bg-white shadow-md "
 									: "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -324,7 +324,7 @@ const AdminHome = () => {
 						</button>
 						<button
 							onClick={() => setActiveTab("Accepted Plans")}
-							className={`w-full text-center px-4 py-3 font-semibold rounded-md transition-colors ${
+							className={`w-full text-center px-4 py-3 font-semibold rounded-md transition-colors cursor-pointer ${
 								activeTab === "Accepted Plans"
 									? "bg-white shadow-md "
 									: "bg-gray-200 text-gray-700 hover:bg-gray-300"

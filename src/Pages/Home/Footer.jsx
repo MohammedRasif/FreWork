@@ -16,21 +16,21 @@ const Footer = () => {
 
                 {/* Our Collaborators Column */}
                 <div className="space-y-[1px]">
-                    <h3 className="text-3xl font-bold text-gray-100">Our collaborators</h3>
+                    <h3 className="lg:text-3xl text-2xl font-bold text-gray-100">Our collaborators</h3>
                     <p className="text-sm text-gray-400 pt-5">Demo company limited</p>
                     <p className="text-sm text-gray-400">Demo task company</p>
                 </div>
 
                 {/* About Us Column */}
                 <div className="space-y-[1px]">
-                    <h3 className="text-3xl font-bold text-gray-100">About Us</h3>
+                    <h3 className="lg:text-3xl text-2xl font-bold text-gray-100">About Us</h3>
                     <p className="text-sm text-gray-400 pt-5">Why us?</p>
                     <p className="text-sm text-gray-400">Contact us</p>
                 </div>
 
                 {/* Follow us on Column */}
                 <div className="space-y-4">
-                    <h3 className="text-3xl font-bold text-gray-100">Follow us on</h3>
+                    <h3 className="lg:text-3xl text-2xl font-bold text-gray-100">Follow us on</h3>
                     <div className="flex space-x-4 pt-3">
                         <a href="#" className="text-gray-400 hover:text-white transition-colors">
                             <span className="sr-only">Facebook</span>

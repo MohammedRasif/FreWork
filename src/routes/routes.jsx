@@ -24,14 +24,11 @@ import TourPlan from "@/Pages/Home/TourPlan";
 import Contact from "@/Pages/Home/Contact";
 import AdminDashboardLayout from "@/Layout/Admin/AdminDashboardLayout";
 import HomeLayout from "@/Layout/User";
-<<<<<<< HEAD
 import CreatedPlan from "@/Layout/User/CreatedPlan";
 import PublishedPlan from "@/Layout/User/PublishedPlan";
-=======
-import { CreatedPlan } from "@/Layout/User/CreatedPlan";
-import { PublishedPlan } from "@/Layout/User/PublishedPlan";
 import CreatePlan from "@/Layout/User/CreatePlan";
->>>>>>> rasif
+import Favorite from "@/Layout/User/Favorite";
+import UserAccepte from "@/Layout/User/UserAccepte";
 
 export const router = createBrowserRouter([
 	{
@@ -56,6 +53,16 @@ export const router = createBrowserRouter([
 			{ path: "editProfile", element: <AdminProfileEdit /> },
 			{ path: "membership", element: <AdminPricing /> },
 			{ path: "admin_notification", element: <AdminNotification /> },
+			{
+				path: "chat", // Changed from "user" to "chat" to avoid repetition
+				element: <ChatInterface />,
+				children: [
+					{
+						path: ":id",
+						element: <Messages />,
+					},
+				],
+			},
 		],
 	},
 
@@ -81,12 +88,29 @@ export const router = createBrowserRouter([
 					</HomeLayout>
 				),
 			}, // Default route for /user (maps to /user/)
-			// If HomeLayout is intended as a separate section, add it as a named route
-			// { path: "home", element: <HomeLayout /> },
+			{
+				index: true,
+				path: "accepted",
+				element: (
+					<HomeLayout>
+						<UserAccepte />
+					</HomeLayout>
+				),
+			},
+			{
+				index: true,
+				path: "favourite",
+				element: (
+					<HomeLayout>
+						<Favorite />
+					</HomeLayout>
+				),
+			},
+			
 		],
 	},
 
-	{ path: "/sign_up", element: <Registration /> },
+	{ path: "/register", element: <Registration /> },
 	{ path: "/login", element: <Login /> },
 	{ path: "/verify", element: <EmailVerification /> },
 	{ path: "/otp_verify", element: <OTP_Verification /> },
@@ -111,24 +135,11 @@ export const router = createBrowserRouter([
 			{ path: "CreatePlan", element: <CreatePlan /> },
 			{ path: "editCreatePlan", element: <CreatePlan /> },
 			{ path: "notification", element: <AdminNotification /> },
+			{ path: "editProfile", element: <UserEditProfile /> },
 		],
 	},
 
-	// {
-	//       path: "Message", // Relative path under /Admin_Dashboard
-	//       element: <AdminDashboardMessage />,
-	//       children: [
-	//         {
-	//           path: ":id", // Relative path under /Admin_Dashboard/Message
-	//           element: <AdminDashboardChats />
-	//         },
-	//         {
-	//           path: "chatbot",
-	//           element: <AdminDashboardAiChat />
-	//         }
-	//       ]
-	//     },
-
+	
 	{ path: "/register", element: <Registration /> },
 	{ path: "/login", element: <Login /> },
 	{ path: "/verify", element: <EmailVerification /> },
