@@ -77,22 +77,23 @@ const register = () => {
             </div>
 
             {/* User Type Dropdown */}
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-gray-700 mb-1">What describes you best</label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                What describes you best
+              </label>
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="w-64 px-3 py-2.5 border border-gray-300 rounded-sm bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent flex items-center justify-between"
+                  className="w-full px-2 sm:px-3 py-2 sm:py-2.5 border border-gray-300 rounded-sm bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent flex items-center justify-between text-sm sm:text-base"
                 >
                   <span className={selectedUserType ? "text-gray-900" : "text-gray-400"}>
                     {selectedUserType || "Select one"}
                   </span>
                   <ChevronDown
-                    className={`h-4 w-4 text-gray-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+                    className={`h-4 sm:h-4 w-3 sm:w-4 text-gray-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
                   />
                 </button>
-
                 {isDropdownOpen && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-sm shadow-lg">
                     {userTypes.map((type) => (
@@ -100,7 +101,7 @@ const register = () => {
                         key={type}
                         type="button"
                         onClick={() => handleUserTypeSelect(type)}
-                        className="w-full px-3 py-2 text-left hover:bg-gray-50 focus:outline-none focus:bg-gray-50 first:rounded-t-sm last:rounded-b-sm"
+                        className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-left hover:bg-gray-50 focus:outline-none focus:bg-gray-50 first:rounded-t-sm last:rounded-b-sm text-sm sm:text-base"
                       >
                         {type}
                       </button>
@@ -113,7 +114,11 @@ const register = () => {
                 type="hidden"
                 value={selectedUserType}
               />
-              {errors.userType && <p className="text-red-500 text-xs mt-1">{errors.userType.message}</p>}
+              {errors.userType && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.userType.message}
+                </p>
+              )}
             </div>
 
             {/* Password Field */}
