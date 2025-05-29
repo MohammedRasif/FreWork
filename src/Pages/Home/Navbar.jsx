@@ -26,9 +26,9 @@ const Navbar = () => {
     }
   }, [location.pathname]);
 
-  // Toggle dropdown and close on link click
+  // Toggle mobile menu
   const toggleMenu = () => {
-    setIsOpen(!isOpen);
+    setIsOpen((prev) => !prev);
   };
 
   const handleLinkClick = (link, path) => {
