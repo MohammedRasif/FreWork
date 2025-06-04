@@ -2,16 +2,17 @@
 
 import { useEffect, useRef, useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
-import { ThumbsUp, Heart, MessageCircle, Share2, Menu } from "lucide-react"
+import { ThumbsUp, Heart, MessageCircle, Share2, Menu, X } from "lucide-react"
 import { GoArrowLeft } from "react-icons/go"
 import { IoIosSend } from "react-icons/io"
 import { MdVerified } from "react-icons/md"
 
-const TourPlan = () => {
+const TourPlanWithPopup = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
   const [offerBudget, setOfferBudget] = useState("")
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [isPopupOpen, setIsPopupOpen] = useState(false)
   const dropdownRef = useRef(null)
 
   // Consolidated data object
@@ -58,6 +59,40 @@ const TourPlan = () => {
       },
     ],
   })
+
+  // Sample tour cards data for the main view
+  const tourCards = [
+    {
+      id: 1,
+      title: "Tour From Paris",
+      date: "12 July 2025",
+      duration: "10 days",
+      category: "adventure",
+      budget: "200USD",
+      totalPerson: "5 person",
+      image: "https://res.cloudinary.com/dfsu0cuvb/image/upload/v1737529180/cld-sample-2.jpg",
+    },
+    {
+      id: 2,
+      title: "Tour From Tokyo",
+      date: "15 August 2025",
+      duration: "7 days",
+      category: "cultural",
+      budget: "350USD",
+      totalPerson: "4 person",
+      image: "https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443119/samples/landscapes/nature-mountains.jpg",
+    },
+    {
+      id: 3,
+      title: "Tour From London",
+      date: "20 September 2025",
+      duration: "12 days",
+      category: "historical",
+      budget: "450USD",
+      totalPerson: "6 person",
+      image: "https://res.cloudinary.com/dfsu0cuvb/image/upload/v1737529179/cld-sample.jpg",
+    },
+  ]
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -113,9 +148,17 @@ const TourPlan = () => {
     setIsMobileFilterOpen(!isMobileFilterOpen)
   }
 
+  const openPopup = () => {
+    setIsPopupOpen(true)
+  }
+
+  const closePopup = () => {
+    setIsPopupOpen(false)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6 pb-20 roboto">
-      <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-6">
+      <div className="px-2 sm:px-4 lg:px-6">
         {/* Mobile Filter Toggle Button */}
         <button
           className="md:hidden flex items-center gap-2 mb-4 bg-white px-4 py-2 rounded-md shadow-sm border border-gray-200"
@@ -173,261 +216,67 @@ const TourPlan = () => {
               <p className="text-gray-500 text-md font-medium">All posted tour plans are here</p>
             </div>
 
-            {/* Tour Card */}
-            {travelData.tour && (
-              <div className="bg-white rounded-t-lg border-x border-t border-gray-200">
-                {/* Card Header */}
-                <div className="p-4 sm:p-6 pb-3 sm:pb-4">
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0 mb-4">
-                    <div>
-                      <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">
-                        {travelData.tour.destination}
-                      </h2>
-                      <div className="space-y-1 text-sm text-gray-600">
-                        <p>
-                          Willing to go on <span className="font-medium">{travelData.tour.date}</span>
-                        </p>
-                        <p>
-                          Include: <span className="font-medium">{travelData.tour.duration}</span>
-                        </p>
-                        <p>
-                          Category: <span className="font-medium">{travelData.tour.category}</span>
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex justify-between sm:text-right sm:flex-col items-center sm:items-end space-x-2 relative">
-                     <div className="flex items-center justify-between lg:space-x-3 space-x-40">
-                         <div>
-                        <p className="text-lg font-bold text-gray-700">Budget {travelData.tour.budget}</p>
-                        <p className="text-md text-gray-800">Total 5 person</p>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          setIsDropdownOpen(!isDropdownOpen)
-                        }}
-                        className="sm:-mt-3"
-                      >
-                        <HiDotsVertical
-                          size={22}
-                          className="cursor-pointer text-gray-600 hover:text-gray-800 transition-colors"
-                        />
-                      </button>
-                     </div>
-                      {isDropdownOpen && (
-                        <div
-                          ref={dropdownRef}
-                          className="absolute right-0 top-8 bg-white shadow-lg rounded-md py-2 w-40 z-10"
-                        >
-                          <button
-                            onClick={() =>
-                              updateTour({
-                                description: "Updated description for the tour plan.",
-                              })
-                            }
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            Edit Plan
-                          </button>
-                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            Share Plan
-                          </button>
-                          <button
-                            onClick={deleteTour}
-                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                          >
-                            Delete Plan
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Description */}
-                  <div className="mb-4">
-                    <p className="text-sm text-gray-600 leading-relaxed">{travelData.tour.description}</p>
-                  </div>
-
-                  {/* Interested Travel Points */}
-                  <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                    <p className="text-sm font-medium text-gray-700">Interested Travel Points:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {travelData.tour.interestedLocations.map((location, index) => (
-                        <span key={index} className="text-sm font-medium text-blue-600 hover:underline cursor-pointer">
-                          {location}
-                          {index < travelData.tour.interestedLocations.length - 1 && ", "}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tour Image */}
-                <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
-                  <div className="rounded-lg overflow-hidden">
-                    <img
-                      src={travelData.tour.image || "/placeholder.svg?height=256&width=512" || "/placeholder.svg"}
-                      alt="Tour destination"
-                      className="w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover"
-                    />
-                  </div>
-                  {/* Social Stats */}
-                  <div className="flex items-center justify-between pt-3">
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center">
-                        <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center mr-1">
-                          <ThumbsUp className="w-3 h-3 text-white fill-current" />
-                        </div>
-                        <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center -ml-2">
-                          <Heart className="w-3 h-3 text-white fill-current" />
-                        </div>
-                      </div>
-                      <span className="text-sm text-gray-600 ml-2">{travelData.tour.likes} Likes</span>
-                    </div>
-                    <div className="flex items-center gap-2 sm:gap-4 text-sm text-gray-600">
-                      <span>{travelData.tour.comments} Comments</span>
-                      <span>{travelData.tour.shares} Share</span>
-                    </div>
-                  </div>
-
-                  {/* Social Actions */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                    <div className="flex items-center gap-3 sm:gap-6">
-                      <button
-                        onClick={() => setIsLiked(!isLiked)}
-                        className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm cursor-pointer ${
-                          isLiked ? "text-blue-600" : "text-gray-600"
-                        } hover:text-blue-600 transition-colors`}
-                      >
-                        <ThumbsUp className={`w-3 h-3 sm:w-4 sm:h-4 ${isLiked ? "fill-current" : ""}`} />
-                        <span>Likes</span>
-                      </button>
-                      <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors cursor-pointer">
-                        <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span>Comments</span>
-                      </button>
-                      <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors cursor-pointer">
-                        <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span>Share</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Agency Listings */}
-            <div className="bg-white rounded-b-lg border-x border-b border-gray-200">
-              {/* Header */}
-              <div className="px-4 sm:px-6 pb-4 border-b border-gray-200">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                  <div>
-                    <h3 className="text-xl sm:text-2xl font-semibold text-gray-600 pt-3 flex items-center space-x-2">
-                      <GoArrowLeft />
-                      <p>All Offers</p>
-                    </h3>
-                  </div>
-                  <div className="flex items-center justify-between sm:space-x-16 pt-2">
-                    <div className="text-sm text-gray-600">Offered Budget</div>
-                    <div className="text-sm text-gray-600">
-                      <h3 className="text-lg sm:text-xl font-semibold text-gray-600 flex items-center space-x-2">
-                        <GoArrowLeft />
-                        <p>Back</p>
-                      </h3>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 py-4 sm:py-6">
-                {/* Existing Offers */}
-                {travelData.offers.map((offer) => (
-                  <div
-                    key={offer.id}
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-2 sm:px-4 py-3 rounded-lg border border-transparent hover:border-gray-100 hover:bg-gray-50"
-                  >
-                    <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-0">
-                      {/* Avatar */}
+            {/* Tour Cards Grid */}
+            <div className="grid grid-cols-1 gap-4 mb-6">
+              {tourCards.map((tour) => (
+                <div key={tour.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                  <div className="flex flex-col sm:flex-row">
+                    {/* Tour Image */}
+                    <div className="w-full sm:w-48 h-40 sm:h-40">
                       <img
-                        src={offer.image || "/placeholder.svg"}
-                        alt={`${offer.company} avatar`}
-                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover"
+                        src={tour.image || "/placeholder.svg"}
+                        alt={tour.title}
+                        className="w-full h-full object-cover"
                       />
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-gray-900">{offer.company}</span>
-                          {offer.verified && (
-                            <div className="flex space-x-1">
-                              <div className="rounded-full flex items-center justify-center">
-                                <span className="text-blue-500">
-                                  <MdVerified size={20} className="sm:w-6 sm:h-6" />
-                                </span>
-                              </div>
-                              <div className="rounded-full flex items-center justify-center">
-                                <span className="text-green-500">
-                                  <MdVerified size={20} className="sm:w-6 sm:h-6" />
-                                </span>
-                              </div>
-                            </div>
-                          )}
+                    </div>
+
+                    {/* Tour Details */}
+                    <div className="flex-1 p-4 flex flex-col sm:flex-row sm:justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2">{tour.title}</h3>
+                        <div className="space-y-1 text-sm text-gray-600 mb-3">
+                          <p>
+                            Willing to go on <span className="font-medium">{tour.date}</span>
+                          </p>
+                          <p>
+                            Duration <span className="font-medium">{tour.duration}</span>
+                          </p>
+                          <p>
+                            Category <span className="font-medium">{tour.category}</span>
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Budget and Actions */}
+                      <div className="flex flex-row sm:flex-col justify-between sm:justify-start items-center sm:items-end gap-3 ">
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-gray-700">Budget {tour.budget}</p>
+                          <p className="text-sm text-gray-600">Total {tour.totalPerson}</p>
+                        </div>
+                        <div className="flex gap-2 lg:mt-5">
+                          <button
+                            onClick={openPopup}
+                            className="px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200 transition-colors"
+                          >
+                            View
+                          </button>
+                          <button className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors">
+                            Publish Now
+                          </button>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between sm:justify-end gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-lg sm:text-xl">💰 {offer.budget}</span>
-                      </div>
-                      <button className="px-3 sm:px-5 py-1.5 sm:py-2 bg-[#3776E2] text-white text-sm sm:text-md rounded-md hover:bg-blue-700 transition-colors">
-                        Response
-                      </button>
-                    </div>
-                  </div>
-                ))}
-
-                {/* Separator */}
-                <div className="border-t border-gray-200 my-4"></div>
-
-                {/* Place Your Offer */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-2 sm:p-4 rounded-lg">
-                  <div className="text-gray-600 flex items-center justify-center sm:mt-0">
-                    <img
-                      src="https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443124/samples/smile.jpg"
-                      alt="User avatar"
-                      className="rounded-full w-10 h-10 sm:w-11 sm:h-11"
-                    />
-                  </div>
-                  <div className="flex-1 w-full">
-                    <p className="text-lg sm:text-xl font-medium text-gray-700 mb-2">Place your offer Budget here</p>
-                    <div className="flex w-full gap-2">
-                      <input
-                        type="text"
-                        placeholder="Enter here"
-                        value={offerBudget}
-                        onChange={(e) => setOfferBudget(e.target.value)}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                      />
-                      <button
-                        className={`px-3 py-2 font-medium rounded-md transition-colors ${
-                          offerBudget.trim()
-                            ? "bg-blue-600 text-white hover:bg-blue-700"
-                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        }`}
-                        disabled={!offerBudget.trim()}
-                      >
-                        <IoIosSend size={24} />
-                      </button>
-                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
 
           {/* Sidebar - Right Side */}
           <div
-            className={`w-full md:w-1/4 lg:w-1/5 order-1 md:order-2 ${isMobileFilterOpen ? "block" : "hidden md:block"}`}
+            className={`w-full md:w-1/4 lg:w-1/5 order-1 md:order-2 lg:mt-24 ${isMobileFilterOpen ? "block" : "hidden md:block"}`}
           >
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sticky top-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 top-4">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
                 <button className="md:hidden text-gray-500" onClick={toggleMobileFilter}>
@@ -486,8 +335,280 @@ const TourPlan = () => {
           </div>
         </div>
       </div>
+
+      {/* Popup Modal */}
+      {isPopupOpen && (
+        <div className="fixed inset-0 bg-black/20  flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Popup Header */}
+            <div className="flex justify-between items-center p-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800">Tour Details</h2>
+              <button onClick={closePopup} className="text-gray-500 hover:text-gray-700 transition-colors">
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Popup Content - Same as snippet.txt */}
+            <div className="p-4">
+              <div className="w-full">
+                {/* Tour Card */}
+                {travelData.tour && (
+                  <div className="bg-white rounded-t-lg border-x border-t border-gray-200">
+                    {/* Card Header */}
+                    <div className="p-4 sm:p-6 pb-3 sm:pb-4">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0 mb-4">
+                        <div>
+                          <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">
+                            {travelData.tour.destination}
+                          </h2>
+                          <div className="space-y-1 text-sm text-gray-600">
+                            <p>
+                              Willing to go on <span className="font-medium">{travelData.tour.date}</span>
+                            </p>
+                            <p>
+                              Include: <span className="font-medium">{travelData.tour.duration}</span>
+                            </p>
+                            <p>
+                              Category: <span className="font-medium">{travelData.tour.category}</span>
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex justify-between sm:text-right sm:flex-col items-center sm:items-end space-x-2 relative">
+                          <div className="flex items-center justify-between lg:space-x-3 space-x-40">
+                            <div>
+                              <p className="text-lg font-bold text-gray-700">Budget {travelData.tour.budget}</p>
+                              <p className="text-md text-gray-800">Total 5 person</p>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault()
+                                setIsDropdownOpen(!isDropdownOpen)
+                              }}
+                              className="sm:-mt-3"
+                            >
+                              <HiDotsVertical
+                                size={22}
+                                className="cursor-pointer text-gray-600 hover:text-gray-800 transition-colors"
+                              />
+                            </button>
+                          </div>
+                          {isDropdownOpen && (
+                            <div
+                              ref={dropdownRef}
+                              className="absolute right-0 top-8 bg-white shadow-lg rounded-md py-2 w-40 z-10"
+                            >
+                              <button
+                                onClick={() =>
+                                  updateTour({
+                                    description: "Updated description for the tour plan.",
+                                  })
+                                }
+                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              >
+                                Edit Plan
+                              </button>
+                              <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                Share Plan
+                              </button>
+                              <button
+                                onClick={deleteTour}
+                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                              >
+                                Delete Plan
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <div className="mb-4">
+                        <p className="text-sm text-gray-600 leading-relaxed">{travelData.tour.description}</p>
+                      </div>
+
+                      {/* Interested Travel Points */}
+                      <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <p className="text-sm font-medium text-gray-700">Interested Travel Points:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {travelData.tour.interestedLocations.map((location, index) => (
+                            <span
+                              key={index}
+                              className="text-sm font-medium text-blue-600 hover:underline cursor-pointer"
+                            >
+                              {location}
+                              {index < travelData.tour.interestedLocations.length - 1 && ", "}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Tour Image */}
+                    <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
+                      <div className="rounded-lg overflow-hidden">
+                        <img
+                          src={travelData.tour.image || "/placeholder.svg?height=256&width=512" || "/placeholder.svg"}
+                          alt="Tour destination"
+                          className="w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover"
+                        />
+                      </div>
+                      {/* Social Stats */}
+                      <div className="flex items-center justify-between pt-3">
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center">
+                            <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center mr-1">
+                              <ThumbsUp className="w-3 h-3 text-white fill-current" />
+                            </div>
+                            <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center -ml-2">
+                              <Heart className="w-3 h-3 text-white fill-current" />
+                            </div>
+                          </div>
+                          <span className="text-sm text-gray-600 ml-2">{travelData.tour.likes} Likes</span>
+                        </div>
+                        <div className="flex items-center gap-2 sm:gap-4 text-sm text-gray-600">
+                          <span>{travelData.tour.comments} Comments</span>
+                          <span>{travelData.tour.shares} Share</span>
+                        </div>
+                      </div>
+
+                      {/* Social Actions */}
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <div className="flex items-center gap-3 sm:gap-6">
+                          <button
+                            onClick={() => setIsLiked(!isLiked)}
+                            className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm cursor-pointer ${isLiked ? "text-blue-600" : "text-gray-600"
+                              } hover:text-blue-600 transition-colors`}
+                          >
+                            <ThumbsUp className={`w-3 h-3 sm:w-4 sm:h-4 ${isLiked ? "fill-current" : ""}`} />
+                            <span>Likes</span>
+                          </button>
+                          <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors cursor-pointer">
+                            <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span>Comments</span>
+                          </button>
+                          <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors cursor-pointer">
+                            <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span>Share</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Agency Listings */}
+                <div className="bg-white rounded-b-lg border-x border-b border-gray-200">
+                  {/* Header */}
+                  <div className="px-4 sm:px-6 pb-4 border-b border-gray-200">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <div>
+                        <h3 className="text-xl sm:text-2xl font-semibold text-gray-600 pt-3 flex items-center space-x-2">
+                          <GoArrowLeft />
+                          <p>All Offers</p>
+                        </h3>
+                      </div>
+                      <div className="flex items-center justify-between sm:space-x-16 pt-2">
+                        <div className="text-sm text-gray-600">Offered Budget</div>
+                        <div className="text-sm text-gray-600">
+                          <h3 className="text-lg sm:text-xl font-semibold text-gray-600 flex items-center space-x-2">
+                            <GoArrowLeft />
+                            <p>Back</p>
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 py-4 sm:py-6">
+                    {/* Existing Offers */}
+                    {travelData.offers.map((offer) => (
+                      <div
+                        key={offer.id}
+                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-2 sm:px-4 py-3 rounded-lg border border-transparent hover:border-gray-100 hover:bg-gray-50"
+                      >
+                        <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-0">
+                          {/* Avatar */}
+                          <img
+                            src={offer.image || "/placeholder.svg"}
+                            alt={`${offer.company} avatar`}
+                            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover"
+                          />
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-gray-900">{offer.company}</span>
+                              {offer.verified && (
+                                <div className="flex space-x-1">
+                                  <div className="rounded-full flex items-center justify-center">
+                                    <span className="text-blue-500">
+                                      <MdVerified size={20} className="sm:w-6 sm:h-6" />
+                                    </span>
+                                  </div>
+                                  <div className="rounded-full flex items-center justify-center">
+                                    <span className="text-green-500">
+                                      <MdVerified size={20} className="sm:w-6 sm:h-6" />
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between sm:justify-end gap-3">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-lg sm:text-xl">💰 {offer.budget}</span>
+                          </div>
+                          <button className="px-3 sm:px-5 py-1.5 sm:py-2 bg-[#3776E2] text-white text-sm sm:text-md rounded-md hover:bg-blue-700 transition-colors">
+                            Response
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Separator */}
+                    <div className="border-t border-gray-200 my-4"></div>
+
+                    {/* Place Your Offer */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-2 sm:p-4 rounded-lg">
+                      <div className="text-gray-600 flex items-center justify-center sm:mt-0">
+                        <img
+                          src="https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443124/samples/smile.jpg"
+                          alt="User avatar"
+                          className="rounded-full w-10 h-10 sm:w-11 sm:h-11"
+                        />
+                      </div>
+                      <div className="flex-1 w-full">
+                        <p className="text-lg sm:text-xl font-medium text-gray-700 mb-2">
+                          Place your offer Budget here
+                        </p>
+                        <div className="flex w-full gap-2">
+                          <input
+                            type="text"
+                            placeholder="Enter here"
+                            value={offerBudget}
+                            onChange={(e) => setOfferBudget(e.target.value)}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                          />
+                          <button
+                            className={`px-3 py-2 font-medium rounded-md transition-colors ${offerBudget.trim()
+                                ? "bg-blue-600 text-white hover:bg-blue-700"
+                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                              }`}
+                            disabled={!offerBudget.trim()}
+                          >
+                            <IoIosSend size={24} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
-export default TourPlan
+export default TourPlanWithPopup
