@@ -40,43 +40,49 @@ const userData = {
 
 function UserProfile() {
   return (
-    <div className="mx-auto p-4">
+    <div className="mx-auto p-4 max-w-7xl">
       {/* Header Section */}
-      <h2 className="text-3xl font-semibold text-gray-800">{userData.header.title}</h2>
-      <div className="flex items-center justify-between py-2 space-x-2">
-        <h1 className="text-lg text-gray-600">{userData.header.invitationCode}</h1>
-       <NavLink to="/user/editProfile">
-         <button className="text-blue-500 hover:underline border border-blue-500 rounded-md px-6 py-2 flex items-center cursor-pointer">
-          <FaEdit className="mr-2" /> Edit
-        </button>
-       </NavLink>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 space-y-2 sm:space-y-0">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">{userData.header.title}</h2>
+        <div className="flex items-center justify-between sm:justify-end space-x-2">
+          <h1 className="text-base sm:text-lg text-gray-600">{userData.header.invitationCode}</h1>
+          <NavLink to="/user/editProfile">
+            <button className="text-blue-500 hover:underline border border-blue-500 rounded-md px-4 sm:px-6 py-2 flex items-center cursor-pointer">
+              <FaEdit className="mr-2" /> Edit
+            </button>
+          </NavLink>
+        </div>
       </div>
 
       {/* User Info and About Me */}
-      <div className="flex items-start mb-6 bg-white p-5 rounded-md">
+      <div className="flex flex-col sm:flex-row items-start mb-6 bg-white p-4 sm:p-5 rounded-md">
         {/* User Image and Details */}
-        <div className="w-2/5 flex space-x-5">
-          <div className="w-28 h-28 bg-gray-300 rounded-full mb-2">
-            <img src={userData.userInfo.imageSrc} className="w-full h-full rounded-full" alt="" />
+        <div className="w-full sm:w-2/5 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-5">
+          <div className="w-20 h-20 sm:w-28 sm:h-28 bg-gray-300 rounded-full mb-2 mx-auto sm:mx-0">
+            <img
+              src={userData.userInfo.imageSrc}
+              className="w-full h-full rounded-full object-cover"
+              alt="User profile"
+            />
           </div>
-          <div>
-            <h3 className="text-[28px] font-semibold text-gray-700">{userData.userInfo.name}</h3>
-            <p className="text-sm text-gray-600 pt-2 font-medium">{userData.userInfo.role}</p>
+          <div className="text-center sm:text-left">
+            <h3 className="text-xl sm:text-[28px] font-semibold text-gray-700">{userData.userInfo.name}</h3>
+            <p className="text-sm text-gray-600 pt-1 sm:pt-2 font-medium">{userData.userInfo.role}</p>
             <p className="text-sm text-gray-600 pt-1 font-medium">{userData.userInfo.location}</p>
           </div>
-          <div className="w-px ml-12 bg-gray-300 mx-4"></div>
+          <div className="hidden sm:block w-px ml-12 bg-gray-300 mx-4"></div>
         </div>
         {/* About Me */}
-        <div className="w-4/5 pl-4">
-          <h4 className="text-[24px] font-semibold text-gray-800">{userData.about.title}</h4>
-          <p className="text-sm text-gray-600">{userData.about.description}</p>
+        <div className="w-full sm:w-3/5 pl-0 sm:pl-4 mt-4 sm:mt-0">
+          <h4 className="text-xl sm:text-[24px] font-semibold text-gray-800">{userData.about.title}</h4>
+          <p className="text-sm text-gray-600 leading-relaxed">{userData.about.description}</p>
         </div>
       </div>
 
       {/* Personal Information Section */}
-      <div className="mb-6 bg-white p-5 rounded-md">
-        <h3 className="text-[24px] font-semibold text-gray-800 mb-4">Personal Information</h3>
-        <div className="grid grid-cols-3 gap-4">
+      <div className="mb-6 bg-white p-4 sm:p-5 rounded-md">
+        <h3 className="text-xl sm:text-[24px] font-semibold text-gray-800 mb-4">Personal Information</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {userData.personalInfo.map((item, index) => (
             <div key={index}>
               <p className="text-sm text-gray-500">{item.label}</p>
@@ -87,11 +93,14 @@ function UserProfile() {
       </div>
 
       {/* Address Section */}
-      <div className="bg-white p-5 rounded-md">
-        <h3 className="text-[24px] font-semibold text-gray-800 mb-4">Address</h3>
-        <div className="grid grid-cols-3 gap-4">
+      <div className="bg-white p-4 sm:p-5 rounded-md">
+        <h3 className="text-xl sm:text-[24px] font-semibold text-gray-800 mb-4">Address</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {userData.address.map((item, index) => (
-            <div key={index} className={item.span ? `col-span-${item.span}` : ""}>
+            <div
+              key={index}
+              className={item.span ? `col-span-1 sm:col-span-${item.span}` : ""}
+            >
               <p className="text-sm text-gray-500">{item.label}</p>
               <p className="text-md font-medium text-gray-800">{item.value}</p>
             </div>

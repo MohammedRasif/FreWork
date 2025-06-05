@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -49,47 +48,57 @@ const AdminNotification = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-semibold text-gray-700">All Notifications</h1>
-        <a href="#" className="text-md underline">Clear all</a>
+    <div className="p-4 sm:p-6 container mx-auto">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
+        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-700 text-center sm:text-left">
+          All Notifications
+        </h1>
+        <a href="#" className="text-sm sm:text-md underline text-center sm:text-right">
+          Clear all
+        </a>
       </div>
+
+      {/* Notifications List */}
       <div className="space-y-2">
         {notifications.map((item) => (
           <div
             key={item.id}
-            className="bg-white rounded-md p-3 py-4 flex justify-between items-center"
+            className="bg-white rounded-md p-3 sm:p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3"
           >
-            <p className="text-md">{renderHighlightedText(item.text)}</p>
-            <div className="flex items-center space-x-2">
-              <span className="text-gray-500 text-md">{item.timestamp}</span>
+            <p className="text-sm sm:text-md text-gray-700">
+              {renderHighlightedText(item.text)}
+            </p>
+            <div className="flex items-center justify-between sm:justify-end space-x-2">
+              <span className="text-gray-500 text-sm sm:text-md">{item.timestamp}</span>
               <button
                 onClick={() => handleDeleteClick(item.id)}
-                className="text-red-500 hover:text-red-700 border border-gray-300 rounded-sm cursor-pointer"
+                className="text-red-500 hover:text-red-700 border border-gray-300 rounded-sm cursor-pointer p-1 sm:p-[2px]"
               >
-                <RiDeleteBin6Line size={28} className="py-1 px-[2px]" />
+                <RiDeleteBin6Line size={24} sm:size={28} className="py-1 px-[2px]" />
               </button>
             </div>
           </div>
         ))}
       </div>
 
+      {/* Popup */}
       {showPopup && (
-        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-lg font-semibold text-gray-700 mb-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-xs sm:max-w-md">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4 text-center">
               Are you sure you want to delete this notification?
             </h2>
-            <div className="flex justify-end space-x-4">
+            <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
               <button
                 onClick={handleCancelDelete}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 cursor-pointer"
+                className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 cursor-pointer w-full sm:w-auto"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 cursor-pointer"
+                className="px-3 sm:px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 cursor-pointer w-full sm:w-auto"
               >
                 Confirm
               </button>
