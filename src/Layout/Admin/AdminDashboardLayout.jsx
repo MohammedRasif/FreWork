@@ -115,7 +115,7 @@ export default function AdminDashboardLayout() {
   return (
     <div className="flex h-screen bg-[#F8F9FA]">
       {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>}
+      {isMobileMenuOpen && <div className="fixed inset-0 bg-black/20 bg-opacity-50 z-40 lg:hidden"></div>}
 
       {/* Sidebar - Desktop */}
       <aside className={`hidden lg:block ${isCollapsed ? "w-20" : "w-80"} transition-all duration-500 ease-in-out`}>
@@ -189,7 +189,7 @@ export default function AdminDashboardLayout() {
 
       {/* Mobile Sidebar */}
       <aside
-        className={`mobile-sidebar fixed top-0 left-0 h-full w-80 bg-white z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
+        className={`mobile-sidebar fixed top-0 left-0 h-full w-80 bg-white z-50 transform transition-transform duration-300 ease-in-out  lg:hidden ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

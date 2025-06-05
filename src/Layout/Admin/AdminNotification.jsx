@@ -48,7 +48,7 @@ const AdminNotification = () => {
   };
 
   return (
-    <div className="p-4 sm:p-6 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-6 container mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
         <h1 className="text-2xl sm:text-3xl font-semibold text-gray-700 text-center sm:text-left">
