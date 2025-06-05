@@ -195,19 +195,19 @@ const AdminProfileEdit = () => {
                 </div>
 
                 {/* Additional Services and Category Types as Text */}
-                <div className=" flex items-center space-x-10">
+                <div className=" lg:flex items-center space-x-10 space-y-3">
 
 
-                    <p className="text-base text-gray-700 bg-white px-5 rounded-full  py-[1px]">Local Guides and Language Support</p>
-                    <p className="text-base text-gray-700 bg-white px-5 rounded-full  py-[1px]">24/7 Support during tour</p>
+                    <p className="text-base text-gray-700 bg-white px-5 rounded-full  py-[2px]">Local Guides and Language Support</p>
+                    <p className="text-base text-gray-700 bg-white px-5 rounded-full  py-[2px]">24/7 Support during tour</p>
 
 
 
 
 
-                    <p className="text-base text-gray-700 bg-white px-5 rounded-full  py-[1px]">Mountain</p>
-                    <p className="text-base text-gray-700 bg-white px-5 rounded-full  py-[1px]">Sea</p>
-                    <p className="text-base text-gray-700 bg-white px-5 rounded-full  py-[1px]" >River</p>
+                    <p className="text-base text-gray-700 bg-white px-5 rounded-full  py-[2px]">Mountain</p>
+                    <p className="text-base text-gray-700 bg-white px-5 rounded-full  py-[2px]">Sea</p>
+                    <p className="text-base text-gray-700 bg-white px-5 rounded-full  py-[2px]" >River</p>
 
                 </div>
 
