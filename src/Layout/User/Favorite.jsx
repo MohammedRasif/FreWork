@@ -32,14 +32,14 @@ const Favorite = () => {
         <div className=" p-4">
             <div className="max-w-7xl mx-auto">
                 {/* Header Section */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="lg:flex justify-between items-center mb-6">
                     <div>
                         <div className="text-sm text-gray-500 mb-1">12 July, 2025</div>
                         <h1 className="text-2xl font-semibold text-gray-800">Previous Tour Plans</h1>
                     </div>
 
                     {/* Search Bar */}
-                    <div className="relative">
+                    <div className="relative lg:mt-0 mt-3">
                         <input
                             type="text"
                             placeholder="Search by agency name"

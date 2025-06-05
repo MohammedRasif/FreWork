@@ -257,16 +257,16 @@ const AdminHome = () => {
         <div className="space-y-4 lg:space-y-6">
           {/* My Board Header */}
           <div>
-            <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700 mb-4 lg:mb-6 text-center">
+            <h3 className="text-2xl sm:text-2xl lg:text-2xl font-semibold text-gray-700 mb-4 lg:mb-6 text-center">
               {sidebarData.myBoard.title}
             </h3>
           </div>
 
           {/* Navigation Links */}
-          <div className="flex lg:flex-col space-x-2 lg:space-x-0 lg:space-y-3 overflow-x-auto lg:overflow-x-visible">
+          <div className="flex flex-col space-x-2 lg:space-x-0 space-y-3 overflow-x-auto lg:overflow-x-visible">
             <button
               onClick={() => setActiveTab("All Plans")}
-              className={`flex-shrink-0 lg:w-full text-center px-3 sm:px-4 lg:px-4 py-2 lg:py-3 text-xs sm:text-sm lg:text-base font-semibold rounded-md transition-colors cursor-pointer ${
+              className={`flex-shrink-0 lg:w-full text-center px-3 sm:px-4 lg:px-4 py-2 lg:py-3 text-[17px] sm:text-[17px] lg:text-[17px] font-semibold rounded-md transition-colors cursor-pointer ${
                 activeTab === "All Plans" ? "bg-white shadow-md" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
@@ -274,7 +274,7 @@ const AdminHome = () => {
             </button>
             <button
               onClick={() => setActiveTab("Offered Plans")}
-              className={`flex-shrink-0 lg:w-full text-center px-3 sm:px-4 lg:px-4 py-2 lg:py-3 text-xs sm:text-sm lg:text-base font-semibold rounded-md transition-colors cursor-pointer ${
+              className={`flex-shrink-0 lg:w-full text-center px-3 sm:px-4 lg:px-4 py-2 lg:py-3 text-[17px] sm:text-[17px] lg:text-[17px] font-semibold rounded-md transition-colors cursor-pointer ${
                 activeTab === "Offered Plans" ? "bg-white shadow-md" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
@@ -282,7 +282,7 @@ const AdminHome = () => {
             </button>
             <button
               onClick={() => setActiveTab("Accepted Plans")}
-              className={`flex-shrink-0 lg:w-full text-center px-3 sm:px-4 lg:px-4 py-2 lg:py-3 text-xs sm:text-sm lg:text-base font-semibold rounded-md transition-colors cursor-pointer ${
+              className={`flex-shrink-0 lg:w-full text-center px-3 sm:px-4 lg:px-4 py-2 lg:py-3 text-[17px] sm:text-[17px]lg:text-[17px] font-semibold rounded-md transition-colors cursor-pointer ${
                 activeTab === "Accepted Plans" ? "bg-white shadow-md" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
@@ -292,10 +292,10 @@ const AdminHome = () => {
 
           {/* Promotional Description */}
           <div className="pt-4 lg:pt-6">
-            <p className="text-xs sm:text-sm lg:text-sm text-gray-900 font-semibold mb-2">
+            <p className="text-sm sm:text-sm lg:text-sm text-gray-900 font-semibold mb-2">
               Want to respond fast to get Tourist for "Free"?
             </p>
-            <a href="#" className="text-xs sm:text-sm lg:text-sm text-blue-600 hover:underline">
+            <a href="#" className="text-sm sm:text-sm lg:text-sm text-blue-600 hover:underline">
               Click here
             </a>
           </div>
