@@ -60,7 +60,7 @@ const AdminProfile = () => {
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+    <div className="p-4  l mx-auto">
       {/* Popup */}
       {isPopupOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">

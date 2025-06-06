@@ -40,7 +40,7 @@ const userData = {
 
 function UserProfile() {
   return (
-    <div className="mx-auto p-4 max-w-7xl">
+    <div className="mx-auto p-4 ">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 space-y-2 sm:space-y-0">
         <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">{userData.header.title}</h2>
