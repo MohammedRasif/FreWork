@@ -2,13 +2,17 @@ import React, { useState } from "react";
 import { Lock } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import img from "../../assets/img/Mask group (3).png";
-import { useOtpVerifyMutation } from "@/redux/features/baseApi";
+import {
+  useOtpVerifyMutation,
+  useReSendOtpMutation,
+} from "@/redux/features/baseApi";
 
 const OTP_Verification = () => {
   const [otp, setOtp] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const [regVerify, { isLoading }] = useOtpVerifyMutation();
+  const [reSend, { isLoading: ResendLoading }] = useReSendOtpMutation();
   const handleOtpChange = (e) => {
     setOtp(e.target.value);
   };
@@ -91,12 +95,23 @@ const OTP_Verification = () => {
               </button>
 
               <div className="flex mx-auto justify-center">
-                <Link
-                  to="/login"
-                  className="font-semibold mt-4 text-sm text-blue-500 hover:text-blue-600 hover:underline"
+                <button
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    try {
+                      const res = await reSend({
+                        email: location.state.email,
+                      }).unwrap();
+                      alert(res.message || "OTP resent successfully!");
+                    } catch (error) {
+                      alert(error.data?.message || "Error sending OTP again.");
+                    }
+                  }}
+                  disabled={ResendLoading}
+                  className="font-semibold mt-4 text-sm text-blue-500 hover:text-blue-600 hover:underline hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Resend Code
-                </Link>
+                  {ResendLoading ? "Sending..." : "Resend Code"}
+                </button>
               </div>
             </div>
           </form>

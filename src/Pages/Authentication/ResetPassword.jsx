@@ -1,81 +1,123 @@
-import React from 'react';
-import { Mail, Lock, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import Lottie from 'lottie-react';
-import resetPass from '../../assets/resetPass.json'; // Adjust the path to your Lottie file
+import React, { useState } from "react";
+import { Lock } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import img from "../../assets/img/Mask group (3).png";
+import { useNewPasswordMutation } from "@/redux/features/baseApi";
 
 const ResetPassword = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const email = location.state?.email || "";
+
+  const [setNew, { isLoading }] = useNewPasswordMutation();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (newPassword !== confirmPassword) {
+      return alert("Passwords do not match!");
+    }
+
+    if (!email) {
+      return alert(
+        "No email found. Please go back and enter your email again."
+      );
+    }
+
+    try {
+      // ✅ Send the new password & email to your API
+      const res = await setNew({
+        email,
+        password: newPassword,
+      }).unwrap();
+
+      // ✅ Check response and navigate
+      console.log("Password reset response:", res);
+      alert(res.message || "Password successfully reset!");
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+      alert(
+        error.data?.message || "Error resetting password. Please try again."
+      );
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
- 
-      <div className="w-full bg-gray-900 md:w-1/2 h-[30vh] md:h-screen relative">
-       
-        <Lottie
-          animationData={resetPass} 
-          loop={true} 
-          className="absolute inset-0 w-3/4 h-full mx-auto object-cover"></Lottie>
-     
+      {/* Left image section */}
+      <div className="w-full bg-blue-900 md:w-1/2 h-[30vh] md:h-screen relative">
+        <img
+          src={img}
+          className="absolute inset-0 w-full h-full mx-auto object-cover opacity-70"
+          alt="Background"
+        />
       </div>
 
+      {/* Right form section */}
+      <div className="w-full md:w-1/2 min-h-[100vh] md:h-screen relative bg-blue-50 flex flex-col justify-center items-center p-8">
+        <div className="w-full max-w-xl space-y-8">
+          <form
+            onSubmit={handleSubmit}
+            className="backdrop-blur-sm bg-white/60 p-10 mb-10 rounded-lg border border-blue-200 shadow-xl"
+          >
+            <h2 className="text-3xl font-bold text-blue-600 mb-10 text-center">
+              Reset your Password
+            </h2>
 
-      <div className="w-full md:w-1/2 min-h-[100vh] md:h-screen relative">
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-40"
-          style={{
-            backgroundImage: "url('https://i.ibb.co.com/cctYrsKY/Group-1686551056.png')",
-          }}
-        >
-        </div>
-        
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-[70vh] md:h-screen p-8">
-          <div className="w-full max-w-xl space-y-8">
-            <div className="text-center">
-              <img 
-                src="https://i.ibb.co.com/sp5JLnkF/Whats-App-Image-2025-02-22-at-9-25-22-AM-3.png" 
-                alt="Logo" 
-                className="mx-auto mb-16 w-3/4" 
-              />
+            {/* New Password */}
+            <div className="form-control w-full mb-6">
+              <div className="relative">
+                <input
+                  type="password"
+                  placeholder="New Password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="input input-bordered border-blue-200 w-full pl-10 bg-white/70 text-blue-900 placeholder-blue-300 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  required
+                />
+                <Lock
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"
+                  size={18}
+                />
+              </div>
             </div>
 
-            <form className="backdrop-blur-sm bg-white/10 p-10 mb-10 rounded-lg border border-gray-200 shadow-lg">
-              <h2 className="text-3xl font-bold text-[#B28D28] mb-10 text-center">Reset your Password</h2>
-              <div className="form-control w-full mb-6">
-                <div className="relative">
-                  <input 
-                    type="text" 
-                    placeholder="New Password" 
-                    className="input input-bordered border-[#B28D2866]/40 w-full pl-10 bg-white/20  text-white placeholder-gray-300" 
-                  />
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                </div>
+            {/* Confirm Password */}
+            <div className="form-control w-full mb-6">
+              <div className="relative">
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="input input-bordered border-blue-200 w-full pl-10 bg-white/70 text-blue-900 placeholder-blue-300 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  required
+                />
+                <Lock
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"
+                  size={18}
+                />
               </div>
-              <div className="form-control w-full mb-6">
-                <div className="relative">
-                  <input 
-                    type="text" 
-                    placeholder="Confirm Password" 
-                    className="input input-bordered border-[#B28D2866]/40 w-full pl-10 bg-white/20  text-white placeholder-gray-300" 
-                  />
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                </div>
-              </div>
+            </div>
 
-
-<div className='pb-2'>
-    
-<Link to="/login">
-<button className="btn bg-[#B28D28] text-white rounded-full w-full text-base ">Confirm</button>
-</Link>
-
-</div>
-
-            
-            </form>
-          </div>
+            {/* Submit button */}
+            <div className="pb-2">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="btn bg-blue-500 hover:bg-blue-600 text-white rounded-full w-full text-base disabled:opacity-50"
+              >
+                {isLoading ? "Submitting..." : "Confirm"}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default ResetPassword;
