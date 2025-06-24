@@ -1,12 +1,16 @@
-import { useForm } from "react-hook-form"
-import { useState } from "react"
-import { ChevronDown, Mail, Lock } from "lucide-react"
-import img from "../../assets/img/Mask group (3).png"
-import { NavLink } from "react-router-dom"
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { ChevronDown, Mail, Lock } from "lucide-react";
+import img from "../../assets/img/Mask group (3).png";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useCreateUserMutation } from "@/redux/features/baseApi";
 
 const register = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [selectedUserType, setSelectedUserType] = useState("")
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedUserType, setSelectedUserType] = useState("");
+  const [createUser, { isLoading, isError, error, isSuccess }] =
+    useCreateUserMutation();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -14,22 +18,36 @@ const register = () => {
     formState: { errors },
     watch,
     setValue,
-  } = useForm()
+  } = useForm();
 
-  const password = watch("password")
+  const password = watch("password");
 
-  const userTypes = ["Tourist", "Travel agency"]
+  const userTypes = ["Tourist", "Travel agency"];
 
-  const onSubmit = (data) => {
-    console.log("Form Data:", data)
-    alert("Registration successful!")
-  }
+  const onSubmit = async (data) => {
+    try {
+      const payload = {
+        email: data.email,
+        role: data.userType,
+        password: data.password,
+        invitation_code: data.invitationCode || undefined,
+      };
+      const res = await createUser(payload).unwrap();
+      console.log("User created successfully:", res);
+      navigate("/otp_verify", {
+        state: { email: data.email, from: "register" },
+      });
+    } catch (err) {
+      console.error("Error creating user:", err);
+      alert("Error occurred during registration. Please try again.");
+    }
+  };
 
   const handleUserTypeSelect = (type) => {
-    setSelectedUserType(type)
-    setValue("userType", type)
-    setIsDropdownOpen(false)
-  }
+    setSelectedUserType(type);
+    setValue("userType", type);
+    setIsDropdownOpen(false);
+  };
 
   return (
     <div className="min-h-screen flex">
@@ -48,14 +66,18 @@ const register = () => {
           {/* Logo */}
           <div className="text-center mb-8">
             <div className="text-gray-400 text-sm mb-6">Logo here</div>
-            <h1 className="text-4xl font-semibold text-gray-700">Welcome to Frework</h1>
+            <h1 className="text-4xl font-semibold text-gray-700">
+              Welcome to Frework
+            </h1>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Email Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-4 w-4 text-gray-400" />
@@ -73,7 +95,11 @@ const register = () => {
                   className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             {/* User Type Dropdown */}
@@ -87,11 +113,17 @@ const register = () => {
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="w-full px-2 sm:px-3 py-2 sm:py-2.5 border border-gray-300 rounded-sm bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent flex items-center justify-between text-sm sm:text-base"
                 >
-                  <span className={selectedUserType ? "text-gray-900" : "text-gray-400"}>
+                  <span
+                    className={
+                      selectedUserType ? "text-gray-900" : "text-gray-400"
+                    }
+                  >
                     {selectedUserType || "Select one"}
                   </span>
                   <ChevronDown
-                    className={`h-4 sm:h-4 w-3 sm:w-4 text-gray-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+                    className={`h-4 sm:h-4 w-3 sm:w-4 text-gray-400 transition-transform ${
+                      isDropdownOpen ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
                 {isDropdownOpen && (
@@ -110,7 +142,9 @@ const register = () => {
                 )}
               </div>
               <input
-                {...register("userType", { required: "Please select user type" })}
+                {...register("userType", {
+                  required: "Please select user type",
+                })}
                 type="hidden"
                 value={selectedUserType}
               />
@@ -123,7 +157,9 @@ const register = () => {
 
             {/* Password Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-4 w-4 text-gray-400" />
@@ -141,12 +177,18 @@ const register = () => {
                   className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             {/* Confirm Password Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Confirm Password
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-4 w-4 text-gray-400" />
@@ -154,19 +196,26 @@ const register = () => {
                 <input
                   {...register("confirmPassword", {
                     required: "Please confirm your password",
-                    validate: (value) => value === password || "Passwords do not match",
+                    validate: (value) =>
+                      value === password || "Passwords do not match",
                   })}
                   type="password"
                   placeholder="Password"
                   className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
 
             {/* Invitation Code Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Invitation code (optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Invitation code (optional)
+              </label>
               <input
                 {...register("invitationCode")}
                 type="text"
@@ -187,13 +236,16 @@ const register = () => {
           {/* Login Link */}
           <div className="text-center mt-6">
             <NavLink to="/login" className="text-sm text-gray-600 ">
-              Already have an account? <button className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer">Login</button>
-            </NavLink >
+              Already have an account?{" "}
+              <button className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer">
+                Login
+              </button>
+            </NavLink>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default register
+export default register;

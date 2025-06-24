@@ -1,78 +1,109 @@
-import React from "react";
-import { Mail, Lock, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
-import Lottie from "lottie-react";
-import otpLottie from "../../assets/otpVerify.json";
+import React, { useState } from "react";
+import { Lock } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import img from "../../assets/img/Mask group (3).png";
+import { useOtpVerifyMutation } from "@/redux/features/baseApi";
 
 const OTP_Verification = () => {
-	return (
-		<div className="min-h-screen flex flex-col md:flex-row">
-			<div className="w-full bg-gray-900 md:w-1/2 h-[30vh] md:h-screen relative">
-				<Lottie
-					animationData={otpLottie}
-					loop={false}
-					className="absolute inset-0 w-3/4 h-full mx-auto object-cover"
-				></Lottie>
-			</div>
+  const [otp, setOtp] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [regVerify, { isLoading }] = useOtpVerifyMutation();
+  const handleOtpChange = (e) => {
+    setOtp(e.target.value);
+  };
 
-			<div className="w-full md:w-1/2 min-h-[100vh] md:h-screen relative">
-				<div
-					className="absolute inset-0 bg-cover bg-center opacity-40"
-					style={{
-						backgroundImage:
-							"url('https://i.ibb.co.com/cctYrsKY/Group-1686551056.png')",
-					}}
-				></div>
+  const handleOtpSubmit = async (e) => {
+    e.preventDefault();
 
-				<div className="relative z-10 flex flex-col items-center justify-center min-h-[70vh] md:h-screen p-8">
-					<div className="w-full max-w-xl space-y-8">
-						<div className="text-center">
-							<img
-								src="https://i.ibb.co.com/sp5JLnkF/Whats-App-Image-2025-02-22-at-9-25-22-AM-3.png"
-								alt="Logo"
-								className="mx-auto mb-16 w-3/4"
-							/>
-						</div>
+    // Validate OTP input
+    if (!otp || otp.length < 4) {
+      return alert("Please enter a 4-digit OTP.");
+    }
 
-						<form className="backdrop-blur-sm bg-white/10 p-10 mb-10 rounded-lg border border-gray-200 shadow-lg">
-							<h2 className="text-3xl font-bold text-[#B28D28] mb-10 text-center">
-								Verify your OTP
-							</h2>
-							<div className="form-control w-full mb-6">
-								<div className="relative">
-									<input
-										type="email"
-										placeholder="Enter your OTP"
-										className="input input-bordered border-[#B28D2866]/40 w-full pl-10 bg-white/20  text-black placeholder-gray-300"
-									/>
-									<Lock
-										className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-										size={18}
-									/>
-								</div>
-							</div>
+    // Make sure we have email
+    if (!location.state?.email) {
+      return alert("No email found. Please try again.");
+    }
 
-							<div className="pb-2">
-								<Link to="/reset_password">
-									<button className="btn bg-[#B28D28] text-white rounded-full w-full text-base ">
-										Next
-									</button>
-								</Link>
-								<div className="flex mx-auto justify-center">
-									<Link
-										to="/login"
-										className="font-semibold mt-4 text-sm  text-[#B28D28]  hover:underline"
-									>
-										Resend Code
-									</Link>
-								</div>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+    try {
+      const res = await regVerify({
+        otp,
+        email: location.state.email,
+      }).unwrap();
+
+      console.log("OTP verify response:", res); // check the shape
+
+      if (res.access && res.refresh) {
+        localStorage.setItem("access_token", res.access);
+        localStorage.setItem("refresh_token", res.refresh);
+        navigate("/login"); // Redirect only if successful
+      } else {
+        alert("OTP verification failed. Check the code or try again.");
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      alert(error.data?.message || "OTP verification failed.");
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Left image section */}
+      <div className="w-full bg-blue-900 md:w-1/2 h-[30vh] md:h-screen relative">
+        <img
+          src={img}
+          className="absolute inset-0 w-full h-full mx-auto object-cover opacity-70"
+          alt="Background"
+        />
+      </div>
+
+      {/* Right form section */}
+      <div className="w-full md:w-1/2 min-h-[100vh] md:h-screen relative bg-blue-50 flex flex-col justify-center items-center p-8">
+        <div className="w-full max-w-xl space-y-8">
+          <form className="backdrop-blur-sm bg-white/60 p-10 mb-10 rounded-lg border border-blue-200 shadow-xl">
+            <h2 className="text-3xl font-bold text-blue-600 mb-10 text-center">
+              Verify your OTP
+            </h2>
+            <div className="form-control w-full mb-6">
+              <div className="relative">
+                <input
+                  type="number"
+                  placeholder="Enter your OTP"
+                  value={otp}
+                  onChange={handleOtpChange}
+                  maxLength={4}
+                  className="input input-bordered border-blue-200 w-full pl-10 bg-white/70 text-blue-900 placeholder-blue-300 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200 "
+                />
+                <Lock
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"
+                  size={18}
+                />
+              </div>
+            </div>
+
+            <div className="pb-2">
+              <button
+                onClick={(e) => handleOtpSubmit(e)}
+                className="btn bg-blue-500 hover:bg-blue-600 text-white rounded-full w-full text-base"
+              >
+                Next
+              </button>
+
+              <div className="flex mx-auto justify-center">
+                <Link
+                  to="/login"
+                  className="font-semibold mt-4 text-sm text-blue-500 hover:text-blue-600 hover:underline"
+                >
+                  Resend Code
+                </Link>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default OTP_Verification;
