@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Lock } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import img from "../../assets/img/Mask group (3).png";
-import { useNewPasswordMutation } from "@/redux/features/baseApi";
+import { useNewPasswordMutation } from "@/redux/features/withAuth";
 
 const ResetPassword = () => {
   const navigate = useNavigate();

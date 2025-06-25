@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://c940-115-127-156-9.ngrok-free.app",
+    baseUrl: "https://a751-115-127-156-9.ngrok-free.app",
     prepareHeaders: (header) => {
       header.set("ngrok-skip-browser-warning", "true");
       return header;
@@ -47,13 +47,6 @@ export const baseApi = createApi({
         body: email,
       }),
     }),
-    newPassword: builder.mutation({
-      query: (data) => ({
-        url: "/auth/change-password/",
-        method: "POST",
-        body: data,
-      }),
-    }),
   }),
 });
 
@@ -63,5 +56,4 @@ export const {
   useOtpVerifyMutation,
   useReSendOtpMutation,
   useVerifyEmailMutation,
-  useNewPasswordMutation,
 } = baseApi;

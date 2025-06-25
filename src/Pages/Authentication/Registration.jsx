@@ -22,7 +22,7 @@ const register = () => {
 
   const password = watch("password");
 
-  const userTypes = ["Tourist", "Travel agency"];
+  const userTypes = ["tourist", "agency"];
 
   const onSubmit = async (data) => {
     try {
