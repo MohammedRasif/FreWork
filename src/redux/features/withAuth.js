@@ -33,6 +33,33 @@ export const sqQuery = createApi({
         body: data,
       }),
     }),
+    // plans
+    getPlans: builder.query({
+      query: () => "/tour-plans/",
+    }),
+    createPlanOne: builder.mutation({
+      query: (data) => ({
+        url: "/tour-plans/",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    updatePlan: builder.mutation({
+      query: (data) => ({
+        url: `/tour-plans/${data.id}/`,
+        method: "PATCH",
+        body: data.updates,
+      }),
+    }),
+    deletePlan: builder.mutation({
+      query: (id) => ({
+        url: `/tour-plans/${id}/`,
+        method: "DELETE",
+      }),
+    }),
+    getOneDetail: builder.query({
+      query: (id) => `/tour-plans/${id}/`,
+    }),
   }),
 });
 
@@ -40,4 +67,10 @@ export const {
   useNewPasswordMutation,
   useGetTuristProfileQuery,
   useUpdateTuristProfileMutation,
+  // plans
+  useGetPlansQuery,
+  useCreatePlanOneMutation,
+  useUpdatePlanMutation,
+  useDeletePlanMutation,
+  useGetOneDetailQuery,
 } = sqQuery;

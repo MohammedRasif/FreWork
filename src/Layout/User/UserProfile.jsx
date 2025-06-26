@@ -37,7 +37,7 @@ function UserProfile() {
           <div className="w-20 h-20 sm:w-28 sm:h-28 bg-gray-300 rounded-full mb-2 mx-auto sm:mx-0">
             <img
               src={
-                user.profile_picture ||
+                user.profile_picture_url ||
                 "https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443124/samples/smile.jpg"
               }
               className="w-full h-full rounded-full object-cover"
