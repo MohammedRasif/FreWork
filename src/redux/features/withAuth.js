@@ -60,6 +60,17 @@ export const sqQuery = createApi({
     getOneDetail: builder.query({
       query: (id) => `/tour-plans/${id}/`,
     }),
+    // agency profile
+    getAgencyProfile: builder.query({
+      query: () => `/agency/profile/`,
+    }),
+    updateAgencyProfile: builder.mutation({
+      query: (data) => ({
+        url: "/agency/profile/",
+        method: "PATCH",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -73,4 +84,7 @@ export const {
   useUpdatePlanMutation,
   useDeletePlanMutation,
   useGetOneDetailQuery,
+  // agency profile
+  useGetAgencyProfileQuery,
+  useUpdateAgencyProfileMutation,
 } = sqQuery;
