@@ -8,7 +8,6 @@ import {
   FaGlobe,
   FaMapMarkerAlt,
   FaCheckCircle,
-  FaChevronRight,
   FaArrowLeft,
   FaCalendarAlt,
 } from "react-icons/fa";
@@ -41,7 +40,21 @@ const AdminProfile = () => {
     setToDate("");
   };
 
-  // Handle loading state
+  const handleConfirm = async () => {
+    if (!fromDate || !toDate) {
+      alert("Please select both start and end dates.");
+      return;
+    }
+    try {
+      // Replace with your API call
+      console.log("Unavailability set:", { fromDate, toDate });
+      handleClosePopup();
+    } catch (err) {
+      console.error("Failed to set unavailability:", err);
+      alert("Failed to set unavailability. Please try again.");
+    }
+  };
+
   if (isProfileLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -50,7 +63,6 @@ const AdminProfile = () => {
     );
   }
 
-  // Handle error state
   if (isError) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -61,7 +73,16 @@ const AdminProfile = () => {
     );
   }
 
-  // Prepare contact information array
+  if (!profileData) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-lg font-semibold text-gray-600">
+          No profile data available
+        </div>
+      </div>
+    );
+  }
+
   const contactInformation = [
     profileData?.contact_phone && {
       icon: <FaPhone className="w-4 h-4 text-gray-500" />,
@@ -79,11 +100,10 @@ const AdminProfile = () => {
       icon: <FaMapMarkerAlt className="w-4 h-4 text-gray-500 mt-0.5" />,
       text: profileData.address,
     },
-  ].filter(Boolean); // Remove falsy values
+  ].filter(Boolean);
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-      {/* Popup */}
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto min-h-screen">
       {isPopupOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-4 sm:p-6 relative">
@@ -134,14 +154,16 @@ const AdminProfile = () => {
                 </div>
               </div>
             </div>
-            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 sm:py-3 rounded-md">
+            <button
+              onClick={handleConfirm}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 sm:py-3 rounded-md"
+            >
               Confirm
             </button>
           </div>
         </div>
       )}
 
-      {/* Header Section */}
       <div className="pb-4 sm:pb-7">
         <h1 className="text-2xl sm:text-3xl text-black font-semibold text-center">
           Agency Profile
@@ -164,7 +186,6 @@ const AdminProfile = () => {
         </h1>
       </div>
 
-      {/* Image and Travel */}
       <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div className="w-full sm:w-96 flex-shrink-0">
           <img
@@ -177,11 +198,20 @@ const AdminProfile = () => {
           />
         </div>
         <div className="flex-1 bg-white p-3 sm:p-4 rounded-md h-auto sm:h-72">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:space-x-3 mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:space-x-3">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                {profileData?.agency_name || "Unnamed Agency"}
-              </h2>
+              <div className="flex items-center justify-center gap-5">
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                  {profileData?.agency_name || "Unnamed Agency"}
+                </h2>
+                <NavLink
+                  to="/admin/editProfile"
+                  className="flex items-center gap-1 cursor-pointer underline"
+                >
+                  <FaEdit className="w-5 h-5" />
+                  <span className="text-sm sm:text-[16px]">Edit</span>
+                </NavLink>
+              </div>
               <div className="flex items-center gap-2 mb-4 lg:mb-7">
                 <div className="flex items-center">
                   <FaStar className="w-4 h-4 text-yellow-400 fill-current" />
@@ -194,29 +224,19 @@ const AdminProfile = () => {
                 </span>
               </div>
             </div>
-            <NavLink
-              to="/admin/editProfile"
-              className="flex items-center gap-1 mt-2 cursor-pointer self-start sm:self-end lg:-ml-64 underline"
-            >
-              <FaEdit className="w-5 h-5" />
-              <span className="text-sm sm:text-[16px]">Edit</span>
-            </NavLink>
           </div>
-          {/* About Section */}
           <div>
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">
               About
             </h3>
-            <p className="text-gray-700 text-sm sm:text-[15px] leading семейная-relaxed">
+            <p className="text-gray-700 text-sm sm:text-[15px] leading-relaxed line-clamp-5">
               {profileData?.about || "No description available."}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Information Details */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8">
-        {/* Contact Information */}
         <div className="bg-white p-3 sm:p-4 rounded-md">
           <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4">
             Contact Information
@@ -239,7 +259,6 @@ const AdminProfile = () => {
           </div>
         </div>
 
-        {/* Facilities */}
         <div className="bg-white p-3 sm:p-4 rounded-md">
           <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4">
             Facilities
@@ -252,7 +271,7 @@ const AdminProfile = () => {
                     <FaCheckCircle className="w-4 h-4 text-blue-500" />
                   </div>
                   <span className="text-sm sm:text-[15px] text-gray-600">
-                    {item.text}
+                    {item.name}
                   </span>
                 </div>
               ))
@@ -264,7 +283,6 @@ const AdminProfile = () => {
           </div>
         </div>
 
-        {/* Service Categories */}
         <div className="bg-white p-3 sm:p-4 rounded-md">
           <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4">
             Service Categories
@@ -275,7 +293,7 @@ const AdminProfile = () => {
                 <div key={index} className="flex items-center gap-3">
                   <IoMdSend className="w-5 h-5 text-blue-500" />
                   <span className="text-sm sm:text-[15px] text-gray-600">
-                    {item.text}
+                    {item.name}
                   </span>
                 </div>
               ))
@@ -288,12 +306,11 @@ const AdminProfile = () => {
         </div>
       </div>
 
-      {/* Our Aim Section */}
       <div className="bg-white p-3 sm:p-4 rounded-md">
         <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
           Our Aim
         </h3>
-        <p className="text-gray- شارك 700 text-sm sm:text-[15px] leading-relaxed">
+        <p className="text-gray-700 text-sm sm:text-[15px] leading-relaxed">
           {profileData?.our_aim || "No aim description available."}
         </p>
       </div>

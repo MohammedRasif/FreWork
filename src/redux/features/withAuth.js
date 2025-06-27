@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const sqQuery = createApi({
   reducerPath: "sqQuery",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://a751-115-127-156-9.ngrok-free.app",
+    baseUrl: "https://259b-115-127-156-9.ngrok-free.app",
     prepareHeaders: (headers) => {
       headers.set("ngrok-skip-browser-warning", "true");
 

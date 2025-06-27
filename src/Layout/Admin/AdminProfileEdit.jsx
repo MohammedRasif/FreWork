@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { GoArrowLeft } from "react-icons/go";
 import { NavLink } from "react-router-dom";
@@ -6,16 +6,35 @@ import {
   useGetAgencyProfileQuery,
   useUpdateAgencyProfileMutation,
 } from "@/redux/features/withAuth";
+import LoadingPage from "@/lib/Loading";
 
 const AdminProfileEdit = () => {
   const {
     register,
     handleSubmit,
     setValue,
+    getValues,
+    watch,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      facilities: [],
+      categories: "",
+      otherFacilities: "",
+      agencyName: "",
+      about: "",
+      aim: "",
+      phoneNumber: "",
+      email: "",
+      website: "",
+      location: "",
+      handlerName: "",
+      handlerPosition: "",
+    },
+  });
   const [logoFile, setLogoFile] = useState(null);
   const [logoFileName, setLogoFileName] = useState("");
+  const [vatFile, setVatFile] = useState(null);
   const [vatFileName, setVatFileName] = useState("");
   const {
     data: profileData,
@@ -25,6 +44,14 @@ const AdminProfileEdit = () => {
   } = useGetAgencyProfileQuery();
   const [updateProfile, { isLoading: isUpdateLoading }] =
     useUpdateAgencyProfileMutation();
+
+  // Predefined facilities for checkboxes
+  const predefinedFacilities = ["breakfast", "lunch", "snacks", "dinner"];
+
+  // Watch form fields for real-time updates
+  const watchedFacilities = watch("facilities");
+  const watchedOtherFacilities = watch("otherFacilities");
+  const watchedCategories = watch("categories");
 
   // Prepopulate form with fetched data
   useEffect(() => {
@@ -36,32 +63,107 @@ const AdminProfileEdit = () => {
       setValue("email", profileData.contact_email || "");
       setValue("website", profileData.website_url || "");
       setValue("location", profileData.address || "");
-      setValue("facilities", profileData.facilities_details || []);
-      setValue("categories", profileData.service_categories_details || []);
+      setValue("handlerName", profileData.profile_handler_name || "");
+      setValue("handlerPosition", profileData.profile_handler_position || "");
+
+      // Handle facilities
+      const facilities = profileData.facilities || [];
+      const normalizedPredefined = predefinedFacilities.map((f) =>
+        f.toLowerCase()
+      );
+      // Filter predefined facilities (case-insensitive match)
+      const selectedPredefined = JSON.parse(facilities)
+        .filter((f) =>
+          normalizedPredefined.includes(f.toLowerCase().replace(/[^a-z]/g, ""))
+        )
+        .map((f) => {
+          const lowerF = f.toLowerCase().replace(/[^a-z]/g, "");
+          return predefinedFacilities[normalizedPredefined.indexOf(lowerF)];
+        });
+      setValue("facilities", selectedPredefined);
+
+      // Filter other facilities (non-predefined)
+      const otherFacilities = JSON.parse(facilities[0])
+        .filter(
+          (f) =>
+            !normalizedPredefined.includes(
+              f.toLowerCase().replace(/[^a-z]/g, "")
+            )
+        )
+        .join(", ");
+      setValue("otherFacilities", otherFacilities);
+
+      // Handle service categories
+      setValue(
+        "categories",
+        JSON.parse(profileData.service_categories)?.join(", ") || ""
+      );
+
+      // Set logo and VAT file names
+      setLogoFileName(
+        profileData.agency_logo_url
+          ? profileData.agency_logo_url.split("/").pop()
+          : ""
+      );
+      setVatFileName(
+        profileData.vat_id_file_url
+          ? profileData.vat_id_file_url.split("/").pop()
+          : ""
+      );
     }
   }, [profileData, setValue]);
 
   const onSubmit = async (data) => {
     try {
       const formData = new FormData();
-      formData.append("agency_name", data.agencyName);
-      formData.append("about", data.about);
-      formData.append("our_aim", data.aim);
-      formData.append("contact_phone", data.phoneNumber);
-      formData.append("contact_email", data.email);
-      formData.append("website_url", data.website);
-      formData.append("address", data.location);
+      formData.append("id", profileData?.id || "");
+      formData.append("agency_name", data.agencyName || "");
+      formData.append("about", data.about || "");
+      formData.append("our_aim", data.aim || "");
+      formData.append("invitation_code", profileData?.invitation_code || "");
+      formData.append("contact_phone", data.phoneNumber || "");
+      formData.append("contact_email", data.email || "");
+      formData.append("website_url", data.website || "");
+      formData.append("address", data.location || "");
+      formData.append(
+        "is_unavailable",
+        profileData?.is_unavailable ? "true" : "false"
+      );
+      formData.append(
+        "is_verified",
+        profileData?.is_verified ? "true" : "false"
+      );
+      formData.append("rating", profileData?.rating || 0);
+      formData.append("review_count", profileData?.review_count || 0);
+      formData.append("profile_handler_name", data.handlerName || "");
+      formData.append("profile_handler_position", data.handlerPosition || "");
+
       if (logoFile) {
-        formData.append("cover_photo", logoFile);
+        formData.append("agency_logo", logoFile);
       }
-      if (data.facilities) {
-        data.facilities.forEach((facility) =>
-          formData.append("facilities_details[]", facility)
-        );
+      if (vatFile) {
+        formData.append("vat_id_file", vatFile);
       }
-      if (data.categories) {
-        formData.append("service_categories_details[]", data.categories);
-      }
+
+      // Combine predefined and other facilities
+      const standardFacilities = data.facilities || [];
+      const otherFacilities = data.otherFacilities
+        ? data.otherFacilities
+            .split(",")
+            .map((f) => f.trim())
+            .filter((f) => f)
+        : [];
+      const allFacilities = [...standardFacilities, ...otherFacilities];
+      formData.append("facilities", JSON.stringify(allFacilities));
+
+      // Handle service categories
+      const categories = data.categories
+        ? data.categories
+            .split(",")
+            .map((cat) => cat.trim())
+            .filter((cat) => cat)
+        : [];
+      formData.append("service_categories", JSON.stringify(categories));
 
       await updateProfile(formData).unwrap();
       alert("Profile updated successfully!");
@@ -74,6 +176,14 @@ const AdminProfileEdit = () => {
   const handleLogoChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (!["image/jpeg", "image/png", "image/gif"].includes(file.type)) {
+        alert("Please upload an image file (JPEG, PNG, or GIF).");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size must be less than 5MB.");
+        return;
+      }
       setLogoFile(file);
       setLogoFileName(file.name);
     }
@@ -82,11 +192,44 @@ const AdminProfileEdit = () => {
   const handleVatChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.type !== "application/pdf") {
+        alert("Please upload a PDF file.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size must be less than 5MB.");
+        return;
+      }
+      setVatFile(file);
       setVatFileName(file.name);
     }
   };
 
-  if (isProfileLoading) return <div>Loading...</div>;
+  // Combine predefined and other facilities for display
+  const allFacilities = [
+    ...(watchedFacilities || []),
+    ...(watchedOtherFacilities
+      ? watchedOtherFacilities
+          .split(",")
+          .map((f) => f.trim())
+          .filter((f) => f)
+      : []),
+  ];
+
+  // Get categories for display
+  const allCategories = watchedCategories
+    ? watchedCategories
+        .split(",")
+        .map((cat) => cat.trim())
+        .filter((cat) => cat)
+    : [];
+
+  if (isProfileLoading)
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <LoadingPage size="lg" />
+      </div>
+    );
   if (isError)
     return <div>Error: {error?.message || "Something went wrong"}</div>;
 
@@ -138,7 +281,7 @@ const AdminProfileEdit = () => {
                   type="file"
                   className="hidden"
                   onChange={handleLogoChange}
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/gif"
                 />
               </label>
               <span className="text-base text-gray-600">{logoFileName}</span>
@@ -153,7 +296,7 @@ const AdminProfileEdit = () => {
               Facilities your agency provide
             </label>
             <div className="grid grid-cols-2 gap-3">
-              {["breakfast", "lunch", "snacks", "dinner"].map((facility) => (
+              {predefinedFacilities.map((facility) => (
                 <label key={facility} className="flex items-center">
                   <input
                     {...register("facilities")}
@@ -168,6 +311,11 @@ const AdminProfileEdit = () => {
                 </label>
               ))}
             </div>
+            {errors.facilities && (
+              <span className="text-red-500 text-sm">
+                {errors.facilities.message}
+              </span>
+            )}
           </div>
 
           <div>
@@ -209,7 +357,7 @@ const AdminProfileEdit = () => {
 
           <div>
             <label className="block text-base font-medium text-gray-700 mb-2">
-              Upload VAT ID
+              Upload VAT ID (PDF)
             </label>
             <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-md">
               <label className="px-4 py-2 text-gray-700 rounded-l-md cursor-pointer bg-gray-300 hover:bg-gray-200 transition-colors text-base font-semibold">
@@ -218,7 +366,7 @@ const AdminProfileEdit = () => {
                   type="file"
                   className="hidden"
                   onChange={handleVatChange}
-                  accept="image/*,application/pdf"
+                  accept="application/pdf"
                 />
               </label>
               <span className="text-base text-gray-600">{vatFileName}</span>
@@ -230,45 +378,85 @@ const AdminProfileEdit = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-base font-medium text-gray-700 mb-2">
-              Other facilities (Max 2)
+              Other facilities (comma-separated)
             </label>
             <input
-              {...register("otherFacilities")}
+              {...register("otherFacilities", {
+                validate: (value) => {
+                  const facilities = value
+                    .split(",")
+                    .map((f) => f.trim())
+                    .filter((f) => f);
+                  return (
+                    facilities.length <= 2 ||
+                    "Maximum 2 other facilities allowed"
+                  );
+                },
+              })}
               type="text"
-              placeholder="Enter here"
+              placeholder="Enter here (e.g., Wi-Fi, Parking)"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white placeholder:text-base"
             />
+            {errors.otherFacilities && (
+              <span className="text-red-500 text-sm">
+                {errors.otherFacilities.message}
+              </span>
+            )}
+            {/* Display Selected Facilities */}
+            {allFacilities.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-3">
+                {allFacilities.map((facility, index) => (
+                  <span
+                    key={index}
+                    className="text-base text-gray-700 bg-white px-5 rounded-full py-[2px] border border-gray-200"
+                  >
+                    {facility}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>
             <label className="block text-base font-medium text-gray-700 mb-2">
-              Select categories (Max 5)
+              Select categories (Max 5, comma-separated)
             </label>
             <input
-              {...register("categories")}
+              {...register("categories", {
+                validate: (value) => {
+                  const categories = value
+                    .split(",")
+                    .map((cat) => cat.trim())
+                    .filter((cat) => cat);
+                  return (
+                    categories.length <= 5 ||
+                    "You can select a maximum of 5 categories"
+                  );
+                },
+              })}
               type="text"
               placeholder="Enter here (comma-separated)"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white placeholder:text-base"
             />
+            {errors.categories && (
+              <span className="text-red-500 text-sm">
+                {errors.categories.message}
+              </span>
+            )}
+            {/* Display Selected Categories */}
+            {allCategories.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-3">
+                {allCategories.map((category, index) => (
+                  <span
+                    key={index}
+                    className="text-base text-gray-700 bg-white px-5 rounded-full py-[2px] border border-gray-200"
+                  >
+                    {category}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-
-        {/* Additional Services and Category Types as Text */}
-        <div className="lg:flex items-center space-x-10 space-y-3">
-          {[
-            "Local Guides and Language Support",
-            "24/7 Support during tour",
-            "Mountain",
-            "Sea",
-            "River",
-          ].map((item, index) => (
-            <p
-              key={index}
-              className="text-base text-gray-700 bg-white px-5 rounded-full py-[2px]"
-            >
-              {item}
-            </p>
-          ))}
         </div>
 
         {/* Contact Information Section */}
@@ -301,7 +489,7 @@ const AdminProfileEdit = () => {
                   {...register("phoneNumber")}
                   type="tel"
                   placeholder="Ex. 123456789"
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent Gibson-white placeholder:text-base"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white placeholder:text-base"
                 />
               </div>
             </div>
