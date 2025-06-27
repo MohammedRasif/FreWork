@@ -20,7 +20,7 @@ const Membership = () => {
   const { data: TopAgencies, isLoading: isTopAgencyLoading } =
     useGetTopAgencyQuery();
   const { data: SearchAgencies, isLoading: isSearchLoading } =
-    useSearchAgencyQuery(searchTerm);
+    useSearchAgencyQuery(searchTerm, { skip: !searchTerm });
 
   // Debounced search function
   const debouncedSearch = useCallback(

@@ -58,6 +58,13 @@ export const baseApi = createApi({
       query: (search) => `public/agencies/?search=${search}`,
     }),
     // tour plan
+    getTourPlanPublic: builder.query({
+      query: () => `/public/tour-plans/`,
+    }),
+    filterTourPlanPublic: builder.query({
+      query: (query) =>
+        `/public/tour-plans?search=${query.search}&min_budget=${query.min}&max_budget=${query.max}&country=${query.country}&type=${query.type}&category=${query.category}`,
+    }),
   }),
 });
 
@@ -71,4 +78,7 @@ export const {
   useGetAllAgencyQuery,
   useGetTopAgencyQuery,
   useSearchAgencyQuery,
+  // tour plan
+  useFilterTourPlanPublicQuery,
+  useGetTourPlanPublicQuery,
 } = baseApi;
