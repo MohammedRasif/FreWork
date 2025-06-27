@@ -1,5 +1,8 @@
-import { useGetAgencyProfileQuery } from "@/redux/features/withAuth";
-import { useState } from "react";
+import {
+  useGetAgencyProfileQuery,
+  useUpdateAgencyProfileMutation,
+} from "@/redux/features/withAuth";
+import { useEffect, useState } from "react";
 import {
   FaStar,
   FaEdit,
@@ -23,7 +26,9 @@ const AdminProfile = () => {
     isLoading: isProfileLoading,
     isError,
     error,
+    refetch,
   } = useGetAgencyProfileQuery();
+  const [update, { isLoading }] = useUpdateAgencyProfileMutation();
 
   const handleOpenPopup = () => {
     setIsPopupOpen(true);
@@ -35,23 +40,73 @@ const AdminProfile = () => {
     setToDate("");
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     setFromDate("");
     setToDate("");
+    const formdata = new FormData();
+    formdata.append("start_unavailable", "");
+    formdata.append("end_unavailable", "");
+
+    // Pass formdata to the update function
+    await update(formdata).unwrap();
+    refetch(); // Refresh profile data after update
+    handleClosePopup();
   };
+
+  useEffect(() => {
+    if (profileData) {
+      setFromDate(profileData.start_unavailable?.split("T")[0] || "");
+      setToDate(profileData.end_unavailable?.split("T")[0] || "");
+    }
+  }, [profileData]);
 
   const handleConfirm = async () => {
     if (!fromDate || !toDate) {
       alert("Please select both start and end dates.");
       return;
     }
+
+    const parsedFromDate = new Date(fromDate);
+    const parsedToDate = new Date(toDate);
+
+    if (isNaN(parsedFromDate) || isNaN(parsedToDate)) {
+      alert("Invalid date format. Please select valid dates.");
+      return;
+    }
+
+    if (parsedFromDate >= parsedToDate) {
+      alert("End date must be after start date.");
+      return;
+    }
+
     try {
-      // Replace with your API call
-      console.log("Unavailability set:", { fromDate, toDate });
+      // Set time to match the example format (e.g., 14:36:34.327135Z)
+      // If API doesn't require specific time, you can skip this and use toISOString() directly
+      const formattedFromDate = new Date(
+        parsedFromDate.setHours(14, 36, 34, 327)
+      ).toISOString();
+      const formattedToDate = new Date(
+        parsedToDate.setHours(14, 36, 34, 327)
+      ).toISOString();
+
+      console.log("Unavailability set:", {
+        formattedFromDate,
+        formattedToDate,
+      });
+
+      const formdata = new FormData();
+      formdata.append("start_unavailable", formattedFromDate);
+      formdata.append("end_unavailable", formattedToDate);
+
+      // Pass formdata to the update function
+      await update(formdata).unwrap();
+      refetch(); // Refresh profile data after update
       handleClosePopup();
     } catch (err) {
       console.error("Failed to set unavailability:", err);
-      alert("Failed to set unavailability. Please try again.");
+      const errorMessage =
+        err?.data?.message || "Failed to set unavailability. Please try again.";
+      alert(errorMessage);
     }
   };
 
@@ -81,6 +136,30 @@ const AdminProfile = () => {
         </div>
       </div>
     );
+  }
+
+  // Parse facilities and service_categories
+  let facilitiesDetails = [];
+  let serviceCategoriesDetails = [];
+
+  try {
+    if (profileData?.facilities?.[0]) {
+      facilitiesDetails = JSON.parse(profileData.facilities[0]).map((name) => ({
+        name,
+      }));
+    }
+  } catch (err) {
+    console.error("Failed to parse facilities:", err);
+  }
+
+  try {
+    if (profileData?.service_categories?.[0]) {
+      serviceCategoriesDetails = JSON.parse(
+        profileData.service_categories[0]
+      ).map((name) => ({ name }));
+    }
+  } catch (err) {
+    console.error("Failed to parse service categories:", err);
   }
 
   const contactInformation = [
@@ -156,9 +235,14 @@ const AdminProfile = () => {
             </div>
             <button
               onClick={handleConfirm}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 sm:py-3 rounded-md"
+              disabled={isLoading}
+              className={`w-full py-2 sm:py-3 rounded-md font-medium text-white ${
+                isLoading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
             >
-              Confirm
+              {isLoading ? "Submitting..." : "Confirm"}
             </button>
           </div>
         </div>
@@ -263,9 +347,9 @@ const AdminProfile = () => {
           <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4">
             Facilities
           </h3>
-          <div className="space-y-3">
-            {profileData?.facilities_details?.length > 0 ? (
-              profileData.facilities_details.map((item, index) => (
+          <div className="space-y-3 flex flex-col flex-wrap">
+            {facilitiesDetails.length > 0 ? (
+              facilitiesDetails.map((item, index) => (
                 <div key={index} className="flex items-center gap-3">
                   <div className="w-5 h-5 rounded-full flex items-center justify-center">
                     <FaCheckCircle className="w-4 h-4 text-blue-500" />
@@ -287,9 +371,9 @@ const AdminProfile = () => {
           <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4">
             Service Categories
           </h3>
-          <div className="space-y-3">
-            {profileData?.service_categories_details?.length > 0 ? (
-              profileData.service_categories_details.map((item, index) => (
+          <div className="space-y-3 flex flex-col flex-wrap">
+            {serviceCategoriesDetails.length > 0 ? (
+              serviceCategoriesDetails.map((item, index) => (
                 <div key={index} className="flex items-center gap-3">
                   <IoMdSend className="w-5 h-5 text-blue-500" />
                   <span className="text-sm sm:text-[15px] text-gray-600">

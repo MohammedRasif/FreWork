@@ -148,9 +148,11 @@ export default function AdminDashboardLayout() {
                 src={
                   isLoading
                     ? UserAvatar
-                    : agencyData?.coverImageUrl || UserAvatar
+                    : agencyData?.profile_handler_image ||
+                      agencyData?.agency_logo_url ||
+                      UserAvatar
                 }
-                alt={agencyData?.name || "User"}
+                alt={agencyData?.profile_handler_name || "User"}
                 className="w-16 h-16 rounded-full"
               />
             </div>
@@ -159,10 +161,12 @@ export default function AdminDashboardLayout() {
               <h3 className="text-2xl text-center font-normal text-[#343E4B]">
                 {isLoading
                   ? "Loading..."
-                  : agencyData?.name || "Company Profile"}
+                  : agencyData?.profile_handler_name || "Company Profile"}
               </h3>
               <span className="text-center text-md text-[#8C8C8C]">
-                {isLoading ? "Loading..." : agencyData?.position || "username"}
+                {isLoading
+                  ? "Loading..."
+                  : agencyData?.profile_handler_position || "username"}
               </span>
             </div>
           </div>
