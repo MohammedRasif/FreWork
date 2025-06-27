@@ -47,6 +47,17 @@ export const baseApi = createApi({
         body: email,
       }),
     }),
+    // agency
+    getAllAgency: builder.query({
+      query: () => "/public/agencies/",
+    }),
+    getTopAgency: builder.query({
+      query: () => "/public/top-agencies/",
+    }),
+    searchAgency: builder.query({
+      query: (search) => `public/agencies/?search=${search}`,
+    }),
+    // tour plan
   }),
 });
 
@@ -56,4 +67,8 @@ export const {
   useOtpVerifyMutation,
   useReSendOtpMutation,
   useVerifyEmailMutation,
+  // agency
+  useGetAllAgencyQuery,
+  useGetTopAgencyQuery,
+  useSearchAgencyQuery,
 } = baseApi;

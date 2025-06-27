@@ -241,9 +241,9 @@ export default function AdminDashboardLayout() {
       >
         {/* Mobile Sidebar Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h meadows className="text-lg font-semibold text-[#343E4B]">
+          <h1 meadows className="text-lg font-semibold text-[#343E4B]">
             Menu
-          </h>
+          </h1>
           <button
             onClick={toggleMobileMenu}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -256,11 +256,11 @@ export default function AdminDashboardLayout() {
         <div className="h-auto flex items-center px-4">
           {console.log(agencyData?.cover_photo_url)}
           <div className="flex flex-col w-full justify-center items-center mt-8">
-            <div>
+            <div className="w-20 h-20 rounded-full overflow-hidden">
               <img
-                src={(!isLoading && agencyData?.cover_photo_url) || UserAvatar}
+                src={(!isLoading && agencyData?.agency_logo_url) || UserAvatar}
                 alt={agencyData?.name || "User"}
-                className="w-16 h-16 rounded-full"
+                className="w-full h-full rounded-full"
               />
             </div>
             <div className="w-full flex flex-col gap-1 pl-3 mt-4">

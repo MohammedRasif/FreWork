@@ -36,6 +36,8 @@ const AdminProfileEdit = () => {
   const [logoFileName, setLogoFileName] = useState("");
   const [vatFile, setVatFile] = useState(null);
   const [vatFileName, setVatFileName] = useState("");
+  const [agencyLogoUrlFile, setAgencyLogoUrlFile] = useState(null);
+  const [agencyLogoUrlFileName, setAgencyLogoUrlFileName] = useState("");
   const {
     data: profileData,
     isLoading: isProfileLoading,
@@ -99,8 +101,13 @@ const AdminProfileEdit = () => {
         JSON.parse(profileData.service_categories)?.join(", ") || ""
       );
 
-      // Set logo and VAT file names
+      // Set logo, agency logo URL, and VAT file names
       setLogoFileName(
+        profileData.agency_logo_url
+          ? profileData.agency_logo_url.split("/").pop()
+          : ""
+      );
+      setAgencyLogoUrlFileName(
         profileData.agency_logo_url
           ? profileData.agency_logo_url.split("/").pop()
           : ""
@@ -140,6 +147,9 @@ const AdminProfileEdit = () => {
 
       if (logoFile) {
         formData.append("agency_logo", logoFile);
+      }
+      if (agencyLogoUrlFile) {
+        formData.append("agency_logo_url", agencyLogoUrlFile);
       }
       if (vatFile) {
         formData.append("vat_id_file", vatFile);
@@ -186,6 +196,22 @@ const AdminProfileEdit = () => {
       }
       setLogoFile(file);
       setLogoFileName(file.name);
+    }
+  };
+
+  const handleAgencyLogoUrlChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!["image/jpeg", "image/png", "image/gif"].includes(file.type)) {
+        alert("Please upload an image file (JPEG, PNG, or GIF).");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size must be less than 5MB.");
+        return;
+      }
+      setAgencyLogoUrlFile(file);
+      setAgencyLogoUrlFileName(file.name);
     }
   };
 
@@ -289,6 +315,47 @@ const AdminProfileEdit = () => {
           </div>
         </div>
 
+        {/* Agency Logo URL and VAT ID Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-base font-medium text-gray-700 mb-2">
+              Upload Agency Logo URL
+            </label>
+            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-md">
+              <label className="px-4 py-2 text-gray-700 rounded-l-md cursor-pointer bg-gray-300 hover:bg-gray-200 transition-colors text-base font-semibold">
+                Choose file
+                <input
+                  type="file"
+                  className="hidden"
+                  onChange={handleAgencyLogoUrlChange}
+                  accept="image/jpeg,image/png,image/gif"
+                />
+              </label>
+              <span className="text-base text-gray-600">
+                {agencyLogoUrlFileName}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-base font-medium text-gray-700 mb-2">
+              Upload VAT ID (PDF)
+            </label>
+            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-md">
+              <label className="px-4 py-2 text-gray-700 rounded-l-md cursor-pointer bg-gray-300 hover:bg-gray-200 transition-colors text-base font-semibold">
+                Choose file
+                <input
+                  type="file"
+                  className="hidden"
+                  onChange={handleVatChange}
+                  accept="application/pdf"
+                />
+              </label>
+              <span className="text-base text-gray-600">{vatFileName}</span>
+            </div>
+          </div>
+        </div>
+
         {/* Facilities and Description Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -297,7 +364,7 @@ const AdminProfileEdit = () => {
             </label>
             <div className="grid grid-cols-2 gap-3">
               {predefinedFacilities.map((facility) => (
-                <label key={facility} className="flex items-center">
+                <label key={facility} className="flux items-center">
                   <input
                     {...register("facilities")}
                     type="checkbox"
@@ -341,7 +408,7 @@ const AdminProfileEdit = () => {
           </div>
         </div>
 
-        {/* Aim and VAT ID Row */}
+        {/* Aim and Other facilities Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-base font-medium text-gray-700 mb-2">
@@ -355,27 +422,6 @@ const AdminProfileEdit = () => {
             />
           </div>
 
-          <div>
-            <label className="block text-base font-medium text-gray-700 mb-2">
-              Upload VAT ID (PDF)
-            </label>
-            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-md">
-              <label className="px-4 py-2 text-gray-700 rounded-l-md cursor-pointer bg-gray-300 hover:bg-gray-200 transition-colors text-base font-semibold">
-                Choose file
-                <input
-                  type="file"
-                  className="hidden"
-                  onChange={handleVatChange}
-                  accept="application/pdf"
-                />
-              </label>
-              <span className="text-base text-gray-600">{vatFileName}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Other facilities and Categories Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-base font-medium text-gray-700 mb-2">
               Other facilities (comma-separated)
@@ -416,7 +462,10 @@ const AdminProfileEdit = () => {
               </div>
             )}
           </div>
+        </div>
 
+        {/* Categories Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-base font-medium text-gray-700 mb-2">
               Select categories (Max 5, comma-separated)
