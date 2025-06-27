@@ -12,16 +12,20 @@ import {
 } from "@/redux/features/baseApi";
 import { debounce } from "lodash";
 import FullScreenInfinityLoader from "@/lib/Loading";
+import { useNavigate } from "react-router-dom";
+
+const token = localStorage.getItem("access_token");
 
 const TourPlanWithPopup = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(null); // Store tour ID for dropdown
   const [isLiked, setIsLiked] = useState({});
-  const [offerBudget, setOfferBudget] = useState("");
+  const [offerBudget, setOfferBudget] = useState(0);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedTour, setSelectedTour] = useState(null);
   const [expandedOffers, setExpandedOffers] = useState({}); // Track which tours have expanded offers
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
   const [filters, setFilters] = useState({
     search: "",
     min: "",
@@ -29,6 +33,7 @@ const TourPlanWithPopup = () => {
     country: "",
     category: "",
   });
+  const [offerComment, setOfferComment] = useState("");
 
   // RTK Queries
   const { data: tourPlanPublic, isLoading: isTourPlanPublicLoading } =
@@ -104,6 +109,9 @@ const TourPlanWithPopup = () => {
       ...prev,
       [tourId]: !prev[tourId],
     }));
+  };
+  const handleSubmitOffer = () => {
+    console.log(offerBudget, offerComment);
   };
 
   // Determine which data to display
@@ -339,12 +347,16 @@ const TourPlanWithPopup = () => {
                       <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                         <div className="flex items-center gap-4 sm:gap-6 lg:gap-6">
                           <button
-                            onClick={() =>
-                              setIsLiked((prev) => ({
-                                ...prev,
-                                [tour.id]: !prev[tour.id],
-                              }))
-                            }
+                            onClick={() => {
+                              if (!token) {
+                                navigate("/login");
+                              } else {
+                                setIsLiked((prev) => ({
+                                  ...prev,
+                                  [tour.id]: !prev[tour.id],
+                                }));
+                              }
+                            }}
                             className={`flex items-center gap-1 sm:gap-2 lg:gap-2 text-xs sm:text-sm lg:text-sm ${
                               isLiked[tour.id]
                                 ? "text-blue-600"
@@ -702,86 +714,56 @@ const TourPlanWithPopup = () => {
                     </div>
 
                     {/* Offers Section */}
-                    <div className="mt-4 space-y-4">
-                      {selectedTour.offers.map((offer) => (
-                        <div
-                          key={offer.id}
-                          className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-2 sm:px-4 py-3 rounded-lg border border-transparent hover:border-gray-100 hover:bg-gray-50"
-                        >
-                          <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-0">
-                            <img
-                              src={offer.agency.logo_url || "/placeholder.svg"}
-                              alt={`${offer.agency.agency_name} avatar`}
-                              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover"
-                            />
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium text-gray-900">
-                                  {offer.agency.agency_name}
-                                </span>
-                                {offer.agency.is_verified && (
-                                  <div className="flex space-x-1">
-                                    <span className="text-blue-500">
-                                      <MdVerified
-                                        size={20}
-                                        className="sm:w-6 sm:h-6"
-                                      />
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                              <p className="text-xs sm:text-sm text-gray-600">
-                                {offer.message}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between sm:justify-end gap-3">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-lg sm:text-xl">
-                                💰 ${offer.offered_budget}
-                              </span>
-                            </div>
-                            <button className="px-3 sm:px-5 py-1.5 sm:py-2 bg-[#3776E2] text-white text-sm sm:text-md rounded-md hover:bg-blue-700 transition-colors">
-                              Response
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                      {/* Place Your Offer */}
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-2 sm:p-4 rounded-lg">
-                        <div className="text-gray-600 flex items-center justify-center sm:mt-0">
-                          <img
-                            src="https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443124/samples/smile.jpg"
-                            alt="User avatar"
-                            className="rounded-full w-10 h-10 sm:w-11 sm:h-11"
+                    {/* Place Your Offer */}
+                    <div className="flex flex-col justify-start sm:flex-row items-start gap-3 p-2 sm:p-4 rounded-lg">
+                      <div className="text-gray-600 sm:mt-0 w-fit md:mt-8">
+                        <img
+                          src="https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443124/samples/smile.jpg"
+                          alt="User avatar"
+                          className="rounded-full w-10 h-10 sm:w-11 sm:h-11"
+                        />
+                      </div>
+                      <div className="flex-1 w-full">
+                        <p className="text-lg sm:text-xl font-medium text-gray-700 mb-2">
+                          Place your offer
+                        </p>
+                        <div className="flex flex-col gap-3">
+                          <input
+                            type="number"
+                            placeholder="Enter your budget"
+                            value={offerBudget}
+                            onChange={(e) => setOfferBudget(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                           />
-                        </div>
-                        <div className="flex-1 w-full">
-                          <p className="text-lg sm:text-xl font-medium text-gray-700 mb-2">
-                            Place your offer Budget here
-                          </p>
-                          <div className="flex w-full gap-2">
-                            <input
-                              type="text"
-                              placeholder="Enter here"
-                              value={offerBudget}
-                              onChange={(e) => setOfferBudget(e.target.value)}
-                              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                            />
-                            <button
-                              className={`px-3 py-2 font-medium rounded-md transition-colors ${
-                                offerBudget.trim()
-                                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                              }`}
-                              disabled={!offerBudget.trim()}
-                            >
-                              <IoIosSend size={24} />
-                            </button>
-                          </div>
+                          <textarea
+                            placeholder="Enter your comment"
+                            value={offerComment}
+                            onChange={(e) => setOfferComment(e.target.value)}
+                            className="w-full resize-none px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                            rows="4"
+                          />
+                          <button
+                            onClick={() =>
+                              handleSubmitOffer(
+                                selectedTour.id,
+                                offerBudget,
+                                offerComment
+                              )
+                            }
+                            className={`px-3 py-2 font-medium rounded-md transition-colors flex items-center gap-3 justify-center ${
+                              offerBudget && offerComment.trim()
+                                ? "bg-blue-600 text-white hover:bg-blue-700"
+                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            }`}
+                            disabled={!offerBudget || !offerComment.trim()}
+                          >
+                            <IoIosSend size={24} />
+                            <span>Submit Offer</span>
+                          </button>
                         </div>
                       </div>
                     </div>
+                    {/* end of comment box */}
                   </div>
                 </div>
               </div>

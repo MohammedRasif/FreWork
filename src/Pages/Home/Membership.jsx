@@ -9,11 +9,14 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 import FullScreenInfinityLoader from "@/lib/Loading";
+import { useNavigate } from "react-router-dom";
 
 const Membership = () => {
   const [agency, setAgency] = useState([]);
   const [topAgencie, setTopAgency] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const token = localStorage.getItem("access_token");
+  const navigate = useNavigate();
 
   const { data: AgencyAll, isLoading: isAgencyDataLoading } =
     useGetAllAgencyQuery();
@@ -195,6 +198,11 @@ const Membership = () => {
                     </div>
 
                     <button
+                      onClick={() => {
+                        if (!token) {
+                          navigate("/login");
+                        }
+                      }}
                       className="flex items-center space-x-2 bg-[#3776E2] text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-colors w-full sm:w-auto hover:cursor-pointer"
                       aria-label={`Message ${plan.agency}`}
                     >
