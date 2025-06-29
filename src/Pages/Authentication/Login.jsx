@@ -33,6 +33,12 @@ const login = () => {
       localStorage.setItem("access_token", res.access);
       localStorage.setItem("refresh_token", res.refresh);
       localStorage.setItem("user_id", res?.profile_data?.user_id);
+      localStorage.setItem("user_image", res?.profile_data.image_url);
+      localStorage.setItem("role", res?.profile_data.role);
+      localStorage.setItem(
+        "name",
+        res?.profile_data.name || res?.profile_data.agency
+      );
       navigate(redirect, { replace: true });
       // console.log(res, "success responce");
     } catch (error) {

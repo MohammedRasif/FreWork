@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { data } from "react-router-dom";
 
 export const sqQuery = createApi({
   reducerPath: "sqQuery",
@@ -87,6 +88,33 @@ export const sqQuery = createApi({
         body: data,
       }),
     }),
+    acceptOffer: builder.mutation({
+      query: (id) => ({
+        url: `/offers/${id}/accept/`,
+        method: "POST",
+      }),
+    }),
+    getAllacceptedOffer: builder.query({
+      query: () => "/accepted-offers/",
+    }),
+    // add to favorite
+    addToFavorit: builder.mutation({
+      query: (id) => ({
+        url: `/agencies/${id}/favorite/`,
+        method: "POST",
+      }),
+    }),
+    allFavoritAgency: builder.query({
+      query: () => `/tourist/favorite-agencies/`,
+    }),
+    // give review
+    giveReview: builder.mutation({
+      query: (data) => ({
+        url: `review/plan/${data.agency_id}/`,
+        method: "POST",
+        body: { comment: data.comment, rating: data.rating },
+      }),
+    }),
   }),
 });
 
@@ -107,4 +135,11 @@ export const {
   useLikePostMutation,
   // offer
   useOfferBudgetMutation,
+  useAcceptOfferMutation,
+  useGetAllacceptedOfferQuery,
+  // favorite
+  useAddToFavoritMutation,
+  useAllFavoritAgencyQuery,
+  //review
+  useGiveReviewMutation,
 } = sqQuery;

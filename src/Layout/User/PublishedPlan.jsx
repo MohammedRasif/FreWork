@@ -8,6 +8,7 @@ import { Heart, MessageCircle, Share2, ThumbsUp } from "lucide-react";
 import { FaCheckCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGetPlansQuery } from "@/redux/features/withAuth";
+import FullScreenInfinityLoader from "@/lib/Loading";
 
 function PublishedPlan() {
   const { data: posts, isLoading, isError } = useGetPlansQuery();
@@ -70,7 +71,7 @@ function PublishedPlan() {
     );
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <FullScreenInfinityLoader />;
   if (isError) return <div>Error loading plans</div>;
   if (!publishedPlans.length) return <div>No published plans available</div>;
 

@@ -1,3 +1,4 @@
+import FullScreenInfinityLoader from "@/lib/Loading";
 import {
   useGetAgencyProfileQuery,
   useUpdateAgencyProfileMutation,
@@ -113,7 +114,7 @@ const AdminProfile = () => {
   if (isProfileLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-lg font-semibold text-gray-600">Loading...</div>
+        <FullScreenInfinityLoader />
       </div>
     );
   }

@@ -129,7 +129,7 @@ export default function FullScreenInfinityLoader() {
 
       {/* Optional loading text */}
       <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2">
-        <div className="text-white text-xl font-light tracking-wider animate-pulse">
+        <div className="text-black text-xl font-light tracking-wider animate-pulse">
           Loading...
         </div>
       </div>

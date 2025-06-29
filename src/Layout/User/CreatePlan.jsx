@@ -3,58 +3,69 @@
 import { useForm } from "react-hook-form";
 import { FiArrowLeft, FiCalendar } from "react-icons/fi";
 import { useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+
 import {
   useCreatePlanOneMutation,
   useGetOneDetailQuery,
   useUpdatePlanMutation,
 } from "@/redux/features/withAuth";
+import { Toaster, toast } from "react-hot-toast";
+import FullScreenInfinityLoader from "@/lib/Loading";
 
 const CreatePlan = () => {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [createPlan, { isLoading: isCreating, isError }] =
-    useCreatePlanOneMutation();
-  const { state } = useLocation();
+  const [createPlan, { isLoading: isCreating }] = useCreatePlanOneMutation();
   const [update, { isLoading: isUpdateLoading }] = useUpdatePlanMutation();
-
+  const { state } = useLocation();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
-    reset,
     setValue,
+    reset,
   } = useForm();
 
-  // Fetch data only if state.id exists
-  const {
-    data: oldData,
-    isLoading: isFetching,
-    refetch,
-  } = useGetOneDetailQuery(state?.id, {
-    skip: !state?.id,
-  });
+  // Fetch data only if state?.id exists
+  const { data: oldData, isLoading: isFetching } = useGetOneDetailQuery(
+    state?.id,
+    { skip: !state?.id }
+  );
 
   // Populate form with data when oldData is available
   useEffect(() => {
     if (state?.id && oldData) {
       setValue("locationFrom", oldData.location_from);
       setValue("locationTo", oldData.location_to);
-      setValue("startingDate", oldData.start_date);
-      setValue("endingDate", oldData.end_date);
+      setValue(
+        "startingDate",
+        oldData.start_date
+          ? new Date(oldData.start_date).toISOString().split("T")[0]
+          : ""
+      );
+      setValue(
+        "endingDate",
+        oldData.end_date
+          ? new Date(oldData.end_date).toISOString().split("T")[0]
+          : ""
+      );
       setValue("totalMembers", oldData.total_members);
       setValue("budget", oldData.budget);
       setValue("touristSpots", oldData.tourist_spots);
       setValue("description", oldData.description);
       setValue("category", oldData.category);
-      // Optionally set confirmation if needed
-      setValue("confirmation", true); // Adjust based on your logic
+      setValue("confirmation", !!oldData.is_confirmed_request);
     }
   }, [state?.id, oldData, setValue]);
 
   const onSubmit = async (data, status) => {
-    const formData = new FormData();
+    if (data.endingDate < data.startingDate) {
+      toast.error("End date must be after start date");
+      return;
+    }
 
+    const formData = new FormData();
     formData.append("location_from", data.locationFrom);
     formData.append("location_to", data.locationTo);
     formData.append("start_date", data.startingDate);
@@ -63,21 +74,31 @@ const CreatePlan = () => {
     formData.append("budget", data.budget);
     formData.append("description", data.description);
     formData.append("category", data.category);
-    formData.append("status", status); // "published" or "draft"
-    formData.append("is_confirmed_request", data.confirmation ? true : false);
+    formData.append("status", status);
+    formData.append(
+      "is_confirmed_request",
+      data.confirmation ? "true" : "false"
+    );
 
     if (selectedFile) {
       formData.append("image", selectedFile);
     }
 
     try {
-      state.id
-        ? await update({ id: state.id, updates: formData }).unwrap()
-        : await createPlan(formData).unwrap();
-      console.log(`Plan successfully ${status}!`);
-      reset();
+      if (state?.id) {
+        await update({ id: state.id, updates: formData }).unwrap();
+        toast.success("Plan updated successfully!");
+      } else {
+        await createPlan(formData).unwrap();
+        toast.success("Plan created successfully!");
+        reset();
+        setSelectedFile(null);
+      }
+      navigate("/user"); // Redirect to plans list
     } catch (error) {
-      console.error(`Error creating plan (${status}):`, error);
+      toast.error(
+        `Error ${state?.id ? "updating" : "creating"} plan: ${error.message}`
+      );
     }
   };
 
@@ -86,18 +107,18 @@ const CreatePlan = () => {
     setSelectedFile(file);
   };
 
-  // Show loading state while fetching data
   if (isFetching && state?.id) {
-    return <div className="text-center p-6">Loading...</div>;
+    return <FullScreenInfinityLoader />;
   }
 
   return (
     <div className="p-6">
-      <div className="">
+      <div className="mx-auto">
+        <Toaster />
         {/* Header */}
         <div className="flex items-center mb-8">
           <NavLink to="/user">
-            <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors cursor-pointer">
+            <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors">
               <FiArrowLeft className="w-5 h-5" />
               <span className="text-md">Back</span>
             </button>
@@ -114,16 +135,13 @@ const CreatePlan = () => {
           {/* Row 1: Location From & To */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label
-                className="block text-[14px] font-medium text-gray-700 mb-2"
-                style={{ fontSize: "16px" }}
-              >
+              <label className="block text-[16px] font-medium text-gray-700 mb-2">
                 Location (From)
               </label>
               <input
                 type="text"
                 placeholder="Enter here"
-                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("locationFrom", {
                   required: "Location from is required",
                 })}
@@ -135,16 +153,13 @@ const CreatePlan = () => {
               )}
             </div>
             <div>
-              <label
-                className="block text-[14px] font-medium text-gray-700 mb-2"
-                style={{ fontSize: "15px" }}
-              >
+              <label className="block text-[16px] font-medium text-gray-700 mb-2">
                 Location (To)
               </label>
               <input
                 type="text"
                 placeholder="Enter here"
-                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("locationTo", {
                   required: "Location to is required",
                 })}
@@ -160,17 +175,13 @@ const CreatePlan = () => {
           {/* Row 2: Starting Date & Ending Date */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label
-                className="block text-[14px] font-medium text-gray-700 mb-2"
-                style={{ fontSize: "15px" }}
-              >
+              <label className="block text-[16px] font-medium text-gray-700 mb-2">
                 Starting Date
               </label>
               <div className="relative">
                 <input
                   type="date"
-                  placeholder="Select date"
-                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10  max-w-full"
                   {...register("startingDate", {
                     required: "Starting date is required",
                   })}
@@ -184,17 +195,13 @@ const CreatePlan = () => {
               )}
             </div>
             <div>
-              <label
-                className="block text-[14px] font-medium text-gray-700 mb-2"
-                style={{ fontSize: "15px" }}
-              >
+              <label className="block text-[16px] font-medium text-gray-700 mb-2">
                 Ending Date
               </label>
               <div className="relative">
                 <input
                   type="date"
-                  placeholder="Select Date"
-                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
                   {...register("endingDate", {
                     required: "Ending date is required",
                   })}
@@ -212,19 +219,16 @@ const CreatePlan = () => {
           {/* Row 3: Total Member & Budget */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label
-                className="block text-[14px] font-medium text-gray-700 mb-2"
-                style={{ fontSize: "15px" }}
-              >
-                Enter Total Member
+              <label className="block text-[16px] font-medium text-gray-700 mb-2">
+                Total Members
               </label>
               <input
                 type="number"
                 placeholder="Enter here"
-                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("totalMembers", {
                   required: "Total members is required",
-                  min: 1,
+                  min: { value: 1, message: "Must have at least 1 member" },
                 })}
               />
               {errors.totalMembers && (
@@ -234,17 +238,17 @@ const CreatePlan = () => {
               )}
             </div>
             <div>
-              <label
-                className="block text-[14px] font-medium text-gray-700 mb-2"
-                style={{ fontSize: "15px" }}
-              >
+              <label className="block text-[16px] font-medium text-gray-700 mb-2">
                 Budget
               </label>
               <input
-                type="text"
+                type="number"
                 placeholder="USD"
-                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                {...register("budget", { required: "Budget is required" })}
+                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                {...register("budget", {
+                  required: "Budget is required",
+                  min: { value: 0, message: "Budget cannot be negative" },
+                })}
               />
               {errors.budget && (
                 <p className="text-red-500 text-[14px] mt-1">
@@ -257,16 +261,13 @@ const CreatePlan = () => {
           {/* Row 4: Tourist Spots & Upload Picture */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label
-                className="block text-[14px] font-medium text-gray-700 mb-2"
-                style={{ fontSize: "15px" }}
-              >
-                Enter Tourist Spots Name
+              <label className="block text-[16px] font-medium text-gray-700 mb-2">
+                Tourist Spots
               </label>
               <input
                 type="text"
-                placeholder="Example: Cox's Bazar, Sundarbani, Bandarban"
-                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Example: Cox's Bazar, Sundarbans, Bandarban"
+                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("touristSpots", {
                   required: "Tourist spots are required",
                 })}
@@ -278,11 +279,8 @@ const CreatePlan = () => {
               )}
             </div>
             <div>
-              <label
-                className="block text-[14px] font-medium text-gray-700 mb-2"
-                style={{ fontSize: "15px" }}
-              >
-                Upload a Picture of the Tour Spot (Optional)
+              <label className="block text-[16px] font-medium text-gray-700 mb-2">
+                Upload Picture (Optional)
               </label>
               <div className="flex items-center bg-white gap-3">
                 <label className="bg-gray-200 px-4 py-2 rounded-l-md cursor-pointer transition-colors border border-gray-300">
@@ -304,16 +302,14 @@ const CreatePlan = () => {
           {/* Row 5: Description & Category */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label
-                className="block text-[14px] font-medium text-gray-700 mb-2"
-                style={{ fontSize: "15px" }}
-              >
-                Describe about tour
+              <label className="block text-[16px] font-medium text-gray-700 mb-2">
+                Description
               </label>
               <textarea
                 placeholder="Enter here"
+                Ha
                 rows={4}
-                className="w-full px-4 py-1 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 {...register("description", {
                   required: "Description is required",
                 })}
@@ -325,16 +321,13 @@ const CreatePlan = () => {
               )}
             </div>
             <div>
-              <label
-                className="block text-[14px] font-medium text-gray-700 mb-2"
-                style={{ fontSize: "15px" }}
-              >
+              <label className="block text-[16px] font-medium text-gray-700 mb-2">
                 Category
               </label>
               <input
                 type="text"
-                placeholder="Ex. Adventure, Family tour etc."
-                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Ex. Adventure, Family tour"
+                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("category", { required: "Category is required" })}
               />
               {errors.category && (
@@ -350,7 +343,7 @@ const CreatePlan = () => {
             <input
               type="checkbox"
               id="confirmation"
-              className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="mt-1 w-4 h-4 text-blue-600 border border-blue-600 rounded focus:ring-blue-500 hover:cursor-pointer checkbox checkbox-xs checked:text-blue-600"
               {...register("confirmation", {
                 required: "Please confirm the information",
               })}
@@ -359,8 +352,8 @@ const CreatePlan = () => {
               htmlFor="confirmation"
               className="text-[15px] text-gray-600 leading-relaxed"
             >
-              I Confirm This is a Travel request, All the information I provided
-              are valid and don't include any third party.
+              I confirm this is a travel request, and all provided information
+              is valid and does not include any third party.
             </label>
           </div>
           {errors.confirmation && (
@@ -374,18 +367,18 @@ const CreatePlan = () => {
             <button
               type="button"
               onClick={handleSubmit((data) => onSubmit(data, "draft"))}
-              className="px-8 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium cursor-pointer"
-              disabled={isCreating}
+              className="px-8 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium"
+              disabled={isCreating || isUpdateLoading}
             >
-              {isCreating ? "Saving..." : "Save for Future"}
+              {isCreating || isUpdateLoading ? "Saving..." : "Save for Future"}
             </button>
             <button
               type="button"
               onClick={handleSubmit((data) => onSubmit(data, "published"))}
-              className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium cursor-pointer"
-              disabled={isCreating}
+              className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
+              disabled={isCreating || isUpdateLoading}
             >
-              {isCreating ? "Publishing..." : "Publish Now"}
+              {isCreating || isUpdateLoading ? "Publishing..." : "Publish Now"}
             </button>
           </div>
         </form>

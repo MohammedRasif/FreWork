@@ -13,6 +13,7 @@ import { debounce } from "lodash";
 import FullScreenInfinityLoader from "@/lib/Loading";
 import { useNavigate } from "react-router-dom";
 import {
+  useAcceptOfferMutation,
   useLikePostMutation,
   useOfferBudgetMutation,
 } from "@/redux/features/withAuth";
@@ -57,6 +58,8 @@ const TourPlanWithPopup = () => {
   const [interact, { isLoading: isInteractLoading }] = useLikePostMutation();
   const [offerBudgetToBack, { isLoading: isOfferBudgetLoading }] =
     useOfferBudgetMutation();
+  const [acceptOffer, { isLoading: isAcceptLoading }] =
+    useAcceptOfferMutation();
 
   // Initialize tours and like/share status
   useEffect(() => {
@@ -151,9 +154,8 @@ const TourPlanWithPopup = () => {
         offered_budget: parseFloat(budget),
         message: comment,
         agency: {
-          agency_name: "Your Agency", // Replace with actual agency data from current user
-          logo_url:
-            "https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443124/samples/smile.jpg", // Replace with actual agency logo
+          agency_name: localStorage.getItem("name"), // Replace with actual agency data from current user
+          logo_url: localStorage.getItem("user_image"), // Replace with actual agency logo
           is_verified: false, // Replace with actual verification status
         },
       };
@@ -338,6 +340,33 @@ const TourPlanWithPopup = () => {
     } catch (error) {
       console.error("Failed to update share:", error);
       toast.error("Failed to copy link or update share");
+    }
+  };
+  const acceptOfferHandler = async (offerId, tourId) => {
+    console.log(offerId, tourId);
+    if (!token) {
+      navigate("/login");
+      toast.error("Please log in to accept an offer");
+      return;
+    }
+
+    try {
+      // Send accept offer request to backend with only offerId
+      await acceptOffer(offerId).unwrap();
+
+      // Remove the tour from the UI
+      setTours((prevTours) => prevTours.filter((tour) => tour.id !== tourId));
+
+      // If the popup is open for this tour, close it
+      if (selectedTour && selectedTour.id === tourId) {
+        setIsPopupOpen(false);
+        setSelectedTour(null);
+      }
+
+      toast.success("Offer accepted successfully");
+    } catch (error) {
+      console.error("Failed to accept offer:", error);
+      toast.error(error.data?.detail || "Failed to accept offer");
     }
   };
 
@@ -644,16 +673,26 @@ const TourPlanWithPopup = () => {
                                   <div className="flex gap-2">
                                     <button
                                       onClick={() => {}}
-                                      className="px-3 sm:px-5 py-1.5 sm:py-2 bg-[#3776E2] text-white text-sm sm:text-md rounded-md hover:bg-blue-700 transition-colors"
+                                      className="px-3 hover:cursor-pointer sm:px-5 py-1.5 sm:py-2 bg-[#3776E2] text-white text-sm sm:text-md rounded-md hover:bg-blue-700 transition-colors"
                                     >
                                       Message
                                     </button>
-                                    <button
-                                      onClick={() => {}}
-                                      className="px-3 sm:px-5 py-1.5 sm:py-2 bg-[#3776E2] text-white text-sm sm:text-md rounded-md hover:bg-blue-700 transition-colors"
-                                    >
-                                      Accept
-                                    </button>
+                                    {tour.user ==
+                                      localStorage.getItem("user_id") && (
+                                      <button
+                                        onClick={() =>
+                                          acceptOfferHandler(offer.id, tour.id)
+                                        }
+                                        disabled={isAcceptLoading}
+                                        className={`px-3 sm:px-5 py-1.5 sm:py-2 text-sm sm:text-md rounded-md transition-colors ${
+                                          isAcceptLoading
+                                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                            : "bg-[#3776E2] text-white hover:bg-blue-700"
+                                        }`}
+                                      >
+                                        Accept
+                                      </button>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -938,7 +977,10 @@ const TourPlanWithPopup = () => {
                     <div className="flex flex-col justify-start sm:flex-row items-start gap-3 p-2 sm:p-4 rounded-lg">
                       <div className="text-gray-600 sm:mt-0 w-fit md:mt-8">
                         <img
-                          src="https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443124/samples/smile.jpg"
+                          src={
+                            localStorage.getItem("user_image") ||
+                            "https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443124/samples/smile.jpg"
+                          }
                           alt="User avatar"
                           className="rounded-full w-10 h-10 sm:w-11 sm:h-11"
                         />
