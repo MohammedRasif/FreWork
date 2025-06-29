@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 import { ThumbsUp, Heart, MessageCircle, Share2, Menu, X } from "lucide-react";
-import { GoArrowLeft } from "react-icons/go";
 import { IoIosSend } from "react-icons/io";
 import { MdVerified } from "react-icons/md";
 import {
@@ -13,17 +12,25 @@ import {
 import { debounce } from "lodash";
 import FullScreenInfinityLoader from "@/lib/Loading";
 import { useNavigate } from "react-router-dom";
+import {
+  useLikePostMutation,
+  useOfferBudgetMutation,
+} from "@/redux/features/withAuth";
+import toast, { Toaster } from "react-hot-toast";
 
 const token = localStorage.getItem("access_token");
+const currentUserId = localStorage.getItem("user_id");
 
 const TourPlanWithPopup = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(null); // Store tour ID for dropdown
+  const [isDropdownOpen, setIsDropdownOpen] = useState(null);
   const [isLiked, setIsLiked] = useState({});
+  const [isShared, setIsShared] = useState({});
   const [offerBudget, setOfferBudget] = useState(0);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedTour, setSelectedTour] = useState(null);
-  const [expandedOffers, setExpandedOffers] = useState({}); // Track which tours have expanded offers
+  const [expandedOffers, setExpandedOffers] = useState({});
+  const [tours, setTours] = useState([]);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
@@ -38,41 +45,52 @@ const TourPlanWithPopup = () => {
   // RTK Queries
   const { data: tourPlanPublic, isLoading: isTourPlanPublicLoading } =
     useGetTourPlanPublicQuery();
-  const {
-    data: filteredTourPlan,
-    isLoading: isFilteredLoading,
-    refetch,
-  } = useFilterTourPlanPublicQuery(filters, {
-    skip:
-      !filters.search &&
-      !filters.min &&
-      !filters.max &&
-      !filters.country &&
-      !filters.category,
-  });
+  const { data: filteredTourPlan, isLoading: isFilteredLoading } =
+    useFilterTourPlanPublicQuery(filters, {
+      skip:
+        !filters.search &&
+        !filters.min &&
+        !filters.max &&
+        !filters.country &&
+        !filters.category,
+    });
+  const [interact, { isLoading: isInteractLoading }] = useLikePostMutation();
+  const [offerBudgetToBack, { isLoading: isOfferBudgetLoading }] =
+    useOfferBudgetMutation();
 
-  // Debounced refetch with useCallback
-  const debouncedRefetch = useCallback(
-    debounce(() => {
-      refetch();
+  // Initialize tours and like/share status
+  useEffect(() => {
+    const data = filteredTourPlan || tourPlanPublic || [];
+    setTours(data);
+    if (data && currentUserId) {
+      const initialLikes = {};
+      const initialShares = {};
+      data.forEach((tour) => {
+        initialLikes[tour.id] = tour.interactions.some(
+          (interaction) =>
+            String(interaction.user) === String(currentUserId) &&
+            interaction.interaction_type === "like"
+        );
+        initialShares[tour.id] = tour.interactions.some(
+          (interaction) =>
+            String(interaction.user) === String(currentUserId) &&
+            interaction.interaction_type === "share"
+        );
+      });
+      setIsLiked(initialLikes);
+      setIsShared(initialShares);
+    }
+  }, [tourPlanPublic, filteredTourPlan, currentUserId]);
+
+  // Debounced filter change
+  const debouncedFilterChange = useCallback(
+    debounce((name, value) => {
+      setFilters((prev) => ({ ...prev, [name]: value }));
     }, 500),
-    [refetch]
+    []
   );
 
-  // Trigger debounced refetch when filters change
-  useEffect(() => {
-    if (
-      filters.search ||
-      filters.min ||
-      filters.max ||
-      filters.country ||
-      filters.category
-    ) {
-      debouncedRefetch();
-    }
-  }, [filters, debouncedRefetch]);
-
-  // Close dropdown when clicking outside
+  // Handle click outside for dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -80,14 +98,11 @@ const TourPlanWithPopup = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Handle filter changes (immediate state update)
   const handleFilterChange = (name, value) => {
-    setFilters((prev) => ({ ...prev, [name]: value }));
+    debouncedFilterChange(name, value);
   };
 
   const toggleMobileFilter = () => {
@@ -110,22 +125,238 @@ const TourPlanWithPopup = () => {
       [tourId]: !prev[tourId],
     }));
   };
-  const handleSubmitOffer = () => {
-    console.log(offerBudget, offerComment);
+
+  const handleSubmitOffer = async (tourId, budget, comment) => {
+    if (!token) {
+      navigate("/login");
+      toast.error("Please log in to submit an offer");
+      return;
+    }
+
+    if (!budget || !comment.trim()) {
+      toast.error("Please provide both a budget and a comment");
+      return;
+    }
+
+    try {
+      // Send offer to backend
+      await offerBudgetToBack({
+        id: tourId,
+        data: { offered_budget: parseFloat(budget), message: comment },
+      }).unwrap();
+
+      // Update local state
+      const newOffer = {
+        id: localStorage.getItem("user_id"), // Temporary ID, ideally provided by backend
+        offered_budget: parseFloat(budget),
+        message: comment,
+        agency: {
+          agency_name: "Your Agency", // Replace with actual agency data from current user
+          logo_url:
+            "https://res.cloudinary.com/dpi0t9wfn/image/upload/v1741443124/samples/smile.jpg", // Replace with actual agency logo
+          is_verified: false, // Replace with actual verification status
+        },
+      };
+
+      setTours((prevTours) =>
+        prevTours.map((tour) =>
+          tour.id === tourId
+            ? {
+                ...tour,
+                offers: [...tour.offers, newOffer],
+                offer_count: tour.offer_count + 1,
+              }
+            : tour
+        )
+      );
+
+      if (selectedTour && selectedTour.id === tourId) {
+        setSelectedTour((prev) =>
+          prev
+            ? {
+                ...prev,
+                offers: [...prev.offers, newOffer],
+                offer_count: prev.offer_count + 1,
+              }
+            : prev
+        );
+      }
+
+      // Reset form
+      setOfferBudget(0);
+      setOfferComment("");
+      toast.success("Offer submitted successfully");
+    } catch (error) {
+      console.error("Failed to submit offer:", error.data.detail);
+      toast.error(
+        error.data.detail
+          ? error.data.detail + " Only agency can do this."
+          : "Sumthing going wrong"
+      );
+    }
   };
 
-  // Determine which data to display
-  const displayTours =
-    filters.search ||
-    filters.min ||
-    filters.max ||
-    filters.country ||
-    filters.category
-      ? filteredTourPlan
-      : tourPlanPublic;
+  // Handle like/unlike action
+  const handleLike = async (tourId) => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      await interact({
+        id: tourId,
+        data: { interaction_type: "like" },
+      }).unwrap();
+      setIsLiked((prev) => {
+        const newIsLiked = { ...prev, [tourId]: !prev[tourId] };
+        setTours((prevTours) =>
+          prevTours.map((tour) =>
+            tour.id === tourId
+              ? {
+                  ...tour,
+                  interactions: newIsLiked[tourId]
+                    ? [
+                        ...tour.interactions.filter(
+                          (i) =>
+                            String(i.user) !== String(currentUserId) ||
+                            i.interaction_type !== "like"
+                        ),
+                        { user: currentUserId, interaction_type: "like" },
+                      ]
+                    : tour.interactions.filter(
+                        (i) =>
+                          String(i.user) !== String(currentUserId) ||
+                          i.interaction_type !== "like"
+                      ),
+                }
+              : tour
+          )
+        );
+        if (selectedTour && selectedTour.id === tourId) {
+          setSelectedTour((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  interactions: newIsLiked[tourId]
+                    ? [
+                        ...prev.interactions.filter(
+                          (i) =>
+                            String(i.user) !== String(currentUserId) ||
+                            i.interaction_type !== "like"
+                        ),
+                        { user: currentUserId, interaction_type: "like" },
+                      ]
+                    : prev.interactions.filter(
+                        (i) =>
+                          String(i.user) !== String(currentUserId) ||
+                          i.interaction_type !== "like"
+                      ),
+                }
+              : prev
+          );
+        }
+        return newIsLiked;
+      });
+    } catch (error) {
+      console.error("Failed to update like:", error);
+    }
+  };
+
+  // Handle share/unshare action
+  const handleShare = async (tourId) => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      // Copy to clipboard
+      console.log(String(tourId)); // For debugging
+      await navigator.clipboard.writeText(
+        `http://localhost:5173/post?postid=${tourId}`
+      );
+      toast.success("Post link is copied");
+
+      // Send share interaction to backend
+      await interact({
+        id: tourId,
+        data: { interaction_type: "share" },
+      }).unwrap();
+
+      // Update local state
+      setIsShared((prev) => {
+        const newIsShared = { ...prev, [tourId]: !prev[tourId] };
+        setTours((prevTours) =>
+          prevTours.map((tour) =>
+            tour.id === tourId
+              ? {
+                  ...tour,
+                  interactions: newIsShared[tourId]
+                    ? [
+                        ...tour.interactions.filter(
+                          (i) =>
+                            String(i.user) !== String(currentUserId) ||
+                            i.interaction_type !== "share"
+                        ),
+                        { user: currentUserId, interaction_type: "share" },
+                      ]
+                    : tour.interactions.filter(
+                        (i) =>
+                          String(i.user) !== String(currentUserId) ||
+                          i.interaction_type !== "share"
+                      ),
+                }
+              : tour
+          )
+        );
+        if (selectedTour && selectedTour.id === tourId) {
+          setSelectedTour((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  interactions: newIsShared[tourId]
+                    ? [
+                        ...prev.interactions.filter(
+                          (i) =>
+                            String(i.user) !== String(currentUserId) ||
+                            i.interaction_type !== "share"
+                        ),
+                        { user: currentUserId, interaction_type: "share" },
+                      ]
+                    : prev.interactions.filter(
+                        (i) =>
+                          String(i.user) !== String(currentUserId) ||
+                          i.interaction_type !== "share"
+                      ),
+                }
+              : prev
+          );
+        }
+        return newIsShared;
+      });
+    } catch (error) {
+      console.error("Failed to update share:", error);
+      toast.error("Failed to copy link or update share");
+    }
+  };
+
+  // Calculate like and share counts
+  const getInteractionCounts = (tour) => {
+    const likeCount = tour.interactions.filter(
+      (interaction) => interaction.interaction_type === "like"
+    ).length;
+    const shareCount = tour.interactions.filter(
+      (interaction) => interaction.interaction_type === "share"
+    ).length;
+    return { likeCount, shareCount };
+  };
+
+  const displayTours = tours;
 
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6 pb-20 roboto">
+      <Toaster />
       <div className="px-2 sm:px-4 lg:px-6">
         {/* Mobile Filter Toggle Button */}
         <button
@@ -139,7 +370,6 @@ const TourPlanWithPopup = () => {
         <div className="flex flex-col md:flex-row gap-4 md:gap-6">
           {/* Main Content - Left Side */}
           <div className="w-full md:w-3/4 lg:w-4/5 order-2 md:order-1">
-            {/* Header */}
             <div className="mb-4 md:mb-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-3">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium text-gray-600 mb-2 sm:mb-0">
@@ -202,253 +432,247 @@ const TourPlanWithPopup = () => {
                   <FullScreenInfinityLoader />
                 </div>
               ) : displayTours && displayTours.length > 0 ? (
-                displayTours.map((tour) => (
-                  <div
-                    key={tour.id}
-                    className="rounded-lg bg-white shadow-sm border border-gray-200"
-                  >
-                    <div className="p-3 sm:p-4 lg:p-6">
-                      {/* Travel Header */}
-                      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start mb-4 space-y-3 lg:space-y-0">
-                        <div className="flex-1">
-                          <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 mb-2">
-                            {tour.location_to}
-                          </h2>
-                          <div className="space-y-1 text-xs sm:text-sm lg:text-sm text-gray-600">
-                            <p>
-                              Willing to go on{" "}
-                              <span className="font-medium">
-                                {tour.start_date}
-                              </span>
-                            </p>
-                            <p>
-                              Include:{" "}
-                              <span className="font-medium">
-                                {tour.duration}
-                              </span>
-                            </p>
-                            <p>
-                              Category:{" "}
-                              <span className="font-medium">
-                                {tour.category}
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-start justify-between lg:justify-end lg:text-right lg:flex-col lg:items-end space-x-2 lg:space-x-0 relative">
-                          <div>
-                            <p className="text-sm sm:text-base lg:text-lg font-bold text-gray-700">
-                              Budget ${tour.budget}
-                            </p>
-                            <p className="text-xs sm:text-sm lg:text-md text-gray-800">
-                              Total {tour.total_members} person
-                            </p>
-                          </div>
-                          {/* 3dot Dropdown */}
-                          {/* <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setIsDropdownOpen(
-                                isDropdownOpen === tour.id ? null : tour.id
-                              );
-                            }}
-                            className="lg:mt-5"
-                          >
-                            <HiDotsVertical
-                              size={18}
-                              className="sm:w-5 sm:h-5 lg:w-6 lg:h-6 cursor-pointer text-gray-600 hover:text-gray-800 transition-colors"
-                            />
-                          </button>
-                          {isDropdownOpen === tour.id && (
-                            <div
-                              ref={dropdownRef}
-                              className="absolute right-0 top-8 bg-white shadow-lg rounded-md py-2 w-32 sm:w-36 lg:w-40 z-10"
-                            >
-                              <button className="block w-full text-left px-3 lg:px-4 py-2 text-xs sm:text-sm lg:text-sm text-gray-700 hover:bg-gray-100">
-                                Edit Plan
-                              </button>
-                              <button className="block w-full text-left px-3 lg:px-4 py-2 text-xs sm:text-sm lg:text-sm text-gray-700 hover:bg-gray-100">
-                                Share Plan
-                              </button>
-                              <button className="block w-full text-left px-3 lg:px-4 py-2 text-xs sm:text-sm lg:text-sm text-red-600 hover:bg-gray-100">
-                                Delete Plan
-                              </button>
-                            </div>
-                          )} */}
-                        </div>
-                      </div>
-
-                      {/* Description */}
-                      <div className="mb-4">
-                        <p className="text-xs sm:text-sm lg:text-sm text-gray-600 leading-relaxed">
-                          {tour.description}
-                        </p>
-                      </div>
-
-                      {/* Interested Travel Points */}
-                      <div className="mb-6 flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                        <p className="text-xs sm:text-sm lg:text-sm font-medium text-gray-700">
-                          Interested Travel Points:
-                        </p>
-                        <div className="flex flex-wrap gap-1">
-                          {tour.tourist_spots ? (
-                            tour.tourist_spots
-                              .split(",")
-                              .map((location, index) => (
-                                <span
-                                  key={index}
-                                  className="text-xs sm:text-sm lg:text-sm font-medium text-blue-600 hover:underline cursor-pointer"
-                                >
-                                  {location.trim()}
-                                  {index <
-                                    tour.tourist_spots.split(",").length - 1 &&
-                                    ", "}
+                displayTours.map((tour) => {
+                  const { likeCount, shareCount } = getInteractionCounts(tour);
+                  return (
+                    <div
+                      key={tour.id}
+                      className="rounded-lg bg-white shadow-sm border border-gray-200"
+                    >
+                      <div className="p-3 sm:p-4 lg:p-6">
+                        {/* Travel Header */}
+                        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start mb-4 space-y-3 lg:space-y-0">
+                          <div className="flex-1">
+                            <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 mb-2">
+                              {tour.location_to}
+                            </h2>
+                            <div className="space-y-1 text-xs sm:text-sm lg:text-sm text-gray-600">
+                              <p>
+                                Willing to go on{" "}
+                                <span className="font-medium">
+                                  {tour.start_date}
                                 </span>
-                              ))
-                          ) : (
-                            <span className="text-xs sm:text-sm lg:text-sm text-gray-600">
-                              None
+                              </p>
+                              <p>
+                                Include:{" "}
+                                <span className="font-medium">
+                                  {tour.duration}
+                                </span>
+                              </p>
+                              <p>
+                                Category:{" "}
+                                <span className="font-medium">
+                                  {tour.category}
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-start justify-between lg:justify-end lg:text-right lg:flex-col lg:items-end space-x-2 lg:space-x-0 relative">
+                            <div>
+                              <p className="text-sm sm:text-base lg:text-lg font-bold text-gray-700">
+                                Budget ${tour.budget}
+                              </p>
+                              <p className="text-xs sm:text-sm lg:text-md text-gray-800">
+                                Total {tour.total_members} person
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Description */}
+                        <div className="mb-4">
+                          <p className="text-xs sm:text-sm lg:text-sm text-gray-600 leading-relaxed">
+                            {tour.description}
+                          </p>
+                        </div>
+
+                        {/* Interested Travel Points */}
+                        <div className="mb-6 flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                          <p className="text-xs sm:text-sm lg:text-sm font-medium text-gray-700">
+                            Interested Travel Points:
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {tour.tourist_spots ? (
+                              tour.tourist_spots
+                                .split(",")
+                                .map((location, index) => (
+                                  <span
+                                    key={index}
+                                    className="text-xs sm:text-sm lg:text-sm font-medium text-blue-600 hover:underline cursor-pointer"
+                                  >
+                                    {location.trim()}
+                                    {index <
+                                      tour.tourist_spots.split(",").length -
+                                        1 && ", "}
+                                  </span>
+                                ))
+                            ) : (
+                              <span className="text-xs sm:text-sm lg:text-sm text-gray-600">
+                                None
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Resort Image */}
+                        <div className="mb-4">
+                          <img
+                            src={tour.spot_picture_url || "/placeholder.svg"}
+                            alt="Tour destination"
+                            className="w-full h-48 sm:h-64 lg:h-96 object-cover rounded-lg"
+                          />
+                        </div>
+
+                        {/* Social Stats */}
+                        <div className="flex items-center justify-between py-3">
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center">
+                              <div className="w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 bg-blue-500 rounded-full flex items-center justify-center mr-1">
+                                <ThumbsUp className="w-2 h-2 sm:w-3 sm:h-3 lg:w-3 lg:h-3 text-white fill-current" />
+                              </div>
+                              <div className="w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 bg-red-500 rounded-full flex items-center justify-center -ml-2">
+                                <Heart className="w-2 h-2 sm:w-3 sm:h-3 lg:w-3 lg:h-3 text-white fill-current" />
+                              </div>
+                            </div>
+                            <span className="text-xs sm:text-sm lg:text-sm text-gray-600 ml-2">
+                              {likeCount} Likes
                             </span>
+                          </div>
+                          <div className="flex items-center gap-3 sm:gap-4 lg:gap-4 text-xs sm:text-sm lg:text-sm text-gray-600">
+                            <span>{tour.offer_count} Offers</span>
+                            <span>{shareCount} Shares</span>
+                          </div>
+                        </div>
+
+                        {/* Social Actions */}
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                          <div className="flex items-center gap-4 sm:gap-6 lg:gap-6 w-full justify-around lg:w-auto lg:justify-baseline">
+                            <button
+                              onClick={() => handleLike(tour.id)}
+                              disabled={isInteractLoading}
+                              className={`flex items-center gap-1 sm:gap-2 lg:gap-2 text-xs sm:text-sm lg:text-sm ${
+                                isLiked[tour.id]
+                                  ? "text-blue-600"
+                                  : "text-gray-600"
+                              } hover:text-blue-600 transition-colors hover:cursor-pointer`}
+                            >
+                              <ThumbsUp
+                                className={`w-3 h-3 sm:w-4 sm:h-4 lg:w-4 lg:h-4 ${
+                                  isLiked[tour.id] ? "fill-current" : ""
+                                }`}
+                              />
+                              <span>
+                                {isLiked[tour.id] ? "Unlike" : "Like"}
+                              </span>
+                            </button>
+                            <button
+                              onClick={() => openPopup(tour)}
+                              className="flex items-center gap-1 sm:gap-2 lg:gap-2 text-xs sm:text-sm lg:text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                            >
+                              <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-4 lg:h-4" />
+                              <span>Comments</span>
+                            </button>
+                            <button
+                              onClick={() => handleShare(tour.id)}
+                              disabled={isInteractLoading}
+                              className={`flex items-center gap-1 sm:gap-2 lg:gap-2 text-xs sm:text-sm lg:text-sm ${
+                                isShared[tour.id]
+                                  ? "text-blue-600"
+                                  : "text-gray-600"
+                              } hover:text-blue-600 transition-colors`}
+                            >
+                              <Share2
+                                className={`w-3 h-3 sm:w-4 sm:h-4 lg:w-4 lg:h-4 ${
+                                  isShared[tour.id] ? "fill-current" : ""
+                                }`}
+                              />
+                              <span>
+                                {isShared[tour.id] ? "Unshare" : "Share"}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Offers Section */}
+                        <div className="mt-4 space-y-4">
+                          {tour.offers
+                            .slice(
+                              0,
+                              expandedOffers[tour.id] ? tour.offers.length : 3
+                            )
+                            .map((offer) => (
+                              <div
+                                key={offer.id}
+                                className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-2 sm:px-4 py-3 rounded-lg border border-transparent hover:border-gray-100 hover:bg-gray-50"
+                              >
+                                <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-0">
+                                  <img
+                                    src={
+                                      offer.agency.logo_url ||
+                                      "/placeholder.svg"
+                                    }
+                                    alt={`${offer.agency.agency_name} avatar`}
+                                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover"
+                                  />
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium text-gray-900">
+                                        {offer.agency.agency_name}
+                                      </span>
+                                      {offer.agency.is_verified && (
+                                        <div className="flex space-x-1">
+                                          <span className="text-blue-500">
+                                            <MdVerified
+                                              size={20}
+                                              className="sm:w-6 sm:h-6"
+                                            />
+                                          </span>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <p className="text-xs sm:text-sm text-gray-600">
+                                      {offer.message}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center justify-between sm:justify-end gap-3">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-semibold text-lg sm:text-xl">
+                                      💰 ${offer.offered_budget}
+                                    </span>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => {}}
+                                      className="px-3 sm:px-5 py-1.5 sm:py-2 bg-[#3776E2] text-white text-sm sm:text-md rounded-md hover:bg-blue-700 transition-colors"
+                                    >
+                                      Message
+                                    </button>
+                                    <button
+                                      onClick={() => {}}
+                                      className="px-3 sm:px-5 py-1.5 sm:py-2 bg-[#3776E2] text-white text-sm sm:text-md rounded-md hover:bg-blue-700 transition-colors"
+                                    >
+                                      Accept
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          {tour.offers.length > 3 && (
+                            <button
+                              onClick={() => toggleOffers(tour.id)}
+                              className="text-blue-600 hover:underline text-sm"
+                            >
+                              {expandedOffers[tour.id]
+                                ? "Show Less"
+                                : "See More"}
+                            </button>
                           )}
                         </div>
                       </div>
-
-                      {/* Resort Image */}
-                      <div className="mb-4">
-                        <img
-                          src={tour.spot_picture_url || "/placeholder.svg"}
-                          alt="Tour destination"
-                          className="w-full h-48 sm:h-64 lg:h-96 object-cover rounded-lg"
-                        />
-                      </div>
-
-                      {/* Social Stats */}
-                      <div className="flex items-center justify-between py-3">
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center">
-                            <div className="w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 bg-blue-500 rounded-full flex items-center justify-center mr-1">
-                              <ThumbsUp className="w-2 h-2 sm:w-3 sm:h-3 lg:w-3 lg:h-3 text-white fill-current" />
-                            </div>
-                            <div className="w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 bg-red-500 rounded-full flex items-center justify-center -ml-2">
-                              <Heart className="w-2 h-2 sm:w-3 sm:h-3 lg:w-3 lg:h-3 text-white fill-current" />
-                            </div>
-                          </div>
-                          <span className="text-xs sm:text-sm lg:text-sm text-gray-600 ml-2">
-                            {tour.like_count} Likes
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3 sm:gap-4 lg:gap-4 text-xs sm:text-sm lg:text-sm text-gray-600">
-                          <span>{tour.offer_count} Offers</span>
-                          <span>{tour.share_count} Share</span>
-                        </div>
-                      </div>
-
-                      {/* Social Actions */}
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                        <div className="flex items-center gap-4 sm:gap-6 lg:gap-6">
-                          <button
-                            onClick={() => {
-                              if (!token) {
-                                navigate("/login");
-                              } else {
-                                setIsLiked((prev) => ({
-                                  ...prev,
-                                  [tour.id]: !prev[tour.id],
-                                }));
-                              }
-                            }}
-                            className={`flex items-center gap-1 sm:gap-2 lg:gap-2 text-xs sm:text-sm lg:text-sm ${
-                              isLiked[tour.id]
-                                ? "text-blue-600"
-                                : "text-gray-600"
-                            } hover:text-blue-600 transition-colors hover:cursor-pointer`}
-                          >
-                            <ThumbsUp
-                              className={`w-3 h-3 sm:w-4 sm:h-4 lg:w-4 lg:h-4 ${
-                                isLiked[tour.id] ? "fill-current" : ""
-                              }`}
-                            />
-                            <span>Likes</span>
-                          </button>
-                          <button
-                            onClick={() => openPopup(tour)}
-                            className="flex items-center gap-1 sm:gap-2 lg:gap-2 text-xs sm:text-sm lg:text-sm text-gray-600 hover:text-blue-600 transition-colors"
-                          >
-                            <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-4 lg:h-4" />
-                            <span>Comments</span>
-                          </button>
-                          <button className="flex items-center gap-1 sm:gap-2 lg:gap-2 text-xs sm:text-sm lg:text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                            <Share2 className="w-3 h-3 sm:w-4 sm:h-4 lg:w-4 lg:h-4" />
-                            <span>Share</span>
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Offers Section */}
-                      <div className="mt-4 space-y-4">
-                        {tour.offers
-                          .slice(
-                            0,
-                            expandedOffers[tour.id] ? tour.offers.length : 3
-                          )
-                          .map((offer) => (
-                            <div
-                              key={offer.id}
-                              className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-2 sm:px-4 py-3 rounded-lg border border-transparent hover:border-gray-100 hover:bg-gray-50"
-                            >
-                              <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-0">
-                                <img
-                                  src={
-                                    offer.agency.logo_url || "/placeholder.svg"
-                                  }
-                                  alt={`${offer.agency.agency_name} avatar`}
-                                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover"
-                                />
-                                <div>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium text-gray-900">
-                                      {offer.agency.agency_name}
-                                    </span>
-                                    {offer.agency.is_verified && (
-                                      <div className="flex space-x-1">
-                                        <span className="text-blue-500">
-                                          <MdVerified
-                                            size={20}
-                                            className="sm:w-6 sm:h-6"
-                                          />
-                                        </span>
-                                      </div>
-                                    )}
-                                  </div>
-                                  <p className="text-xs sm:text-sm text-gray-600">
-                                    {offer.message}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex items-center justify-between sm:justify-end gap-3">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-semibold text-lg sm:text-xl">
-                                    💰 ${offer.offered_budget}
-                                  </span>
-                                </div>
-                                <button className="px-3 sm:px-5 py-1.5 sm:py-2 bg-[#3776E2] text-white text-sm sm:text-md rounded-md hover:bg-blue-700 transition-colors">
-                                  Response
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                        {tour.offers.length > 3 && (
-                          <button
-                            onClick={() => toggleOffers(tour.id)}
-                            className="text-blue-600 hover:underline text-sm"
-                          >
-                            {expandedOffers[tour.id] ? "Show Less" : "See More"}
-                          </button>
-                        )}
-                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div>No tours found</div>
               )}
@@ -554,7 +778,6 @@ const TourPlanWithPopup = () => {
       {isPopupOpen && selectedTour && (
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            {/* Popup Header */}
             <div className="flex justify-between items-center p-4 border-b border-gray-200">
               <h2 className="text-xl font-semibold text-gray-800">
                 Tour Details
@@ -566,14 +789,10 @@ const TourPlanWithPopup = () => {
                 <X size={24} />
               </button>
             </div>
-
-            {/* Popup Content */}
             <div className="p-4">
               <div className="w-full">
-                {/* Tour Card */}
                 <div className="rounded-lg bg-white shadow-sm border border-gray-200">
                   <div className="p-3 sm:p-4 lg:p-6">
-                    {/* Travel Header */}
                     <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start mb-4 space-y-3 lg:space-y-0">
                       <div className="flex-1">
                         <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 mb-2">
@@ -611,17 +830,13 @@ const TourPlanWithPopup = () => {
                         </div>
                       </div>
                     </div>
-
-                    {/* Description */}
                     <div className="mb-4">
                       <p className="text-xs sm:text-sm lg:text-sm text-gray-600 leading-relaxed">
                         {selectedTour.description}
                       </p>
                     </div>
-
-                    {/* Interested Travel Points */}
                     <div className="mb-6 flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                      <p className="text-xs sm:text-sm lg:text-sm font-medium text-gray-700">
+                      <p className="text-xs sm:text-sm lg:text-sm font-medium text-gray-600">
                         Interested Travel Points:
                       </p>
                       <div className="flex flex-wrap gap-1">
@@ -646,8 +861,6 @@ const TourPlanWithPopup = () => {
                         )}
                       </div>
                     </div>
-
-                    {/* Resort Image */}
                     <div className="mb-4">
                       <img
                         src={
@@ -657,8 +870,6 @@ const TourPlanWithPopup = () => {
                         className="w-full h-48 sm:h-64 lg:h-96 object-cover rounded-lg"
                       />
                     </div>
-
-                    {/* Social Stats */}
                     <div className="flex items-center justify-between py-3">
                       <div className="flex items-center gap-2">
                         <div className="flex items-center">
@@ -670,25 +881,21 @@ const TourPlanWithPopup = () => {
                           </div>
                         </div>
                         <span className="text-xs sm:text-sm lg:text-sm text-gray-600 ml-2">
-                          {selectedTour.like_count} Likes
+                          {getInteractionCounts(selectedTour).likeCount} Likes
                         </span>
                       </div>
                       <div className="flex items-center gap-3 sm:gap-4 lg:gap-4 text-xs sm:text-sm lg:text-sm text-gray-600">
                         <span>{selectedTour.offer_count} Offers</span>
-                        <span>{selectedTour.share_count} Share</span>
+                        <span>
+                          {getInteractionCounts(selectedTour).shareCount} Shares
+                        </span>
                       </div>
                     </div>
-
-                    {/* Social Actions */}
                     <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                       <div className="flex items-center gap-4 sm:gap-6 lg:gap-6">
                         <button
-                          onClick={() =>
-                            setIsLiked((prev) => ({
-                              ...prev,
-                              [selectedTour.id]: !prev[selectedTour.id],
-                            }))
-                          }
+                          onClick={() => handleLike(selectedTour.id)}
+                          disabled={isInteractLoading}
                           className={`flex items-center gap-1 sm:gap-2 lg:gap-2 text-xs sm:text-sm lg:text-sm ${
                             isLiked[selectedTour.id]
                               ? "text-blue-600"
@@ -700,21 +907,34 @@ const TourPlanWithPopup = () => {
                               isLiked[selectedTour.id] ? "fill-current" : ""
                             }`}
                           />
-                          <span>Likes</span>
+                          <span>
+                            {isLiked[selectedTour.id] ? "Unlike" : "Like"}
+                          </span>
                         </button>
                         <button className="flex items-center gap-1 sm:gap-2 lg:gap-2 text-xs sm:text-sm lg:text-sm text-gray-600 hover:text-blue-600 transition-colors">
                           <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-4 lg:h-4" />
                           <span>Comments</span>
                         </button>
-                        <button className="flex items-center gap-1 sm:gap-2 lg:gap-2 text-xs sm:text-sm lg:text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                          <Share2 className="w-3 h-3 sm:w-4 sm:h-4 lg:w-4 lg:h-4" />
-                          <span>Share</span>
+                        <button
+                          onClick={() => handleShare(selectedTour.id)}
+                          disabled={isInteractLoading}
+                          className={`flex items-center gap-1 sm:gap-2 lg:gap-2 text-xs sm:text-sm lg:text-sm ${
+                            isShared[selectedTour.id]
+                              ? "text-blue-600"
+                              : "text-gray-600"
+                          } hover:text-blue-600 transition-colors`}
+                        >
+                          <Share2
+                            className={`w-3 h-3 sm:w-4 sm:h-4 lg:w-4 lg:h-4 ${
+                              isShared[selectedTour.id] ? "fill-current" : ""
+                            }`}
+                          />
+                          <span>
+                            {isShared[selectedTour.id] ? "Unshare" : "Share"}
+                          </span>
                         </button>
                       </div>
                     </div>
-
-                    {/* Offers Section */}
-                    {/* Place Your Offer */}
                     <div className="flex flex-col justify-start sm:flex-row items-start gap-3 p-2 sm:p-4 rounded-lg">
                       <div className="text-gray-600 sm:mt-0 w-fit md:mt-8">
                         <img
@@ -763,7 +983,6 @@ const TourPlanWithPopup = () => {
                         </div>
                       </div>
                     </div>
-                    {/* end of comment box */}
                   </div>
                 </div>
               </div>

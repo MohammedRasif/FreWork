@@ -32,6 +32,7 @@ const login = () => {
       const res = await login(data).unwrap();
       localStorage.setItem("access_token", res.access);
       localStorage.setItem("refresh_token", res.refresh);
+      localStorage.setItem("user_id", res?.profile_data?.user_id);
       navigate(redirect, { replace: true });
       // console.log(res, "success responce");
     } catch (error) {

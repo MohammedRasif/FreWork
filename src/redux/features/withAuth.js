@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const sqQuery = createApi({
   reducerPath: "sqQuery",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://259b-115-127-156-9.ngrok-free.app",
+    baseUrl: "https://d132-115-127-156-9.ngrok-free.app",
     prepareHeaders: (headers) => {
       headers.set("ngrok-skip-browser-warning", "true");
 
@@ -71,6 +71,22 @@ export const sqQuery = createApi({
         body: data,
       }),
     }),
+    // like
+    likePost: builder.mutation({
+      query: (int) => ({
+        url: `/tour-plans/${int.id}/interact/`,
+        method: "POST",
+        body: int.data,
+      }),
+    }),
+    // offer a budget
+    offerBudget: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/offers/${id}/`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -87,4 +103,8 @@ export const {
   // agency profile
   useGetAgencyProfileQuery,
   useUpdateAgencyProfileMutation,
+  // int
+  useLikePostMutation,
+  // offer
+  useOfferBudgetMutation,
 } = sqQuery;
