@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://d132-115-127-156-9.ngrok-free.app",
+    baseUrl: "https://endlessly-unified-guppy.ngrok-free.app",
     prepareHeaders: (header) => {
       header.set("ngrok-skip-browser-warning", "true");
       return header;

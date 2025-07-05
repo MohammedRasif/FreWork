@@ -13,7 +13,6 @@ const AdminProfileEdit = () => {
     register,
     handleSubmit,
     setValue,
-    getValues,
     watch,
     formState: { errors },
   } = useForm({
@@ -34,6 +33,8 @@ const AdminProfileEdit = () => {
   });
   const [logoFile, setLogoFile] = useState(null);
   const [logoFileName, setLogoFileName] = useState("");
+  const [coverPhotoFile, setCoverPhotoFile] = useState(null);
+  const [coverPhotoFileName, setCoverPhotoFileName] = useState("");
   const [vatFile, setVatFile] = useState(null);
   const [vatFileName, setVatFileName] = useState("");
   const [agencyLogoUrlFile, setAgencyLogoUrlFile] = useState(null);
@@ -55,26 +56,37 @@ const AdminProfileEdit = () => {
   const watchedOtherFacilities = watch("otherFacilities");
   const watchedCategories = watch("categories");
 
+  // Safe JSON parsing function
+  const safeParseJSON = (value, defaultValue = []) => {
+    if (!value) return defaultValue;
+    try {
+      return JSON.parse(value);
+    } catch (e) {
+      console.error("JSON parsing error:", e.message);
+      return defaultValue;
+    }
+  };
+
   // Prepopulate form with fetched data
   useEffect(() => {
     if (profileData) {
-      setValue("agencyName", profileData.agency_name || "");
-      setValue("about", profileData.about || "");
-      setValue("aim", profileData.our_aim || "");
-      setValue("phoneNumber", profileData.contact_phone || "");
-      setValue("email", profileData.contact_email || "");
-      setValue("website", profileData.website_url || "");
-      setValue("location", profileData.address || "");
-      setValue("handlerName", profileData.profile_handler_name || "");
-      setValue("handlerPosition", profileData.profile_handler_position || "");
+      setValue("agencyName", profileData?.agency_name || "");
+      setValue("about", profileData?.about || "");
+      setValue("aim", profileData?.our_aim || "");
+      setValue("phoneNumber", profileData?.contact_phone || "");
+      setValue("email", profileData?.contact_email || "");
+      setValue("website", profileData?.website_url || "");
+      setValue("location", profileData?.address || "");
+      setValue("handlerName", profileData?.profile_handler_name || "");
+      setValue("handlerPosition", profileData?.profile_handler_position || "");
 
       // Handle facilities
-      const facilities = profileData.facilities || [];
+      const facilities = safeParseJSON(profileData?.facilities, []);
       const normalizedPredefined = predefinedFacilities.map((f) =>
         f.toLowerCase()
       );
       // Filter predefined facilities (case-insensitive match)
-      const selectedPredefined = JSON.parse(facilities)
+      const selectedPredefined = facilities
         .filter((f) =>
           normalizedPredefined.includes(f.toLowerCase().replace(/[^a-z]/g, ""))
         )
@@ -85,7 +97,7 @@ const AdminProfileEdit = () => {
       setValue("facilities", selectedPredefined);
 
       // Filter other facilities (non-predefined)
-      const otherFacilities = JSON.parse(facilities[0])
+      const otherFacilities = facilities
         .filter(
           (f) =>
             !normalizedPredefined.includes(
@@ -96,24 +108,27 @@ const AdminProfileEdit = () => {
       setValue("otherFacilities", otherFacilities);
 
       // Handle service categories
-      setValue(
-        "categories",
-        JSON.parse(profileData.service_categories)?.join(", ") || ""
-      );
+      const categories = safeParseJSON(profileData?.service_categories, []);
+      setValue("categories", categories.join(", ") || "");
 
-      // Set logo, agency logo URL, and VAT file names
+      // Set logo, cover photo, agency logo URL, and VAT file names
       setLogoFileName(
-        profileData.agency_logo_url
+        profileData?.agency_logo_url
           ? profileData.agency_logo_url.split("/").pop()
           : ""
       );
+      setCoverPhotoFileName(
+        profileData?.cover_photo_url
+          ? profileData.cover_photo_url.split("/").pop()
+          : ""
+      );
       setAgencyLogoUrlFileName(
-        profileData.agency_logo_url
+        profileData?.agency_logo_url
           ? profileData.agency_logo_url.split("/").pop()
           : ""
       );
       setVatFileName(
-        profileData.vat_id_file_url
+        profileData?.vat_id_file_url
           ? profileData.vat_id_file_url.split("/").pop()
           : ""
       );
@@ -147,6 +162,9 @@ const AdminProfileEdit = () => {
 
       if (logoFile) {
         formData.append("agency_logo", logoFile);
+      }
+      if (coverPhotoFile) {
+        formData.append("cover_photo", coverPhotoFile);
       }
       if (agencyLogoUrlFile) {
         formData.append("agency_logo_url", agencyLogoUrlFile);
@@ -186,8 +204,8 @@ const AdminProfileEdit = () => {
   const handleLogoChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!["image/jpeg", "image/png", "image/gif"].includes(file.type)) {
-        alert("Please upload an image file (JPEG, PNG, or GIF).");
+      if (!file.type.startsWith("image/")) {
+        alert("Please upload an image file.");
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
@@ -199,11 +217,27 @@ const AdminProfileEdit = () => {
     }
   };
 
+  const handleCoverPhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        alert("Please upload an image file.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size must be less than 5MB.");
+        return;
+      }
+      setCoverPhotoFile(file);
+      setCoverPhotoFileName(file.name);
+    }
+  };
+
   const handleAgencyLogoUrlChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!["image/jpeg", "image/png", "image/gif"].includes(file.type)) {
-        alert("Please upload an image file (JPEG, PNG, or GIF).");
+      if (!file.type.startsWith("image/")) {
+        alert("Please upload an image file.");
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
@@ -298,7 +332,7 @@ const AdminProfileEdit = () => {
 
           <div>
             <label className="block text-base font-medium text-gray-700 mb-2">
-              Upload logo
+              Upload Logo
             </label>
             <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-md">
               <label className="px-4 py-2 text-gray-700 rounded-l-md cursor-pointer bg-gray-300 hover:bg-gray-200 transition-colors text-base font-semibold">
@@ -307,7 +341,6 @@ const AdminProfileEdit = () => {
                   type="file"
                   className="hidden"
                   onChange={handleLogoChange}
-                  accept="image/jpeg,image/png,image/gif"
                 />
               </label>
               <span className="text-base text-gray-600">{logoFileName}</span>
@@ -315,8 +348,27 @@ const AdminProfileEdit = () => {
           </div>
         </div>
 
-        {/* Agency Logo URL and VAT ID Row */}
+        {/* Cover Photo and Agency Logo URL Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-base font-medium text-gray-700 mb-2">
+              Upload Cover Photo
+            </label>
+            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-md">
+              <label className="px-4 py-2 text-gray-700 rounded-l-md cursor-pointer bg-gray-300 hover:bg-gray-200 transition-colors text-base font-semibold">
+                Choose file
+                <input
+                  type="file"
+                  className="hidden"
+                  onChange={handleCoverPhotoChange}
+                />
+              </label>
+              <span className="text-base text-gray-600">
+                {coverPhotoFileName}
+              </span>
+            </div>
+          </div>
+
           <div>
             <label className="block text-base font-medium text-gray-700 mb-2">
               Upload Agency Logo URL
@@ -328,7 +380,6 @@ const AdminProfileEdit = () => {
                   type="file"
                   className="hidden"
                   onChange={handleAgencyLogoUrlChange}
-                  accept="image/jpeg,image/png,image/gif"
                 />
               </label>
               <span className="text-base text-gray-600">
@@ -336,7 +387,21 @@ const AdminProfileEdit = () => {
               </span>
             </div>
           </div>
+        </div>
 
+        {/* VAT ID Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-base font-medium text-gray-700 mb-2">
+              Aim of the Agency
+            </label>
+            <input
+              {...register("aim")}
+              type="text"
+              placeholder="Enter here"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white placeholder:text-base"
+            />
+          </div>
           <div>
             <label className="block text-base font-medium text-gray-700 mb-2">
               Upload VAT ID (PDF)
@@ -364,7 +429,7 @@ const AdminProfileEdit = () => {
             </label>
             <div className="grid grid-cols-2 gap-3">
               {predefinedFacilities.map((facility) => (
-                <label key={facility} className="flux items-center">
+                <label key={facility} className="flex items-center">
                   <input
                     {...register("facilities")}
                     type="checkbox"
@@ -392,7 +457,7 @@ const AdminProfileEdit = () => {
             <textarea
               {...register("about", {
                 maxLength: {
-                  value: 100,
+                  value: 1000,
                   message: "Description cannot exceed 100 words",
                 },
               })}
@@ -412,16 +477,45 @@ const AdminProfileEdit = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-base font-medium text-gray-700 mb-2">
-              Aim of the Agency
+              Select categories (Max 5, comma-separated)
             </label>
             <input
-              {...register("aim")}
+              {...register("categories", {
+                validate: (value) => {
+                  const categories = value
+                    ? value
+                        .split(",")
+                        .map((cat) => cat.trim())
+                        .filter((cat) => cat)
+                    : [];
+                  return (
+                    categories.length <= 5 ||
+                    "You can select a maximum of 5 categories"
+                  );
+                },
+              })}
               type="text"
-              placeholder="Enter here"
+              placeholder="Enter here (comma-separated)"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white placeholder:text-base"
             />
+            {errors.categories && (
+              <span className="text-red-500 text-sm">
+                {errors.categories.message}
+              </span>
+            )}
+            {allCategories.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-3">
+                {allCategories.map((category, index) => (
+                  <span
+                    key={index}
+                    className="text-base text-gray-700 bg-white px-5 rounded-full py-[2px] border border-gray-200"
+                  >
+                    {category}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
-
           <div>
             <label className="block text-base font-medium text-gray-700 mb-2">
               Other facilities (comma-separated)
@@ -430,9 +524,11 @@ const AdminProfileEdit = () => {
               {...register("otherFacilities", {
                 validate: (value) => {
                   const facilities = value
-                    .split(",")
-                    .map((f) => f.trim())
-                    .filter((f) => f);
+                    ? value
+                        .split(",")
+                        .map((f) => f.trim())
+                        .filter((f) => f)
+                    : [];
                   return (
                     facilities.length <= 2 ||
                     "Maximum 2 other facilities allowed"
@@ -448,7 +544,6 @@ const AdminProfileEdit = () => {
                 {errors.otherFacilities.message}
               </span>
             )}
-            {/* Display Selected Facilities */}
             {allFacilities.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-3">
                 {allFacilities.map((facility, index) => (
@@ -465,48 +560,7 @@ const AdminProfileEdit = () => {
         </div>
 
         {/* Categories Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-base font-medium text-gray-700 mb-2">
-              Select categories (Max 5, comma-separated)
-            </label>
-            <input
-              {...register("categories", {
-                validate: (value) => {
-                  const categories = value
-                    .split(",")
-                    .map((cat) => cat.trim())
-                    .filter((cat) => cat);
-                  return (
-                    categories.length <= 5 ||
-                    "You can select a maximum of 5 categories"
-                  );
-                },
-              })}
-              type="text"
-              placeholder="Enter here (comma-separated)"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white placeholder:text-base"
-            />
-            {errors.categories && (
-              <span className="text-red-500 text-sm">
-                {errors.categories.message}
-              </span>
-            )}
-            {/* Display Selected Categories */}
-            {allCategories.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-3">
-                {allCategories.map((category, index) => (
-                  <span
-                    key={index}
-                    className="text-base text-gray-700 bg-white px-5 rounded-full py-[2px] border border-gray-200"
-                  >
-                    {category}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
 
         {/* Contact Information Section */}
         <div className="border-t border-gray-200 pt-6">

@@ -4,7 +4,7 @@ import { data } from "react-router-dom";
 export const sqQuery = createApi({
   reducerPath: "sqQuery",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://d132-115-127-156-9.ngrok-free.app",
+    baseUrl: "https://endlessly-unified-guppy.ngrok-free.app",
     prepareHeaders: (headers) => {
       headers.set("ngrok-skip-browser-warning", "true");
 
@@ -115,6 +115,12 @@ export const sqQuery = createApi({
         body: { comment: data.comment, rating: data.rating },
       }),
     }),
+    getOfferedPlan: builder.query({
+      query: () => `/offers/`,
+    }),
+    getOneTourPlan: builder.query({
+      query: (id) => `/tour-plans/${id}/`,
+    }),
   }),
 });
 
@@ -142,4 +148,6 @@ export const {
   useAllFavoritAgencyQuery,
   //review
   useGiveReviewMutation,
+  useGetOfferedPlanQuery,
+  useGetOneTourPlanQuery,
 } = sqQuery;

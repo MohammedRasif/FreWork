@@ -50,7 +50,8 @@ const CreatePlan = () => {
           ? new Date(oldData.end_date).toISOString().split("T")[0]
           : ""
       );
-      setValue("totalMembers", oldData.total_members);
+      setValue("adult", oldData.adult_count || 0); // Assuming oldData has adult field
+      setValue("child", oldData.child_count || 0); // Assuming oldData has child field
       setValue("budget", oldData.budget);
       setValue("touristSpots", oldData.tourist_spots);
       setValue("description", oldData.description);
@@ -65,23 +66,31 @@ const CreatePlan = () => {
       return;
     }
 
+    // Validate that at least one adult or child is provided
+    if (!data.adult && !data.child) {
+      toast.error("At least one adult or child is required");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("location_from", data.locationFrom);
     formData.append("location_to", data.locationTo);
     formData.append("start_date", data.startingDate);
     formData.append("end_date", data.endingDate);
-    formData.append("total_members", data.totalMembers);
+    formData.append("adult_count", data.adult || 0); // Send adult count
+    formData.append("child_count", data.child || 0); // Send child count
     formData.append("budget", data.budget);
     formData.append("description", data.description);
     formData.append("category", data.category);
     formData.append("status", status);
+    formData.append("tourist_spots", data.touristSpots);
     formData.append(
       "is_confirmed_request",
       data.confirmation ? "true" : "false"
     );
 
     if (selectedFile) {
-      formData.append("image", selectedFile);
+      formData.append("spot_picture", selectedFile);
     }
 
     try {
@@ -181,7 +190,7 @@ const CreatePlan = () => {
               <div className="relative">
                 <input
                   type="date"
-                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10  max-w-full"
+                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 max-w-full"
                   {...register("startingDate", {
                     required: "Starting date is required",
                   })}
@@ -216,26 +225,51 @@ const CreatePlan = () => {
             </div>
           </div>
 
-          {/* Row 3: Total Member & Budget */}
+          {/* Row 3: Adult & Child & Budget */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-[16px] font-medium text-gray-700 mb-2">
-                Total Members
-              </label>
-              <input
-                type="number"
-                placeholder="Enter here"
-                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                {...register("totalMembers", {
-                  required: "Total members is required",
-                  min: { value: 1, message: "Must have at least 1 member" },
-                })}
-              />
-              {errors.totalMembers && (
-                <p className="text-red-500 text-[14px] mt-1">
-                  {errors.totalMembers.message}
-                </p>
-              )}
+            <div className="flex w-full gap-4">
+              <div className="flex-1">
+                <label className="block text-[16px] font-medium text-gray-700 mb-2">
+                  Adult
+                </label>
+                <input
+                  type="number"
+                  placeholder="Enter number of adults"
+                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  {...register("adult", {
+                    min: {
+                      value: 0,
+                      message: "Number of adults cannot be negative",
+                    },
+                  })}
+                />
+                {errors.adult && (
+                  <p className="text-red-500 text-[14px] mt-1">
+                    {errors.adult.message}
+                  </p>
+                )}
+              </div>
+              <div className="flex-1">
+                <label className="block text-[16px] font-medium text-gray-700 mb-2">
+                  Child
+                </label>
+                <input
+                  type="number"
+                  placeholder="Enter number of children"
+                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  {...register("child", {
+                    min: {
+                      value: 0,
+                      message: "Number of children cannot be negative",
+                    },
+                  })}
+                />
+                {errors.child && (
+                  <p className="text-red-500 text-[14px] mt-1">
+                    {errors.child.message}
+                  </p>
+                )}
+              </div>
             </div>
             <div>
               <label className="block text-[16px] font-medium text-gray-700 mb-2">
@@ -307,7 +341,6 @@ const CreatePlan = () => {
               </label>
               <textarea
                 placeholder="Enter here"
-                Ha
                 rows={4}
                 className="w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 {...register("description", {

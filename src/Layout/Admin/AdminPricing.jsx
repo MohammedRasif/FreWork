@@ -1,6 +1,4 @@
-
-
-import React from 'react';
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoCheckmarkCircleSharp, IoCheckmarkDoneSharp } from "react-icons/io5";
 import img from "../../assets/img/Vector 63.png";
@@ -9,24 +7,13 @@ const AdminPricing = () => {
   const plans = [
     {
       name: "Free User",
-      limit: "3",
+      limit: "5",
       limitUnit: "Query/Day",
       features: [
         "Includes general source databases",
         "Limited free queries per bot day",
         "No access to specific, company, or private databases",
       ],
-    },
-    {
-      name: "Standard User",
-      limit: "No limit,",
-      limitUnit: "Query/Day",
-      features: [
-        "Full access to general source databases",
-        "Unlimited queries per bot daily",
-        "Potential limitations on account sharing",
-      ],
-      highlighted: true, // Highlight this plan
     },
     {
       name: "Premium User",
@@ -42,20 +29,28 @@ const AdminPricing = () => {
 
   return (
     <div>
-      <h1 className='text-3xl font-semibold text-center'>Pricing and Packages</h1>
-      <h1 className='text-[16px] text-center font-medium text-gray-600'>Find your best package here</h1>
-      <div className='flex items-center justify-between border border-gray-400 m-5 p-3 rounded-md'>
+      <h1 className="text-3xl font-semibold text-center">
+        Pricing and Packages
+      </h1>
+      <h1 className="text-[16px] text-center font-medium text-gray-600">
+        Find your best package here
+      </h1>
+      <div className="flex items-center justify-between border border-gray-400 m-5 p-3 rounded-md">
         <div>
-          <h1 className='text-[16px] text-gray-700 font-medium'>Date of Starting</h1>
-          <h1 className='text-[13px] text-gray-700'>12 July, 2025</h1>
+          <h1 className="text-[16px] text-gray-700 font-medium">
+            Date of Starting
+          </h1>
+          <h1 className="text-[13px] text-gray-700">12 July, 2025</h1>
         </div>
         <div>
-          <h1 className='text-[16px] text-gray-700 font-medium'>Membership (Current)</h1>
-          <h1 className='text-[13px] text-gray-700'>Freebie</h1>
+          <h1 className="text-[16px] text-gray-700 font-medium">
+            Membership (Current)
+          </h1>
+          <h1 className="text-[13px] text-gray-700">Freebie</h1>
         </div>
         <div>
-          <h1 className='text-[16px] text-gray-700 font-medium'>Date of end</h1>
-          <h1 className='text-[13px] text-gray-700'>12 July, 2025</h1>
+          <h1 className="text-[16px] text-gray-700 font-medium">Date of end</h1>
+          <h1 className="text-[13px] text-gray-700">12 July, 2025</h1>
         </div>
       </div>
 
@@ -75,7 +70,11 @@ const AdminPricing = () => {
               >
                 <div className="relative">
                   <div className="w-3/4 rounded-r-lg my-10 relative">
-                    <img src={img} alt="Plan background" className="w-full h-auto" />
+                    <img
+                      src={img}
+                      alt="Plan background"
+                      className="w-full h-auto"
+                    />
                     <h3 className="absolute top-4 left-4 text-slate-700 font-bold text-xl z-10">
                       {plan.name}
                     </h3>
@@ -85,10 +84,16 @@ const AdminPricing = () => {
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="mb-6">
                     <div className="flex items-end">
-                      <span className="text-4xl font-bold text-slate-700">{plan.limit}</span>
-                      <span className="text-base text-slate-500 ml-2 mb-1">{plan.limitUnit}</span>
+                      <span className="text-4xl font-bold text-slate-700">
+                        {plan.limit}
+                      </span>
+                      <span className="text-base text-slate-500 ml-2 mb-1">
+                        {plan.limitUnit}
+                      </span>
                     </div>
-                    <p className="text-slate-500 text-base mt-1">Measurable results</p>
+                    <p className="text-slate-500 text-base mt-1">
+                      Measurable results
+                    </p>
                   </div>
 
                   <button
@@ -101,11 +106,15 @@ const AdminPricing = () => {
                     Select
                   </button>
 
-                  <p className="text-slate-500 text-base mb-6 mt-4">Contact us for more Details</p>
+                  <p className="text-slate-500 text-base mb-6 mt-4">
+                    Contact us for more Details
+                  </p>
 
                   <div className="mb-4 flex-grow">
                     <div className="flex items-center mb-3">
-                      <span className="text-slate-700 font-semibold text-lg">Features</span>
+                      <span className="text-slate-700 font-semibold text-lg">
+                        Features
+                      </span>
                       <div className="ml-2 text-[#3776E2]">
                         <IoCheckmarkCircleSharp size={20} />
                       </div>
@@ -131,6 +140,6 @@ const AdminPricing = () => {
       </div>
     </div>
   );
-}
+};
 
 export default AdminPricing;

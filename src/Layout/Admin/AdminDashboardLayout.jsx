@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   Bell,
   ChevronDown,
@@ -15,7 +15,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import UserAvatar from "../../assets/img/bruce-mars.png"; // Fallback image
+import UserAvatar from "../../assets/img/bruce-mars.png";
 import { SlDiamond } from "react-icons/sl";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +29,7 @@ import { useGetAgencyProfileQuery } from "@/redux/features/withAuth";
 export default function AdminDashboardLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState("Dashboard");
+  const [selectedItem, setSelectedItem] = useState("My Plans");
   const location = useLocation();
   const navigate = useNavigate();
   const { data: agencyData, isLoading } = useGetAgencyProfileQuery();
@@ -41,39 +41,64 @@ export default function AdminDashboardLayout() {
           name: "My Plans",
           icon: <ClipboardList size={20} />,
           path: "/admin",
+          exact: true, // Add flag for exact matching
         },
         {
           name: "Notifications",
           icon: <Bell size={20} />,
-          path: "admin/admin_notification",
+          path: "/admin/admin_notification",
         },
         {
           name: "Membership",
           icon: <UserRound size={20} />,
-          path: "admin/membership",
+          path: "/admin/membership",
         },
         {
           name: "Conversations",
           icon: <MessageCircle size={20} />,
-          path: "admin/chat",
+          path: "/admin/chat",
         },
         {
           name: "Profile",
           icon: <UserRound size={20} />,
-          path: "admin/profile",
+          path: "/admin/profile",
         },
         { name: "Logout", icon: <LogOut size={20} />, path: "/" },
       ],
     },
   ];
 
-  // Sync selectedItem with current route on initial load
+  // Sync selectedItem with current route
   useEffect(() => {
-    const currentItem = menuItems[0].items.find(
-      (item) => item.path === location.pathname
-    );
+    const normalizedLocation = location.pathname.replace(/\/$/, "");
+
+    // First, try to find an exact match
+    let currentItem = menuItems[0].items.find((item) => {
+      const normalizedPath = item.path.replace(/\/$/, "");
+      return item.exact && normalizedPath === normalizedLocation;
+    });
+
+    // If no exact match, try partial match for non-exact routes
+    if (!currentItem) {
+      currentItem = menuItems[0].items.find((item) => {
+        const normalizedPath = item.path.replace(/\/$/, "");
+        return (
+          !item.exact &&
+          (normalizedPath === normalizedLocation ||
+            normalizedLocation.startsWith(normalizedPath + "/"))
+        );
+      });
+    }
+
     if (currentItem) {
       setSelectedItem(currentItem.name);
+    } else {
+      // Fallback to "My Plans" only if the exact route is "/admin"
+      if (normalizedLocation === "/admin") {
+        setSelectedItem("My Plans");
+      } else {
+        setSelectedItem(null); // No active item if no match
+      }
     }
   }, [location.pathname]);
 
@@ -93,28 +118,27 @@ export default function AdminDashboardLayout() {
         setIsMobileMenuOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobileMenuOpen]);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
   }, [isMobileMenuOpen]);
 
   const handleItemClick = (itemName, path) => {
-    setSelectedItem(itemName);
-    navigate(path);
-    setIsMobileMenuOpen(false); // Close mobile menu after navigation
+    if (itemName === "Logout") {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      navigate(path);
+    } else {
+      setSelectedItem(itemName);
+      navigate(path);
+    }
   };
 
   const toggleMobileMenu = () => {
@@ -134,7 +158,6 @@ export default function AdminDashboardLayout() {
           isCollapsed ? "w-20" : "w-80"
         } transition-all duration-500 ease-in-out`}
       >
-        {/* Logo/Profile Section */}
         <div className="h-auto flex items-center px-4">
           <div className="flex flex-col w-full justify-center items-center mt-16">
             <div
@@ -156,7 +179,6 @@ export default function AdminDashboardLayout() {
                 className="w-16 h-16 rounded-full"
               />
             </div>
-
             <div className="w-full flex flex-col gap-1 pl-3">
               <h3 className="text-2xl text-center font-normal text-[#343E4B]">
                 {isLoading
@@ -172,21 +194,23 @@ export default function AdminDashboardLayout() {
           </div>
         </div>
 
-        {/* Navigation */}
         <nav className="p-4 mt-6">
           {menuItems.map((section, idx) => (
             <div key={idx} className="mb-8">
               <ul className="space-y-2">
                 {section.items.map((item, itemIdx) => (
                   <li key={itemIdx}>
-                    <Link
+                    <NavLink
                       to={item.path}
+                      end={item.exact} // Use end prop for exact matching
                       onClick={() => handleItemClick(item.name, item.path)}
-                      className={`flex items-center gap-3 px-3 py-2 text-[#67748E] rounded-lg group relative ${
-                        selectedItem === item.name
-                          ? "bg-[#3776E2] text-white font-semibold"
-                          : ""
-                      }`}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 px-3 py-2 text-[#67748E] rounded-lg group relative ${
+                          isActive || selectedItem === item.name
+                            ? "bg-[#3776E2] text-white font-semibold"
+                            : ""
+                        }`
+                      }
                     >
                       <span className="p-2 rounded-lg bg-white text-[#67748E] shadow-[0_2px_4px_-1px_#00000030]">
                         {item.icon}
@@ -205,7 +229,7 @@ export default function AdminDashboardLayout() {
                           {item.badge}
                         </span>
                       )}
-                    </Link>
+                    </NavLink>
                   </li>
                 ))}
               </ul>
@@ -239,11 +263,8 @@ export default function AdminDashboardLayout() {
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Mobile Sidebar Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h1 meadows className="text-lg font-semibold text-[#343E4B]">
-            Menu
-          </h1>
+          <h1 className="text-lg font-semibold text-[#343E4B]">Menu</h1>
           <button
             onClick={toggleMobileMenu}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -252,9 +273,7 @@ export default function AdminDashboardLayout() {
           </button>
         </div>
 
-        {/* Mobile Logo/Profile Section */}
         <div className="h-auto flex items-center px-4">
-          {console.log(agencyData?.cover_photo_url)}
           <div className="flex flex-col w-full justify-center items-center mt-8">
             <div className="w-20 h-20 rounded-full overflow-hidden">
               <img
@@ -276,21 +295,23 @@ export default function AdminDashboardLayout() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         <nav className="p-4 mt-6">
           {menuItems.map((section, idx) => (
             <div key={idx} className="mb-8">
               <ul className="space-y-2">
                 {section.items.map((item, itemIdx) => (
                   <li key={itemIdx}>
-                    <Link
+                    <NavLink
                       to={item.path}
+                      end={item.exact} // Use end prop for exact matching
                       onClick={() => handleItemClick(item.name, item.path)}
-                      className={`flex items-center gap-3 px-3 py-2 text-[#67748E] rounded-lg group relative ${
-                        selectedItem === item.name
-                          ? "bg-[#3776E2] text-white font-semibold"
-                          : ""
-                      }`}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 px-3 py-2 text-[#67748E] rounded-lg group relative ${
+                          isActive || selectedItem === item.name
+                            ? "bg-[#3776E2] text-white font-semibold"
+                            : ""
+                        }`
+                      }
                     >
                       <span className="p-2 rounded-lg bg-white text-[#67748E] shadow-[0_2px_4px_-1px_#00000030]">
                         {item.icon}
@@ -303,7 +324,7 @@ export default function AdminDashboardLayout() {
                           {item.badge}
                         </span>
                       )}
-                    </Link>
+                    </NavLink>
                   </li>
                 ))}
               </ul>
@@ -332,18 +353,15 @@ export default function AdminDashboardLayout() {
       </aside>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Navbar */}
         <header className="h-16 bg-[#F8F9FA]">
           <div className="h-full px-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              {/* Mobile Menu Button */}
               <button
                 onClick={toggleMobileMenu}
                 className="mobile-menu-button lg:hidden p-2 hover:bg-gray-200 rounded-full transition-colors duration-300"
               >
                 <Menu size={20} />
               </button>
-
               <div className="flex flex-col">
                 <h1 className="text-lg sm:text-2xl font-medium text-[#343E4B] flex gap-2 sm:gap-4 items-end">
                   Wednesday
@@ -352,13 +370,19 @@ export default function AdminDashboardLayout() {
               </div>
             </div>
             <div className="flex items-center gap-4 sm:gap-8 me-2 sm:me-10">
-              <button className="p-2 bg-[#EEF1F5] rounded-full relative">
+              <NavLink
+                to="/admin/admin_notification"
+                className={({ isActive }) =>
+                  `p-2 rounded-full relative ${
+                    isActive ? "bg-[#3776E2] text-white" : "bg-[#EEF1F5]"
+                  }`
+                }
+              >
                 <Bell size={20} sm:size={24} />
                 <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></div>
-              </button>
+              </NavLink>
               <div className="hidden sm:flex items-center justify-center gap-5">
                 <h4 className="text-xl font-medium">Settings</h4>
-
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="cursor-pointer">
@@ -381,8 +405,6 @@ export default function AdminDashboardLayout() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-
-              {/* Mobile Settings Dropdown */}
               <div className="sm:hidden">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -410,7 +432,6 @@ export default function AdminDashboardLayout() {
           </div>
         </header>
 
-        {/* Main Content */}
         <main className="flex-1 overflow-auto bg-[#F5F5F6] p-4 sm:p-6">
           <Outlet />
         </main>

@@ -1,235 +1,7 @@
-// import { useState, useEffect } from "react";
-// import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-// import {
-// 	Bell,
-// 	ChevronDown,
-// 	ClipboardList,
-// 	CircleArrowUp,
-// 	LogOut,
-// 	Mail,
-// 	MessageCircle,
-// 	UserRound,
-// 	Lock,
-// } from "lucide-react";
-// import UserAvatar from "../../assets/img/bruce-mars.png";
-// import { SlDiamond } from "react-icons/sl";
-// import { Button } from "@/components/ui/button";
-// import {
-// 	DropdownMenu,
-// 	DropdownMenuContent,
-// 	DropdownMenuItem,
-// 	DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
-
-// export default function UserDashboardLayout() {
-// 	const [isCollapsed, setIsCollapsed] = useState(false);
-// 	const [selectedItem, setSelectedItem] = useState("Dashboard");
-// 	const [showSettingsMenu, setShowSettingsMenu] = useState(false);
-// 	const location = useLocation();
-
-// 	const navigate = useNavigate();
-// 	const menuItems = [
-// 		{
-// 			items: [
-// 				{
-// 					name: "My Plans",
-// 					icon: <ClipboardList size={20} />,
-// 					path: "/user",
-// 				},
-// 				{
-// 					name: "Profile",
-// 					icon: <UserRound size={20} />,
-// 					path: "user/profile",
-// 				},
-// 				{
-// 					name: "Conversations",
-// 					icon: <MessageCircle size={20} />,
-// 					path: "user/chat",
-// 				},
-// 				{
-// 					name: "Notifications",
-// 					icon: <Bell size={20} />,
-// 					path: "user/notification",
-// 				},
-// 				{ name: "Logout", icon: <LogOut size={20} />, path: "/" },
-// 			],
-// 		},
-// 	];
-
-// 	// Sync selectedItem with current route on initial load
-// 	useEffect(() => {
-// 		const currentItem = menuItems[0].items.find(
-// 			(item) => item.path === location.pathname
-// 		);
-// 		if (currentItem) {
-// 			setSelectedItem(currentItem.name);
-// 		}
-// 	}, [location.pathname]);
-
-// 	const handleItemClick = (itemName, path) => {
-// 		setSelectedItem(itemName); // Update the selected item on click
-// 		navigate(path); // Navigate to the clicked item's path
-// 	};
-
-// 	return (
-// 		<div className="flex h-screen bg-[#F8F9FA] p-4">
-// 			{/* Sidebar */}
-// 			<aside
-// 				className={`${isCollapsed ? "w-20" : "w-80"
-// 					} transition-all duration-500 ease-in-out`}
-// 			>
-// 				{/* Logo */}
-// 				<div className="h-auto flex items-center px-4">
-// 					<div className="flex flex-col w-full justify-center items-center  mt-16">
-// 						<div
-// 							className={`transform transition-all duration-500 ${isCollapsed
-// 									? "opacity-0 -translate-x-full"
-// 									: "opacity-100 translate-x-0"
-// 								}`}
-// 						>
-// 							<img src={UserAvatar} alt="User" />
-// 						</div>
-
-// 						<div className="w-full flex flex-col gap-1 pl-3">
-// 							<h3 className="text-2xl text-center font-normal text-[#343E4B]">
-// 								Alec Thompson
-// 							</h3>
-// 							<span className="text-sm text-center text-[#8C8C8C]">
-// 								CEO/Founder
-// 							</span>
-// 						</div>
-// 					</div>
-// 				</div>
-
-// 				{/* Navigation */}
-// 				<nav className="p-4 mt-6">
-// 					{menuItems.map((section, idx) => (
-// 						<div key={idx} className="mb-8">
-// 							<ul className="space-y-2 *:outline-none">
-// 								{section.items.map((item, itemIdx) => (
-// 									<li key={itemIdx}>
-// 										<Link
-// 											to={item.path}
-// 											onClick={() =>
-// 												handleItemClick(
-// 													item.name,
-// 													item.path
-// 												)
-// 											}
-// 											className={`flex items-center gap-3 px-3 py-2 text-[#67748E] rounded-lg group relative ${selectedItem === item.name
-// 													? "bg-[#3776E2] text-white font-semibold"
-// 													: ""
-// 												}`}
-// 										>
-// 											<span className="p-2 rounded-lg bg-white text-[#67748E] shadow-[0_2px_4px_-1px_#00000030]">
-// 												{item.icon}
-// 											</span>
-// 											<span
-// 												className={`transform transition-all duration-500 text-md font-semibold ${isCollapsed
-// 														? "opacity-0 -translate-x-full"
-// 														: "opacity-100 translate-x-0"
-// 													} whitespace-nowrap`}
-// 											>
-// 												{item.name}
-// 											</span>
-// 											{item.badge && !isCollapsed && (
-// 												<span className="ml-auto bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-0.5">
-// 													{item.badge}
-// 												</span>
-// 											)}
-// 										</Link>
-// 									</li>
-// 								))}
-// 							</ul>
-// 						</div>
-// 					))}
-// 					<div className="h-44 w-full flex flex-col bg-[url('/src/assets/img/dashboard-menu-help-card-bg.png')] bg-no-repeat bg-center p-5 gap-2 rounded-2xl">
-// 						<div className="w-8 h-8 flex items-center justify-center bg-white shadow-[0_2px_4px_-1px_#00000030] p-2 rounded-md">
-// 							<SlDiamond size={16} />
-// 						</div>
-// 						<div className="w-full flex flex-col gap-1">
-// 							<h3 className="font-open-sans text-base font-semibold">
-// 								Need Help
-// 							</h3>
-// 							<h5 className="font-open-sans text-sm font-normal">
-// 								Please check our docs
-// 							</h5>
-// 							<Button variant="white">DOCUMENTATION</Button>
-// 						</div>
-// 					</div>
-// 				</nav>
-// 			</aside>
-
-// 			<div className="flex-1 flex flex-col overflow-hidden">
-// 				{/* Navbar */}
-// 				<header className="h-16 bg-background">
-// 					<div className="h-full  flex items-center justify-between">
-// 						<div className="flex items-center gap-4">
-// 							{/* <button
-//                 onClick={() => setIsCollapsed(!isCollapsed)}
-//                 className="p-2 hover:bg-gray-200 rounded-full transition-colors duration-300"
-//               >
-//                 {isCollapsed ? <ChevronsRight size={20} /> : <ChevronsLeft size={20} />}
-//               </button> */}
-// 							<div className="flex flex-col">
-// 								<h1 className="text-2xl font-medium text-[#343E4B] flex gap-4 items-end">
-// 									Wednesday
-// 									<span className="text-xs font-normal">
-// 										25 july, 2025
-// 									</span>
-// 								</h1>
-// 							</div>
-// 						</div>
-// 						<div className="flex items-center gap-8 me-10">
-// 							<button className="p-2 bg-[#EEF1F5] rounded-full relative">
-// 								<Bell size={24} />
-// 								<div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></div>
-// 							</button>
-// 							<div className="flex items-center justify-center gap-5">
-// 								<h4 className="text-xl font-medium">
-// 									Settings
-// 								</h4>
-
-// 								<DropdownMenu>
-// 									<DropdownMenuTrigger asChild>
-// 										<button className="cursor-pointer">
-// 											<ChevronDown size={20} />
-// 										</button>
-// 									</DropdownMenuTrigger>
-// 									<DropdownMenuContent
-// 										className="w-56 mt-2"
-// 										align="end"
-// 									>
-// 										<DropdownMenuItem>
-// 											<CircleArrowUp size={20} />
-// 											Upgrade package
-// 										</DropdownMenuItem>
-// 										<DropdownMenuItem>
-// 											<Mail size={20} />
-// 											Contact support
-// 										</DropdownMenuItem>
-// 										<DropdownMenuItem>
-// 											<Lock size={20} />
-// 											Change password
-// 										</DropdownMenuItem>
-// 									</DropdownMenuContent>
-// 								</DropdownMenu>
-// 							</div>
-// 						</div>
-// 					</div>
-// 				</header>
-
-// 				{/* Main Content */}
-// 				<main className="flex-1 overflow-auto p-0 bg-[#F5F5F6]">
-// 					<Outlet />
-// 				</main>
-// 			</div>
-// 		</div>
-// 	);
-// }
+"use client";
 
 import { useState, useEffect } from "react";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   Bell,
   ChevronDown,
@@ -257,12 +29,11 @@ import { useGetTuristProfileQuery } from "@/redux/features/withAuth";
 export default function UserDashboardLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState("Dashboard");
+  const [selectedItem, setSelectedItem] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { data: profileData, isLoading: isProfileLoading } =
     useGetTuristProfileQuery();
-  console.log(profileData);
 
   const menuItems = [
     {
@@ -271,34 +42,59 @@ export default function UserDashboardLayout() {
           name: "My Plans",
           icon: <ClipboardList size={20} />,
           path: "/user",
+          exact: true, // Require exact match for /user
         },
         {
           name: "Profile",
           icon: <UserRound size={20} />,
-          path: "user/profile",
+          path: "/user/profile",
         },
         {
           name: "Conversations",
           icon: <MessageCircle size={20} />,
-          path: "user/chat",
+          path: "/user/chat",
         },
         {
           name: "Notifications",
           icon: <Bell size={20} />,
-          path: "user/notification",
+          path: "/user/notification",
         },
         { name: "Logout", icon: <LogOut size={20} />, path: "/" },
       ],
     },
   ];
 
-  // Sync selectedItem with current route on initial load
+  // Sync selectedItem with current route
   useEffect(() => {
-    const currentItem = menuItems[0].items.find(
-      (item) => item.path === location.pathname
-    );
+    const normalizedLocation = location.pathname.replace(/\/$/, "");
+
+    // First, try to find an exact match
+    let currentItem = menuItems[0].items.find((item) => {
+      const normalizedPath = item.path.replace(/\/$/, "");
+      return item.exact && normalizedPath === normalizedLocation;
+    });
+
+    // If no exact match, try partial match for non-exact routes
+    if (!currentItem) {
+      currentItem = menuItems[0].items.find((item) => {
+        const normalizedPath = item.path.replace(/\/$/, "");
+        return (
+          !item.exact &&
+          (normalizedPath === normalizedLocation ||
+            normalizedLocation.startsWith(normalizedPath + "/"))
+        );
+      });
+    }
+
     if (currentItem) {
       setSelectedItem(currentItem.name);
+    } else {
+      // Fallback to null unless the route is exactly /user
+      if (normalizedLocation === "/user") {
+        setSelectedItem("My Plans");
+      } else {
+        setSelectedItem(null);
+      }
     }
   }, [location.pathname]);
 
@@ -318,28 +114,28 @@ export default function UserDashboardLayout() {
         setIsMobileMenuOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobileMenuOpen]);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
   }, [isMobileMenuOpen]);
 
   const handleItemClick = (itemName, path) => {
-    setSelectedItem(itemName);
-    navigate(path);
-    setIsMobileMenuOpen(false); // Close mobile menu after navigation
+    if (itemName === "Logout") {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      navigate(path);
+    } else {
+      setSelectedItem(itemName);
+      navigate(path);
+      setIsMobileMenuOpen(false);
+    }
   };
 
   const toggleMobileMenu = () => {
@@ -371,18 +167,17 @@ export default function UserDashboardLayout() {
                 }`}
               >
                 <img
-                  src={profileData.profile_picture_url || "/placeholder.svg"}
+                  src={profileData.profile_picture_url || UserAvatar}
                   alt="User"
                   className="w-16 rounded-full"
                 />
               </div>
-
               <div className="w-full flex flex-col gap-1 pl-3">
-                <h3 className="text-2xl text-center font-normal text-[#343E4B] ">
+                <h3 className="text-2xl text-center font-normal text-[#343E4B]">
                   {profileData.first_name + " " + profileData.last_name}
                 </h3>
                 <span className="text-center text-md text-[#8C8C8C]">
-                  {profileData.profession}
+                  {profileData.profession || "User"}
                 </span>
               </div>
             </div>
@@ -396,14 +191,17 @@ export default function UserDashboardLayout() {
               <ul className="space-y-2">
                 {section.items.map((item, itemIdx) => (
                   <li key={itemIdx}>
-                    <Link
+                    <NavLink
                       to={item.path}
+                      end={item.exact} // Use end prop for exact matching
                       onClick={() => handleItemClick(item.name, item.path)}
-                      className={`flex items-center gap-3 px-3 py-2 text-[#67748E] rounded-lg group relative ${
-                        selectedItem === item.name
-                          ? "bg-[#3776E2] text-white font-semibold"
-                          : ""
-                      }`}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 px-3 py-2 text-[#67748E] rounded-lg group relative ${
+                          isActive || selectedItem === item.name
+                            ? "bg-[#3776E2] text-white font-semibold"
+                            : ""
+                        }`
+                      }
                     >
                       <span className="p-2 rounded-lg bg-white text-[#67748E] shadow-[0_2px_4px_-1px_#00000030]">
                         {item.icon}
@@ -422,7 +220,7 @@ export default function UserDashboardLayout() {
                           {item.badge}
                         </span>
                       )}
-                    </Link>
+                    </NavLink>
                   </li>
                 ))}
               </ul>
@@ -470,19 +268,27 @@ export default function UserDashboardLayout() {
         {/* Mobile Logo */}
         <div className="h-auto flex items-center px-4">
           <div className="flex flex-col w-full justify-center items-center mt-8">
-            <div>
+            <div className="w-16 h-16 rounded-full overflow-hidden">
               <img
-                src={UserAvatar || "/placeholder.svg"}
+                src={
+                  (!isProfileLoading && profileData?.profile_picture_url) ||
+                  UserAvatar
+                }
                 alt="User"
-                className="w-16 h-16 rounded-full"
+                className="w-full h-full rounded-full"
               />
             </div>
             <div className="w-full flex flex-col gap-1 pl-3 mt-4">
               <h3 className="text-xl text-center font-normal text-[#343E4B]">
-                Alec Thompson
+                {isProfileLoading
+                  ? "Loading..."
+                  : profileData?.first_name + " " + profileData?.last_name ||
+                    "User"}
               </h3>
               <span className="text-center text-sm text-[#8C8C8C]">
-                CEO/Founder
+                {isProfileLoading
+                  ? "Loading..."
+                  : profileData?.profession || "User"}
               </span>
             </div>
           </div>
@@ -495,14 +301,17 @@ export default function UserDashboardLayout() {
               <ul className="space-y-2">
                 {section.items.map((item, itemIdx) => (
                   <li key={itemIdx}>
-                    <Link
+                    <NavLink
                       to={item.path}
+                      end={item.exact} // Use end prop for exact matching
                       onClick={() => handleItemClick(item.name, item.path)}
-                      className={`flex items-center gap-3 px-3 py-2 text-[#67748E] rounded-lg group relative ${
-                        selectedItem === item.name
-                          ? "bg-[#3776E2] text-white font-semibold"
-                          : ""
-                      }`}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 px-3 py-2 text-[#67748E] rounded-lg group relative ${
+                          isActive || selectedItem === item.name
+                            ? "bg-[#3776E2] text-white font-semibold"
+                            : ""
+                        }`
+                      }
                     >
                       <span className="p-2 rounded-lg bg-white text-[#67748E] shadow-[0_2px_4px_-1px_#00000030]">
                         {item.icon}
@@ -515,7 +324,7 @@ export default function UserDashboardLayout() {
                           {item.badge}
                         </span>
                       )}
-                    </Link>
+                    </NavLink>
                   </li>
                 ))}
               </ul>
@@ -548,26 +357,31 @@ export default function UserDashboardLayout() {
         <header className="h-16 bg-[#F8F9FA]">
           <div className="h-full px-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              {/* Mobile Menu Button */}
               <button
                 onClick={toggleMobileMenu}
                 className="mobile-menu-button lg:hidden p-2 hover:bg-gray-200 rounded-full transition-colors duration-300"
               >
                 <Menu size={20} />
               </button>
-
               <div className="flex flex-col">
                 <h1 className="text-lg sm:text-2xl font-medium text-[#343E4B] flex gap-2 sm:gap-4 items-end">
                   Wednesday
-                  <span className="text-xs font-normal">25 july, 2025</span>
+                  <span className="text-xs font-normal">25 July, 2025</span>
                 </h1>
               </div>
             </div>
             <div className="flex items-center gap-4 sm:gap-8 me-2 sm:me-10">
-              <button className="p-2 bg-[#EEF1F5] rounded-full relative">
+              <NavLink
+                to="/user/notification"
+                className={({ isActive }) =>
+                  `p-2 rounded-full relative ${
+                    isActive ? "bg-[#3776E2] text-white" : "bg-[#EEF1F5]"
+                  }`
+                }
+              >
                 <Bell size={20} className="sm:w-6 sm:h-6" />
                 <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></div>
-              </button>
+              </NavLink>
               <div className="hidden sm:flex items-center justify-center gap-5">
                 <h4 className="text-xl font-medium">Settings</h4>
                 <DropdownMenu>
@@ -592,8 +406,6 @@ export default function UserDashboardLayout() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-
-              {/* Mobile Settings Dropdown */}
               <div className="sm:hidden">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
