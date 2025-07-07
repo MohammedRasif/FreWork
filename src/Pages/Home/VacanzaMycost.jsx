@@ -29,21 +29,21 @@ const VacanzaMycost = () => {
         {/* Content Container */}
         <div className="relative z-20 flex flex-col items-center justify-center min-h-[70vh] md:h-[85vh] px-4 py-10">
           {/* Steps Container */}
-          <div className="flex flex-col md:flex-row items-center justify-center space-y-12 md:space-y-0 md:space-x-8 lg:space-x-32">
+          <div className="flex flex-row items-center justify-center md:space-y-0 md:space-x-8 lg:space-x-32 w-full overflow-x-auto h-full">
             {/* Step 1 */}
-            <div
-              className="flex flex-col items-center text-center bg-white rounded-full shadow-lg p-6 md:p-8"
-              style={{ width: "280px", height: "280px" }}
-            >
-              
+            <div className="flex flex-col items-center text-center  md:rounded-full md:shadow-xl  p-6 md:p-8 w-[120px] md:w-[280px] md:bg-white">
               <div className="relative">
-                <div className="absolute -top-10 -right-16 md:-top-12 md:-right-20 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white rounded-full shadow-2xl border border-gray-100">
+                {/* <div className="absolute -top-10 -right-16 hidden md:-top-12 md:-right-20 md:flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white rounded-full shadow-2xl border border-gray-100">
                   <div className="w-12 h-12 md:w-16 md:h-16 bg-[#05B7D7] rounded-full flex items-center justify-center text-white font-bold text-lg md:text-[24px] z-10">
                     01
                   </div>
-                </div>
+                </div> */}
                 <div className="w-24 h-24 md:w-28 md:h-28 flex items-center justify-center">
-                  <img src={img1} alt="Publish Request" className="h-20 md:h-24" />
+                  <img
+                    src={img1}
+                    alt="Publish Request"
+                    className="h-20 md:h-24"
+                  />
                 </div>
               </div>
               <h3 className="text-xl md:text-2xl font-semibold text-cyan-600 mb-2 md:mb-4">
@@ -56,16 +56,13 @@ const VacanzaMycost = () => {
               </p>
             </div>
             {/* Step 2 */}
-            <div
-              className="flex flex-col items-center text-center bg-white rounded-full shadow-lg p-6 md:p-8"
-               style={{ width: "280px", height: "280px" }}
-            >
+            <div className="flex flex-col items-center text-center md:rounded-full md:shadow-xl  p-6 md:p-8 w-[120px] md:w-[280px] md:bg-white">
               <div className="relative">
-                <div className="absolute -top-10 -right-16 md:-top-12 md:-right-20 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white rounded-full shadow-2xl border border-gray-100">
+                {/* <div className="absolute -top-10 -right-16 md:-top-12 md:-right-20 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white rounded-full shadow-2xl border border-gray-100">
                   <div className="w-12 h-12 md:w-16 md:h-16 bg-[#447CDD] rounded-full flex items-center justify-center text-white font-bold text-lg md:text-[24px] z-10">
                     02
                   </div>
-                </div>
+                </div> */}
                 <div className="w-24 h-24 md:w-28 md:h-28 flex items-center justify-center">
                   <img
                     src={img2}
@@ -84,16 +81,13 @@ const VacanzaMycost = () => {
               </p>
             </div>
             {/* Step 3 */}
-            <div
-              className="flex flex-col items-center text-center bg-white rounded-full shadow-lg p-6 md:p-8"
-               style={{ width: "280px", height: "280px" }}
-            >
+            <div className="flex flex-col items-center text-center md:rounded-full md:shadow-xl p-6 md:p-8 w-[120px] md:w-[280px] md:bg-white">
               <div className="relative">
-                <div className="absolute -top-10 -right-16 md:-top-12 md:-right-20 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white rounded-full shadow-2xl border border-gray-100">
+                {/* <div className="absolute -top-10 -right-16 md:-top-12 md:-right-20 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white rounded-full shadow-2xl border border-gray-100">
                   <div className="w-12 h-12 md:w-16 md:h-16 bg-[#D75EC7] rounded-full flex items-center justify-center text-white font-bold text-lg md:text-[24px] z-10">
                     03
                   </div>
-                </div>
+                </div> */}
                 <div className="w-24 h-24 md:w-28 md:h-28 flex items-center justify-center">
                   <img src={img3} alt="Free Booking" className="h-20 md:h-24" />
                 </div>
