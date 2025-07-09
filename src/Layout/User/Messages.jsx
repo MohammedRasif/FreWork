@@ -4,6 +4,7 @@ import { useLocation, useParams } from "react-router-dom";
 import {
   useGetChatHsitoryQuery,
   useGetPlansQuery,
+  useInviteToChatMutation,
 } from "@/redux/features/withAuth";
 import { chat_sockit } from "@/assets/Socketurl";
 import { v4 as uuidv4 } from "uuid"; // For generating unique IDs
@@ -20,6 +21,8 @@ function Messages() {
   const inputRef = useRef(null);
   const wsRef = useRef(null);
   const pendingMessagesRef = useRef(new Map()); // Track pending messages by tempId
+  // for diffrent tour
+  const [inviteToChat] = useInviteToChatMutation();
 
   // Fetch chat history and plans
   const { data, isLoading, error } = useGetChatHsitoryQuery(id);
@@ -200,6 +203,19 @@ function Messages() {
     }
   };
 
+  // Handle dropdown change and send selected tour id
+  const handleDropdownChange = async (e) => {
+    const selectedId = e.target.value;
+    setSelectedDropdown(selectedId);
+    if (selectedId) {
+      try {
+        await inviteToChat({ selected_tour_id: selectedId });
+      } catch (err) {
+        // Optionally handle error
+        console.error("Failed to send selected tour id:", err);
+      }
+    }
+  };
   // Handle click outside to close menu
   useEffect(() => {
     function handleClickOutside(event) {
@@ -243,7 +259,7 @@ function Messages() {
         <select
           className="bg-gray-100 dark:bg-[#1E232E] text-gray-800 dark:text-gray-200 rounded px-3 py-2 focus:outline-none"
           value={selectedDropdown}
-          onChange={(e) => setSelectedDropdown(e.target.value)}
+          onChange={handleDropdownChange} // <-- use handler
           disabled={plansLoading}
         >
           <option value="">Select Option</option>
@@ -278,7 +294,6 @@ function Messages() {
           </div>
         </div>
       </div>
-
       {/* Messages Section */}
       <div className="flex-1 p-4 space-y-4 overflow-y-auto">
         {messages.map((message) => (
@@ -340,7 +355,6 @@ function Messages() {
         ))}
         <div ref={messagesEndRef} />
       </div>
-
       {/* Message input area */}
       <div className="border-t border-gray-200 p-3 bg-white">
         <div className="flex items-center bg-gray-100 rounded-full px-4 py-3">
