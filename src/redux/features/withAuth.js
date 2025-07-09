@@ -110,7 +110,7 @@ export const sqQuery = createApi({
     // give review
     giveReview: builder.mutation({
       query: (data) => ({
-        url: `review/plan/${data.agency_id}/`,
+        url: `/review/plan/${data.agency_id}/`,
         method: "POST",
         body: { comment: data.comment, rating: data.rating },
       }),
@@ -120,6 +120,24 @@ export const sqQuery = createApi({
     }),
     getOneTourPlan: builder.query({
       query: (id) => `/tour-plans/${id}/`,
+    }),
+    //notifications
+    getNotifications: builder.query({
+      query: () => `/notifications/`,
+    }),
+    // chats
+    inviteToChat: builder.mutation({
+      query: (data) => ({
+        url: `/chat/start/`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getChatList: builder.query({
+      query: () => "/chat/conversations/",
+    }),
+    getChatHsitory: builder.query({
+      query: (id) => `/chat/conversations/${id}/messages/`,
     }),
   }),
 });
@@ -150,4 +168,10 @@ export const {
   useGiveReviewMutation,
   useGetOfferedPlanQuery,
   useGetOneTourPlanQuery,
+  // notifications
+  useGetNotificationsQuery,
+  // chat
+  useInviteToChatMutation,
+  useGetChatListQuery,
+  useGetChatHsitoryQuery,
 } = sqQuery;

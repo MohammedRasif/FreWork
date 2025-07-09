@@ -10,7 +10,10 @@ import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 import FullScreenInfinityLoader from "@/lib/Loading";
 import { useNavigate } from "react-router-dom";
-import { useAddToFavoritMutation } from "@/redux/features/withAuth";
+import {
+  useAddToFavoritMutation,
+  useInviteToChatMutation,
+} from "@/redux/features/withAuth";
 
 const Membership = () => {
   const [agency, setAgency] = useState([]);
@@ -28,6 +31,10 @@ const Membership = () => {
   const { data: SearchAgencies, isLoading: isSearchLoading } =
     useSearchAgencyQuery(searchTerm, { skip: !searchTerm });
   const [addToFavo, { isLoading: isAddFevLoading }] = useAddToFavoritMutation();
+
+  // invite to chat
+  const [invite, { isLoading: isInviteLoading, isError: isInviteError }] =
+    useInviteToChatMutation();
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -158,6 +165,19 @@ const Membership = () => {
     }
   }, [TopAgencies]);
 
+  const handleMessage = async (data) => {
+    const role = localStorage.getItem("role");
+    console.log(data);
+    if (role) {
+      try {
+        await invite(data);
+        navigate(role === "tourist" ? "/user/chat" : "/admin/chat");
+      } catch (error) {
+        console.log(error, "invite to message");
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col sm:flex-row bg-gray-50 px-4 sm:px-10 pb-16 font-roboto">
       {/* Main Content - Tour Plans */}
@@ -276,8 +296,11 @@ const Membership = () => {
                       onClick={() => {
                         if (!token) {
                           navigate("/login");
+                        } else {
+                          handleMessage({ other_user_id: plan.user });
                         }
                       }}
+                      disabled={isAddFevLoading}
                       className="flex items-center space-x-2 bg-[#3776E2] text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-colors w-full sm:w-auto hover:cursor-pointer"
                       aria-label={`Message ${plan.agency}`}
                     >

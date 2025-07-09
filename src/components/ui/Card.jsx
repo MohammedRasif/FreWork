@@ -1,8 +1,12 @@
 import { Heart, Star } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Card({ tourPlan }) {
   return (
-    <div className="flex flex-col w-full max-w-[160px] sm:max-w-sm mx-1 sm:mx-2 h-[200px] sm:h-[400px] overflow-hidden bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg">
+    <Link
+      to={`/tour-plans/${tourPlan.id}`}
+      className="flex flex-col w-full max-w-[160px] sm:max-w-sm mx-1 sm:mx-2 h-[200px] sm:h-[400px] overflow-hidden bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg"
+    >
       <div className="relative flex-shrink-0">
         {/* Property Image */}
         <div className="aspect-[4/3] overflow-hidden">
@@ -57,6 +61,6 @@ export default function Card({ tourPlan }) {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   Bell,
@@ -25,15 +25,52 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useGetTuristProfileQuery } from "@/redux/features/withAuth";
+import { notification_url } from "@/assets/Socketurl";
+import { MdVerified } from "react-icons/md";
 
 export default function UserDashboardLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  //notifications
+  const [notifications, setNotifications] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
   const { data: profileData, isLoading: isProfileLoading } =
     useGetTuristProfileQuery();
+  let ws = useRef(null);
+  useEffect(() => {
+    ws.current = new WebSocket(notification_url);
+    ws.current.onopen = () => {
+      console.log("notification socket connected");
+    };
+    ws.current.onmessage = (event) => {
+      console.log("Raw message:", event.data);
+      try {
+        const data = JSON.parse(event.data);
+        setNotifications((prev) => [...prev, data]);
+        console.log("Parsed message:", data);
+      } catch (error) {
+        console.error("Error parsing message:", error);
+      }
+    };
+    ws.current.onerror = (error) => {
+      console.error("notification socket error:", error);
+    };
+    ws.current.onclose = () => {
+      console.log("notification connection closed");
+    };
+
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, []); // Empty dependency array
+
+  useEffect(() => {
+    console.log(notifications);
+  }, [notifications]);
 
   const menuItems = [
     {
@@ -159,18 +196,26 @@ export default function UserDashboardLayout() {
         {!isProfileLoading && profileData && (
           <div className="h-auto flex items-center px-4">
             <div className="flex flex-col w-full justify-center items-center mt-16">
-              <div
-                className={`transform transition-all duration-500 w-16 h-16 overflow-hidden rounded-full border border-gray-50 ${
-                  isCollapsed
-                    ? "opacity-0 -translate-x-full"
-                    : "opacity-100 translate-x-0"
-                }`}
-              >
-                <img
-                  src={profileData.profile_picture_url || UserAvatar}
-                  alt="User"
-                  className="w-16 rounded-full"
-                />
+              <div className="relative">
+                <div
+                  className={`transform transition-all duration-500 w-16 h-16 overflow-hidden rounded-full border border-gray-50 ${
+                    isCollapsed
+                      ? "opacity-0 -translate-x-full"
+                      : "opacity-100 translate-x-0"
+                  }`}
+                >
+                  <img
+                    src={profileData.profile_picture_url || UserAvatar}
+                    alt="User"
+                    className="w-16 rounded-full"
+                  />
+                  {/* {profileData} */}
+                </div>
+                {profileData?.is_verified && (
+                  <div className="bg-white w-fit absolute top-0 right-0 rounded-full">
+                    <MdVerified className=" w-5 h-5 z-20 text-blue-600" />
+                  </div>
+                )}
               </div>
               <div className="w-full flex flex-col gap-1 pl-3">
                 <h3 className="text-2xl text-center font-normal text-[#343E4B]">
@@ -268,15 +313,22 @@ export default function UserDashboardLayout() {
         {/* Mobile Logo */}
         <div className="h-auto flex items-center px-4">
           <div className="flex flex-col w-full justify-center items-center mt-8">
-            <div className="w-16 h-16 rounded-full overflow-hidden">
-              <img
-                src={
-                  (!isProfileLoading && profileData?.profile_picture_url) ||
-                  UserAvatar
-                }
-                alt="User"
-                className="w-full h-full rounded-full"
-              />
+            <div className="relative">
+              <div className="w-16 h-16 rounded-full overflow-hidden">
+                <img
+                  src={
+                    (!isProfileLoading && profileData?.profile_picture_url) ||
+                    UserAvatar
+                  }
+                  alt="User"
+                  className="w-full h-full rounded-full"
+                />
+              </div>
+              {profileData?.is_verified && (
+                <div className="bg-white w-fit absolute top-0 right-0 rounded-full">
+                  <MdVerified className=" w-5 h-5 z-20 text-blue-600" />
+                </div>
+              )}
             </div>
             <div className="w-full flex flex-col gap-1 pl-3 mt-4">
               <h3 className="text-xl text-center font-normal text-[#343E4B]">
@@ -380,7 +432,9 @@ export default function UserDashboardLayout() {
                 }
               >
                 <Bell size={20} className="sm:w-6 sm:h-6" />
-                <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></div>
+                {notifications.length > 0 && (
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></div>
+                )}
               </NavLink>
               <div className="hidden sm:flex items-center justify-center gap-5">
                 <h4 className="text-xl font-medium">Settings</h4>

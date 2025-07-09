@@ -41,7 +41,11 @@ const OTP_Verification = () => {
       if (res.access && res.refresh) {
         localStorage.setItem("access_token", res.access);
         localStorage.setItem("refresh_token", res.refresh);
-        navigate("/login"); // Redirect only if successful
+        navigate(location.state?.to ? "/reset_password" : "/login", {
+          state: {
+            email: location.state.email,
+          },
+        }); // Redirect only if successful
       } else {
         alert("OTP verification failed. Check the code or try again.");
       }

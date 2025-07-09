@@ -65,6 +65,13 @@ export const baseApi = createApi({
       query: (query) =>
         `/public/tour-plans?search=${query.search}&min_budget=${query.min}&max_budget=${query.max}&country=${query.country}&type=${query.type}&category=${query.category}`,
     }),
+    updatePassword: builder.mutation({
+      query: (data) => ({
+        url: "/auth/reset-password/",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -74,6 +81,7 @@ export const {
   useOtpVerifyMutation,
   useReSendOtpMutation,
   useVerifyEmailMutation,
+  useUpdatePasswordMutation,
   // agency
   useGetAllAgencyQuery,
   useGetTopAgencyQuery,

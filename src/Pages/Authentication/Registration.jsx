@@ -11,6 +11,7 @@ const register = () => {
   const [createUser, { isLoading, isError, error, isSuccess }] =
     useCreateUserMutation();
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     register,
@@ -39,7 +40,13 @@ const register = () => {
       });
     } catch (err) {
       console.error("Error creating user:", err);
-      alert("Error occurred during registration. Please try again.");
+      console.log(err.data.error);
+      setErrorMessage(err.data.error);
+      alert(
+        errorMessage ||
+          err.data.error ||
+          "Error occurred during registration. Please try again."
+      );
     }
   };
 

@@ -29,120 +29,123 @@ import PublishedPlan from "@/Layout/User/PublishedPlan";
 import CreatePlan from "@/Layout/User/CreatePlan";
 import Favorite from "@/Layout/User/Favorite";
 import UserAccepte from "@/Layout/User/UserAccepte";
+import SinglePost from "@/Pages/SinglePost/SinglePost";
+import ViewAllPost from "@/Pages/ViewAllPost/ViewAllPost";
 
 export const router = createBrowserRouter([
-	{
-		path: "/",
-		element: <Main />,
-		children: [
-			{ path: "/", element: <Home /> },
-			{ path: "/membership", element: <Membership /> },
-			{ path: "/pricing", element: <Pricing /> },
-			{ path: "/tourPlan", element: <TourPlan /> },
-			{ path: "/contact", element: <Contact /> },
-		],
-	},
+  {
+    path: "/",
+    element: <Main />,
+    children: [
+      { path: "/", element: <Home /> },
+      { path: "/membership", element: <Membership /> },
+      { path: "/pricing", element: <Pricing /> },
+      { path: "/tourPlan", element: <TourPlan /> },
+      { path: "/contact", element: <Contact /> },
+      { path: "/viewall", element: <ViewAllPost /> },
+    ],
+  },
 
-	{
-		path: "/admin",
-		element: <AdminDashboardLayout />,
-		children: [
-			{ index: true, element: <AdminHome /> },
-			{ path: "dashboard", element: <AdminHome /> },
-			{ path: "profile", element: <AdminProfile /> },
-			{ path: "editProfile", element: <AdminProfileEdit /> },
-			{ path: "membership", element: <AdminPricing /> },
-			{ path: "admin_notification", element: <AdminNotification /> },
-			{
-				path: "chat", // Changed from "user" to "chat" to avoid repetition
-				element: <ChatInterface />,
-				children: [
-					{
-						path: ":id",
-						element: <Messages />,
-					},
-				],
-			},
-		],
-	},
+  {
+    path: "/admin",
+    element: <AdminDashboardLayout />,
+    children: [
+      { index: true, element: <AdminHome /> },
+      { path: "dashboard", element: <AdminHome /> },
+      { path: "profile", element: <AdminProfile /> },
+      { path: "editProfile", element: <AdminProfileEdit /> },
+      { path: "membership", element: <AdminPricing /> },
+      { path: "admin_notification", element: <AdminNotification /> },
+      {
+        path: "chat", // Changed from "user" to "chat" to avoid repetition
+        element: <ChatInterface />,
+        children: [
+          {
+            path: ":id",
+            element: <Messages />,
+          },
+        ],
+      },
+    ],
+  },
 
-	{
-		path: "/user",
-		element: <UserDashboardLayout />,
-		children: [
-			{
-				index: true,
-				path: "",
-				element: (
-					<HomeLayout>
-						<CreatedPlan />
-					</HomeLayout>
-				),
-			}, // Default route for /user (maps to /user/)
-			{
-				index: true,
-				path: "published",
-				element: (
-					<HomeLayout>
-						<PublishedPlan />
-					</HomeLayout>
-				),
-			}, // Default route for /user (maps to /user/)
-			{
-				index: true,
-				path: "accepted",
-				element: (
-					<HomeLayout>
-						<UserAccepte />
-					</HomeLayout>
-				),
-			},
-			{
-				index: true,
-				path: "favourite",
-				element: (
-					<HomeLayout>
-						<Favorite />
-					</HomeLayout>
-				),
-			},
-			
-		],
-	},
+  {
+    path: "/user",
+    element: <UserDashboardLayout />,
+    children: [
+      {
+        index: true,
+        path: "",
+        element: (
+          <HomeLayout>
+            <CreatedPlan />
+          </HomeLayout>
+        ),
+      }, // Default route for /user (maps to /user/)
+      {
+        index: true,
+        path: "published",
+        element: (
+          <HomeLayout>
+            <PublishedPlan />
+          </HomeLayout>
+        ),
+      }, // Default route for /user (maps to /user/)
+      {
+        index: true,
+        path: "accepted",
+        element: (
+          <HomeLayout>
+            <UserAccepte />
+          </HomeLayout>
+        ),
+      },
+      {
+        index: true,
+        path: "favourite",
+        element: (
+          <HomeLayout>
+            <Favorite />
+          </HomeLayout>
+        ),
+      },
+    ],
+  },
 
-	{ path: "/register", element: <Registration /> },
-	{ path: "/login", element: <Login /> },
-	{ path: "/verify", element: <EmailVerification /> },
-	{ path: "/otp_verify", element: <OTP_Verification /> },
-	{ path: "/reset_password", element: <ResetPassword /> },
-	{
-		path: "/user",
-		element: <UserDashboardLayout />,
-		children: [
-			{ index: true, element: <HomeLayout /> },
-			{ path: "dashboard", element: <HomeLayout /> },
-			{
-				path: "chat", // Changed from "user" to "chat" to avoid repetition
-				element: <ChatInterface />,
-				children: [
-					{
-						path: ":id",
-						element: <Messages />,
-					},
-				],
-			},
-			{ path: "profile", element: <UserProfile /> },
-			{ path: "CreatePlan", element: <CreatePlan /> },
-			{ path: "editCreatePlan", element: <CreatePlan /> },
-			{ path: "notification", element: <AdminNotification /> },
-			{ path: "editProfile", element: <UserEditProfile /> },
-		],
-	},
+  { path: "/register", element: <Registration /> },
+  { path: "/login", element: <Login /> },
+  { path: "/verify", element: <EmailVerification /> },
+  { path: "/otp_verify", element: <OTP_Verification /> },
+  { path: "/reset_password", element: <ResetPassword /> },
+  {
+    path: "/user",
+    element: <UserDashboardLayout />,
+    children: [
+      { index: true, element: <HomeLayout /> },
+      { path: "dashboard", element: <HomeLayout /> },
+      {
+        path: "chat", // Changed from "user" to "chat" to avoid repetition
+        element: <ChatInterface />,
+        children: [
+          {
+            path: ":id",
+            element: <Messages />,
+          },
+        ],
+      },
+      { path: "profile", element: <UserProfile /> },
+      { path: "CreatePlan", element: <CreatePlan /> },
+      { path: "editCreatePlan", element: <CreatePlan /> },
+      { path: "notification", element: <AdminNotification /> },
+      { path: "editProfile", element: <UserEditProfile /> },
+    ],
+  },
 
-	
-	{ path: "/register", element: <Registration /> },
-	{ path: "/login", element: <Login /> },
-	{ path: "/verify", element: <EmailVerification /> },
-	{ path: "/otp_verify", element: <OTP_Verification /> },
-	{ path: "/reset_password", element: <ResetPassword /> },
+  // make it private
+  { path: `/tour-plans/:id`, element: <SinglePost /> },
+  { path: "/register", element: <Registration /> },
+  { path: "/login", element: <Login /> },
+  { path: "/verify", element: <EmailVerification /> },
+  { path: "/otp_verify", element: <OTP_Verification /> },
+  { path: "/reset_password", element: <ResetPassword /> },
 ]);

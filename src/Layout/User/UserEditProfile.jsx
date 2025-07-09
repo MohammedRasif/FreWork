@@ -77,7 +77,7 @@ function UserEditProfile() {
     payload.append("bio", formData.describeYourself);
     payload.append("profession", formData.profession);
     payload.append("education", formData.education);
-    payload.append("gender", formData.gender);
+    payload.append("gender", formData.gender.toLocaleLowerCase());
     payload.append("age", formData.age);
     payload.append("language", formData.language);
     payload.append("address_house_no", formData.houseNo);

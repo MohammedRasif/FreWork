@@ -3,6 +3,7 @@ import { Lock } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import img from "../../assets/img/Mask group (3).png";
 import { useNewPasswordMutation } from "@/redux/features/withAuth";
+import { useUpdatePasswordMutation } from "@/redux/features/baseApi";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const email = location.state?.email || "";
 
-  const [setNew, { isLoading }] = useNewPasswordMutation();
+  const [setNew, { isLoading }] = useUpdatePasswordMutation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

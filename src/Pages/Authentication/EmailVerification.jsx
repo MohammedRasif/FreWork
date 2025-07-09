@@ -21,7 +21,7 @@ const EmailVerification = () => {
       console.log("Verify response:", res);
 
       // if successful, navigate to reset_password
-      navigate("/reset_password", { state: { email } });
+      navigate("/otp_verify", { state: { email, to: "/reset_password" } });
     } catch (error) {
       console.error("Error verifying email:", error);
       alert(

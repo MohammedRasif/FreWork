@@ -102,7 +102,7 @@ const Published = () => {
         )}
       </div>
 
-      <NavLink to="/tourPlan">
+      <NavLink to="/viewall">
         <h1 className="text-center py-8 sm:py-10 font-medium text-base sm:text-lg lg:text-[19px] text-blue-500 underline cursor-pointer">
           see more...
         </h1>
