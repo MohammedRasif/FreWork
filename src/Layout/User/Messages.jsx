@@ -107,8 +107,8 @@ function Messages() {
 
   // Map fetched chat history to messages state
   useEffect(() => {
-    if (data) {
-      const formattedMessages = data.map((msg) => ({
+    if (data && Array.isArray(data.messages)) {
+      const formattedMessages = data.messages.map((msg) => ({
         id: msg.id,
         text: msg.message_type === "text" ? msg.text : null,
         isUser: msg.sender.role !== "agency",
@@ -116,10 +116,11 @@ function Messages() {
         is_read: msg.is_read,
         status: "sent",
       }));
-      console.log("Formatted chat history:", formattedMessages); // Debug history
+      console.log("Formatted chat history:", formattedMessages);
       setMessages(formattedMessages);
     }
   }, [data]);
+
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
